@@ -1,0 +1,90 @@
+﻿Language: Cpp
+
+Standard: Latest
+
+UseTab: AlignWithSpaces
+TabWidth: 4
+IndentWidth: 4
+AccessModifierOffset: -4
+ColumnLimit: 130
+
+SortIncludes: false
+
+MaxEmptyLinesToKeep: 1
+KeepEmptyLinesAtTheStartOfBlocks: false
+EmptyLineBeforeAccessModifier: LogicalBlock
+
+FixNamespaceComments: true
+
+NamespaceIndentation: All
+IndentCaseLabels: true
+IndentPPDirectives: AfterHash
+
+SpaceAfterCStyleCast: false 
+SpaceAfterTemplateKeyword: false
+SpaceInEmptyParentheses: false
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeCpp11BracedList: false
+SpaceBeforeCtorInitializerColon : true
+SpaceBeforeInheritanceColon: true
+SpaceBeforeRangeBasedForLoopColon: true
+SpaceBeforeParens: ControlStatements
+SpacesBeforeTrailingComments: 1
+SpacesInAngles: false
+SpacesInCStyleCastParentheses: false
+SpacesInConditionalStatement: false
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+
+Cpp11BracedListStyle: true
+
+BinPackArguments: false
+BinPackParameters: false
+
+AlignConsecutiveAssignments: false
+AlignConsecutiveMacros: AcrossEmptyLinesAndComments
+# Clang-format 13
+# AlignArrayOfStructures: Left
+AlignTrailingComments: true
+AlignEscapedNewlines: Left
+AlignOperands: AlignAfterOperator
+AlignAfterOpenBracket: AlwaysBreak
+
+BreakBeforeBraces: Custom
+BraceWrapping:
+    AfterCaseLabel: true
+    AfterClass: true
+    AfterControlStatement: Always
+    AfterEnum: true
+    AfterFunction: true
+    AfterNamespace: true
+    AfterStruct: true
+    AfterUnion: true
+    AfterExternBlock: true
+    BeforeCatch: true
+    BeforeElse: true
+    BeforeLambdaBody: true
+    IndentBraces: false
+    SplitEmptyFunction: false
+    SplitEmptyRecord: false
+    SplitEmptyNamespace: false
+
+BreakBeforeBinaryOperators: NonAssignment
+BreakBeforeTernaryOperators: true
+BreakConstructorInitializers: BeforeComma
+
+AlwaysBreakTemplateDeclarations: Yes
+AlwaysBreakBeforeMultilineStrings: false
+
+PointerAlignment: Right
+
+ConstructorInitializerAllOnOneLineOrOnePerLine: false
+
+AllowShortLoopsOnASingleLine: true
+AllowShortIfStatementsOnASingleLine: WithoutElse
+AllowShortBlocksOnASingleLine: Never
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: InlineOnly
+AllowShortLambdasOnASingleLine: All
+AllowAllArgumentsOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false

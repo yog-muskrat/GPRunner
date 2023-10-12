@@ -1,0 +1,4 @@
+{
+    "gitlab-url": "https://<gitlab-server>.net",
+    "private-token": "<api-token>"
+}

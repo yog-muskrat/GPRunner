@@ -1,0 +1,28 @@
+#include <QGuiApplication>
+#include <QQmlContext>
+#include <QQmlApplicationEngine>
+
+#include "GPManager.h"
+
+int main(int argc, char *argv[])
+{
+#if defined(Q_OS_WIN)
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+#endif
+
+    QGuiApplication app(argc, argv);
+
+    GPManager manager;
+
+    QQmlApplicationEngine engine;
+    engine.rootContext()->setContextProperty("gpm", &manager);
+    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+    engine.load(QUrl(QStringLiteral("qrc:/ProjectList.qml")));
+    engine.load(QUrl(QStringLiteral("qrc:/PipelineTable.qml")));
+    engine.load(QUrl(QStringLiteral("qrc:/PipelineVariables.qml")));
+
+    if (engine.rootObjects().isEmpty())
+        return -1;
+
+    return app.exec();
+}
