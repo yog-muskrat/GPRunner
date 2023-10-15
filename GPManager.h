@@ -14,59 +14,71 @@ class QJsonArray;
 
 class GPManager : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 
-    Q_PROPERTY(QObject *projectModel READ getProjectModel NOTIFY projectModelChanged)
-    Q_PROPERTY(QObject *pipelineModel READ getPipelineModel NOTIFY pipelineModelChanged)
-    Q_PROPERTY(QObject *variableModel READ getVariableModel NOTIFY variableModelChanged)
+	Q_PROPERTY(QObject *projectModel READ getProjectModel NOTIFY projectModelChanged)
+	Q_PROPERTY(QObject *pipelineModel READ getPipelineModel NOTIFY pipelineModelChanged)
+	Q_PROPERTY(QObject *variableModel READ getVariableModel NOTIFY variableModelChanged)
 
 public:
-    GPManager(QObject* parent = nullptr);
+	GPManager(QObject *parent = nullptr);
 
-    Q_INVOKABLE void loadProjects();
-    Q_INVOKABLE void loadPipelines(int projectId);
-    Q_INVOKABLE void runPipeline(QString const &ref);
-    Q_INVOKABLE QStringList getProjectBranches(int projectId);
-    
-    /**
-     * @brief Остановить пайплайн (в проекте m_currentProject)
-     * @param pipelineId идентификатор пайплайна
-    */
-    Q_INVOKABLE void cancelPipeline(int pipelineId);
+	Q_INVOKABLE void loadProjects();
+	Q_INVOKABLE void setCurrentProject(int projectId);
+	Q_INVOKABLE void runPipeline(QString const &ref);
+	Q_INVOKABLE QStringList getProjectBranches(int projectId);
+	Q_INVOKABLE void loadPipelineVariables(QString const &ref);
 
-    /**
-     * @brief Перезапустить джобы пайплайна (в проекте m_currentProject)
-     * @param pipelineId идентификатор пайплайна
-    */
-    Q_INVOKABLE void retryPipeline(int pipelineId);
+	/**
+	 * @brief Остановить пайплайн (в проекте m_currentProject)
+	 * @param pipelineId идентификатор пайплайна
+	 */
+	Q_INVOKABLE void cancelPipeline(int pipelineId);
 
-    ProjectModel * getProjectModel() const;
-    PipelineModel * getPipelineModel() const;
-    VariableModel * getVariableModel() const;
+	/**
+	 * @brief Перезапустить джобы пайплайна (в проекте m_currentProject)
+	 * @param pipelineId идентификатор пайплайна
+	 */
+	Q_INVOKABLE void retryPipeline(int pipelineId);
 
-    Q_INVOKABLE void addVariable();
+	ProjectModel *getProjectModel() const;
+	PipelineModel *getPipelineModel() const;
+	VariableModel *getVariableModel() const;
+
+	Q_INVOKABLE void addVariable();
 	Q_INVOKABLE void removeVariable(int index);
 
 signals:
-    void pipelineModelChanged();
-    void projectModelChanged();
-    void variableModelChanged();
+	void pipelineModelChanged();
+	void projectModelChanged();
+	void variableModelChanged();
 
 private:
-    void parseProjects(QJsonDocument const& doc);
+	void parseProjects(QJsonDocument const &doc);
+	void parsePipelines(int projectId, QJsonDocument const &doc);
+	void parseMRs(int projectId, QJsonDocument const &doc);
+	void parseVariables(QJsonDocument const &doc);
+	void parseBranches(int projectId, QJsonDocument const &doc);
+
 	void loadProjectBranches(int projectId);
+	void loadProjectAvatar(int projectId, QString const &avatarUrl);
+	void loadProjectPipelines(int projectId);
+	void loadProjectMRs(int projectId);
 
-    void parsePipelines(QJsonDocument const& doc);
-    void readSettings();
+	void readSettings();
 
-    QJsonArray prepareVariables() const;
+	void update();
 
-    QPointer<ProjectModel> m_projectModel;
-    QPointer<PipelineModel> m_pipelineModel;
-    QPointer<VariableModel> m_variableModel;
-    QPointer<QNetworkAccessManager> m_networkManager;
-    QTimer m_pipelineUpdateTimer;
-    int m_currentProject{ -1 };
+	QJsonArray prepareVariables() const;
 
-    gpr::Settings m_settings;
+	QPointer<ProjectModel> m_projectModel;
+	QPointer<PipelineModel> m_pipelineModel;
+	QPointer<VariableModel> m_variableModel;
+	QPointer<QNetworkAccessManager> m_networkManager;
+
+	QTimer m_updateTimer;
+
+	int m_currentProject{-1};
+
+	gpr::Settings m_settings;
 };

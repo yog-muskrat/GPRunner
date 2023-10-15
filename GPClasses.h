@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QDateTime>
+#include <QPixmap>
 
 namespace gpr
 {
@@ -10,13 +11,6 @@ namespace gpr
         QString privateToken{};
     };
 
-    struct Project
-    {
-        int id{};
-        QString name;
-        QString iconUrl;
-        QStringList branches;
-    };
 
     struct Pipeline
     {
@@ -26,6 +20,22 @@ namespace gpr
         QString ref;
         QDateTime created;
         QDateTime updated;
+    };
+
+    struct MR
+    {
+		int id{};
+    };
+
+    struct Project
+    {
+        int id{};
+        QString name;
+        QStringList branches;
+        QPixmap avatar; // TODO
+
+		std::vector<MR> openMRs;
+		std::vector<Pipeline> pipelines;
     };
 
     struct Variable

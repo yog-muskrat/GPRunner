@@ -43,7 +43,7 @@ Rectangle {
                         onClicked: {
                             delegateItem.ListView.view.currentIndex = index
                             delegateItem.ListView.view.parent.currentProject = projectId
-                            gpm.loadPipelines(projectId)
+                            gpm.setCurrentProject(projectId)
                         }
                     }
                 }

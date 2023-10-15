@@ -56,6 +56,11 @@ Window {
                     model: ["master"]
                 }
                 Button {
+                    text: "Get vars"
+                    enabled: projects.currentProject > 0
+                    onClicked: gpm.loadPipelineVariables(ref.currentText)
+                }
+                Button {
                     text: "Run pipeline"
                     enabled: projects.currentProject > 0
                     onClicked: gpm.runPipeline(ref.currentText)
