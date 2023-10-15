@@ -4,34 +4,16 @@ import QtQuick.Controls
 import QtQml.Models
 
 Rectangle {
-    Layout.fillHeight: true
-    Layout.fillWidth:  true
-
     border {width: 1; color: "#424242"}
 
     ColumnLayout {
         anchors.fill:    parent
         anchors.margins: 1
 
-        HorizontalHeaderView {
-            id: variablesHeader
+        spacing: 0
+
+        CommonHeaderView {
             syncView: variables
-            clip: true
-            delegate: Rectangle {
-                implicitWidth:  itemText.implicitWidth
-                implicitHeight: itemText.implicitHeight
-
-                border {width: 1; color: "#424242"}
-                color: "#EFEFEF"
-
-                Text {
-                    id: itemText
-
-                    anchors.centerIn: parent
-                    padding: 5
-                    text: model.display
-                }
-            }
         }
 
         TableView {
@@ -58,42 +40,51 @@ Rectangle {
                 border { width: 1; color: current ? "#8484FE" : "#AEAEAE" }
 
                 Text {
+                    id: textItem
                     text: model.display
                     anchors.centerIn: parent
                 }
 
-                TableView.editDelegate: Item {
-                    anchors.fill: parent
+                Component {
+                    id: textDelegate
 
                     TextField {
-                        visible:      column != 2
                         anchors.fill: parent
-                        text:         model.edit
-                        onAccepted:   model.edit = text
+                        horizontalAlignment: TextInput.AlignHCenter
+                        verticalAlignment:   TextInput.AlignVCenter
+                        text: model.edit
+                        TableView.onCommit: model.edit = text
                         Component.onCompleted: selectAll()
                     }
-                
+                }
+
+                Component {
+                    id: checkDelegate
+
                     CheckBox {
-                        visible:          column == 2
                         anchors.centerIn: parent
-                        checked:          model.edit
-                        onToggled:        model.edit = checked
+                        checked: model.edit
+                        onToggled: model.edit = checked
                     }
                 }
+
+                TableView.editDelegate: { return (typeof(model.edit) == "boolean") ? checkDelegate : textDelegate }
             }
         }
 
         RowLayout {
-            Layout.fillWidth: true
+            spacing: 0
 
             Button {
                 Layout.fillWidth: true
+                Layout.horizontalStretchFactor: 1
                 text: "Добавить"
                 onClicked: gpm.addVariable()
             }
 
             Button {
                 Layout.fillWidth: true
+                Layout.horizontalStretchFactor: 1
                 enabled: variables.currentRow > 0
                 text: "Удалить"
                 onClicked: gpm.removeVariable(variables.currentRow)

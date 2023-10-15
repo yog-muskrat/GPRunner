@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
     engine.load(QUrl(QStringLiteral("qrc:/ProjectList.qml")));
     engine.load(QUrl(QStringLiteral("qrc:/PipelineTable.qml")));
     engine.load(QUrl(QStringLiteral("qrc:/PipelineVariables.qml")));
+    engine.load(QUrl(QStringLiteral("qrc:/CommonHeaderView.qml")));
 
     if (engine.rootObjects().isEmpty())
         return -1;

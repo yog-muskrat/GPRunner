@@ -4,5 +4,6 @@
         <file>PipelineTable.qml</file>
         <file>ProjectList.qml</file>
         <file>PipelineVariables.qml</file>
+        <file>CommonHeaderView.qml</file>
     </qresource>
 </RCC>

@@ -13,15 +13,14 @@ void PipelineModel::addPipeline(gpr::Pipeline pipeline)
     {
         auto const row = std::ranges::distance(m_pipelines.cbegin(), pos);
         *pos = pipeline;
-        Q_EMIT dataChanged(index(row, 0), index(row, Column::Count));
+		Q_EMIT dataChanged(index(row, 0), index(row, Column::Count - 1));
         return;
     }
 
-    auto const row = rowCount();
-
-    beginInsertRows({}, row, row);
+    beginResetModel();
     m_pipelines.push_back(std::move(pipeline));
-    endInsertRows();
+	std::ranges::sort(m_pipelines, std::ranges::greater{}, &gpr::Pipeline::updated);
+    endResetModel();
 }
 
 int PipelineModel::rowCount(QModelIndex const&) const

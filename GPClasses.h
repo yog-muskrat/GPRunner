@@ -15,6 +15,7 @@ namespace gpr
         int id{};
         QString name;
         QString iconUrl;
+        QStringList branches;
     };
 
     struct Pipeline

@@ -64,6 +64,9 @@
       <Filter>gui</Filter>
     </None>
     <None Include=".clang-format" />
+    <None Include="gui\CommonHeaderView.qml">
+      <Filter>gui</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="gui\qml.qrc">

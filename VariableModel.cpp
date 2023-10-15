@@ -4,7 +4,6 @@ void VariableModel::clear()
 {
 	beginResetModel();
 	m_variables.clear();
-	m_variables.push_back({.key = "ref", .value = "master", .used = true});
 	endResetModel();
 }
 
@@ -56,7 +55,7 @@ QVariant VariableModel::data(QModelIndex const &index, int role) const
 	switch (role)
 	{
 		case Qt::DisplayRole: return displayRole(index);
-		case Qt::EditRole: return displayRole(index);
+		case Qt::EditRole: return editRole(index);
 		default: break;
 	}
 	return {};
@@ -82,8 +81,6 @@ bool VariableModel::setData(QModelIndex const &index, QVariant const &value, int
 
 bool VariableModel::removeRows(int firstRow, int count, QModelIndex const &parent)
 {
-	if (firstRow < 1) return false; // Не удаляем "обязательные" переменные
-
 	beginRemoveRows(parent, firstRow, firstRow + count - 1);
 
 	auto const first = std::next(m_variables.begin(), firstRow);
@@ -96,13 +93,7 @@ bool VariableModel::removeRows(int firstRow, int count, QModelIndex const &paren
 
 Qt::ItemFlags VariableModel::flags(QModelIndex const &idx) const
 {
-	Qt::ItemFlags flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
-
-	if (idx.row() >= 1 || idx.column() == Column::Value)
-	{
-		flags |= Qt::ItemIsEditable;
-	}
-	return flags;
+	return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
 }
 
 QVariant VariableModel::displayRole(QModelIndex const &idx) const

@@ -17,10 +17,10 @@ Window {
 
             ProjectList {
                 id: projects
+                onCurrentProjectChanged: ref.model = gpm.getProjectBranches(currentProject)
             }
 
             Button {
-                id: loadProjects
                 Layout.fillWidth: true
                 text: qsTr("Load projects")
                 onClicked: gpm.loadProjects()
@@ -29,19 +29,38 @@ Window {
 
         PipelineTable{
             SplitView.minimumWidth: 750
+            SplitView.fillWidth:    true
         }
 
         ColumnLayout {
             SplitView.minimumWidth: 250
 
-            PipelineVariables{}
-            Button {
-                id: runPipeline
-                //enabled: projects.projects.currentProject > 0
-                Layout.fillWidth: true
-                text: "Run pipeline"
-                onClicked: gpm.runPipeline()
-               }
+            PipelineVariables{
+                Layout.fillWidth:  true
+                Layout.fillHeight: true
+                enabled: projects.currentProject > 0
+            }
+
+            RowLayout {
+                Text { text: "Ref"}
+
+                ComboBox {
+                    id: ref
+
+                    Layout.fillWidth: true
+                    Layout.horizontalStretchFactor: 1
+
+                    enabled:  projects.currentProject > 0
+                    editable: true
+
+                    model: ["master"]
+                }
+                Button {
+                    text: "Run pipeline"
+                    enabled: projects.currentProject > 0
+                    onClicked: gpm.runPipeline(ref.currentText)
+                   }
+            }
         }
     }
 }

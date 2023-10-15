@@ -15,15 +15,23 @@ void ProjectModel::addProject(gpr::Project project)
     {
         auto const row = std::ranges::distance(m_projects.cbegin(), pos);
         *pos = project;
-        Q_EMIT dataChanged(index(row, 0), index(row, Column::Count));
+        Q_EMIT dataChanged(index(row, 0), index(row, Column::Count - 1));
         return;
     }
 
-    auto const row = m_projects.size();
-
-    beginInsertRows({}, row, row);
+    beginResetModel();
     m_projects.push_back(std::move(project));
-    endInsertRows();
+	std::ranges::sort(m_projects, {}, &gpr::Project::name);
+	endResetModel();
+}
+
+std::optional<gpr::Project> ProjectModel::findProject(int projectId)
+{
+	if (auto pos = std::ranges::find(m_projects, projectId, &gpr::Project::id); pos != m_projects.cend())
+    {
+        return *pos;
+    }
+	return std::nullopt;
 }
 
 int ProjectModel::rowCount(QModelIndex const &) const

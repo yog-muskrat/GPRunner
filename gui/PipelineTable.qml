@@ -3,63 +3,29 @@ import QtQuick.Layouts
 import QtQuick.Controls
 
 Rectangle {
-    Layout.fillHeight: true
-    Layout.fillWidth: true
-
     border {width: 1; color: "#424242"}
 
-    HorizontalHeaderView {
-        id: pipelinesHeader
-
-        anchors.left: pipelines.left
-        anchors.top: parent.top
-        syncView: pipelines
-        clip: true
-        delegate: headerDelegate
-
-        Component {
-            id: headerDelegate
-
-            Item {
-                implicitWidth: itemText.implicitWidth
-                implicitHeight: itemText.implicitHeight
-
-                Rectangle {
-                    anchors.fill: parent
-                    border {width: 1; color: "#424242"}
-                    color: "#EFEFEF"
-
-                    Text {
-                        anchors.centerIn: parent
-                        id: itemText
-                        padding: 5
-                        text: display
-                        font.pointSize: 12
-                        horizontalAlignment: Text.AlignHCenter
-                    }
-                }
-            }
-        }
-    }
-
-    TableView {
-        id: pipelines
-
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
-        anchors.top: pipelinesHeader.bottom
+    ColumnLayout {
+        anchors.fill:    parent
         anchors.margins: 1
+      
+        spacing: 0
 
-        Layout.fillHeight: true
-        Layout.fillWidth:  true
+        CommonHeaderView {
+            syncView: pipelines
+        }
 
-        focus: true
-        clip: true
+        TableView {
+            id: pipelines
 
-        model:    gpm.pipelineModel
-        delegate: Component {
-            Item {
+            Layout.fillHeight: true
+            Layout.fillWidth:  true
+
+            focus: true
+            clip: true
+
+            model:    gpm.pipelineModel
+            delegate: Item {
                 implicitWidth: itemText.implicitWidth
                 implicitHeight: itemText.implicitHeight
 
@@ -82,15 +48,15 @@ Rectangle {
                 }
 
                 RoundButton {
-                    anchors.left:   itemText.left
-                    anchors.top:    itemText.top
+                    anchors.left: itemText.left
+                    anchors.top:  itemText.top
 
                     implicitWidth:  itemText.implicitHeight
                     implicitHeight: itemText.implicitHeight
 
-                    visible:        column == 0 && pipelineStatus != "success"
-                    text:           pipelineStatus == "running" ? "⛔" : "↺"
-                    onClicked:      pipelineStatus == "running" ? gpm.cancelPipeline(pipelineId) : gpm.retryPipeline(pipelineId)
+                    visible:   getButtonVisible(column, pipelineStatus)
+                    text:      getButtonText(pipelineStatus)
+                    onClicked: (pipelineStatus == "running" || pipelineStatus == "pending") ? gpm.cancelPipeline(pipelineId) : gpm.retryPipeline(pipelineId)
                 }
 
                 function getTextColor(status) {
@@ -98,7 +64,18 @@ Rectangle {
                     if(status == "canceled") return "#999942"
                     if(status == "failed")   return "#FE4242"
                     if(status == "running")  return "#4242FE"
+                    // TODO: created, waiting_for_resource, preparing, pending, skipped, manual, scheduled
                     return "#424242"
+                }
+
+                function getButtonVisible(column, status) {
+                    return column == 0 && status != "success" && status != "skipped"
+                }
+
+                function getButtonText(status) {
+                    if (status == "running" || status == "pending") return "⛔"
+                    if (status == "failed" || status == "canceled") return  "↺"
+                    return ""
                 }
             }
         }

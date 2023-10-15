@@ -8,6 +8,7 @@
 #include <QNetworkReply>
 #include <QUrlQuery>
 
+#include <thread>
 #include <ranges>
 
 namespace
@@ -78,7 +79,7 @@ void GPManager::loadPipelines(int projectId)
 		});
 }
 
-void GPManager::runPipeline()
+void GPManager::runPipeline(QString const &ref)
 {
 	QNetworkRequest req;
 	req.setRawHeader("PRIVATE-TOKEN", m_settings.privateToken.toUtf8());
@@ -86,8 +87,7 @@ void GPManager::runPipeline()
 	req.setUrl(QUrl(QString("%1/api/v4/projects/%2/pipeline").arg(m_settings.gitlabRoot).arg(m_currentProject)));
 
 	QJsonObject param;
-	param.insert("ref", "master");
-
+	param.insert("ref", ref);
 	param.insert("variables", prepareVariables());
 
 	auto paramsStr = QJsonDocument(param).toJson(QJsonDocument::Compact);
@@ -101,10 +101,55 @@ void GPManager::runPipeline()
 		&QNetworkReply::finished,
 		[this, reply]
 		{
-			//auto doc = QJsonDocument::fromJson(reply->readAll());
-			qDebug() << reply->readAll();
+			qDebug() << "Run pipeline response: " << reply->readAll();
 
 			reply->deleteLater();
+		});
+}
+
+QStringList GPManager::getProjectBranches(int projectId)
+{
+	if (auto prj = m_projectModel->findProject(projectId)) return prj->branches;
+	return QStringList{"master"};
+}
+
+void GPManager::loadProjectBranches(int projectId)
+{
+	QNetworkRequest req;
+	req.setRawHeader("PRIVATE-TOKEN", m_settings.privateToken.toUtf8());
+	req.setUrl(QUrl(QString("%1/api/v4/projects/%2/repository/branches").arg(m_settings.gitlabRoot).arg(projectId)));
+
+	auto reply = m_networkManager->get(req);
+
+	connect(
+		reply,
+		&QNetworkReply::finished,
+		[this, reply, projectId]
+		{
+			auto doc = QJsonDocument::fromJson(reply->readAll());
+			qDebug() << "Get project branches response: " << doc.toJson();
+
+			QStringList result;
+			for (auto const &branchValue : doc.array())
+			{
+				auto const branch = branchValue.toObject();
+				auto name = branch.value("name").toString();
+				
+				if (branch.value("default").toBool())
+				{
+					result.prepend(std::move(name));
+				}
+				else
+				{
+					result << std::move(name);
+				}
+			}
+
+			if (auto prj = m_projectModel->findProject(projectId))
+			{
+				prj->branches = result;
+				m_projectModel->addProject(std::move(*prj));
+			}
 		});
 }
 
@@ -189,6 +234,8 @@ void GPManager::parseProjects(QJsonDocument const &doc)
 			{prj.toObject().value("id").toInt(),
 		     prj.toObject().value("name").toString(),
 		     prj.toObject().value("avatar_url").toString()});
+
+		loadProjectBranches(prj.toObject().value("id").toInt());
 	}
 }
 

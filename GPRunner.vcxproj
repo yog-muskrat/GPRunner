@@ -101,6 +101,7 @@
     <ClCompile Include="ProjectModel.cpp" />
     <ClCompile Include="VariableModel.cpp" />
     <None Include=".clang-format" />
+    <None Include="gui\CommonHeaderView.qml" />
     <None Include="gui\PipelineTable.qml" />
     <None Include="gui\PipelineVariables.qml" />
     <None Include="gui\ProjectList.qml" />

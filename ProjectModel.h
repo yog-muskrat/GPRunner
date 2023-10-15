@@ -25,6 +25,8 @@ public:
 
     void addProject(gpr::Project project);
 
+    std::optional<gpr::Project> findProject(int projectId);
+
     int rowCount(QModelIndex const & = {}) const override;
     int columnCount(QModelIndex const& = {}) const override;
 

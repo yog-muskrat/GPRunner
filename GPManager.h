@@ -25,7 +25,8 @@ public:
 
     Q_INVOKABLE void loadProjects();
     Q_INVOKABLE void loadPipelines(int projectId);
-    Q_INVOKABLE void runPipeline();
+    Q_INVOKABLE void runPipeline(QString const &ref);
+    Q_INVOKABLE QStringList getProjectBranches(int projectId);
     
     /**
      * @brief Остановить пайплайн (в проекте m_currentProject)
@@ -53,6 +54,8 @@ signals:
 
 private:
     void parseProjects(QJsonDocument const& doc);
+	void loadProjectBranches(int projectId);
+
     void parsePipelines(QJsonDocument const& doc);
     void readSettings();
 
