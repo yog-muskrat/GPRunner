@@ -19,6 +19,7 @@ class GPManager : public QObject
 	Q_PROPERTY(QObject *projectModel READ getProjectModel NOTIFY projectModelChanged)
 	Q_PROPERTY(QObject *pipelineModel READ getPipelineModel NOTIFY pipelineModelChanged)
 	Q_PROPERTY(QObject *variableModel READ getVariableModel NOTIFY variableModelChanged)
+	Q_PROPERTY(QString currentUser READ getCurrentUser NOTIFY currentUserChanged)
 
 public:
 	GPManager(QObject *parent = nullptr);
@@ -44,6 +45,7 @@ public:
 	ProjectModel *getProjectModel() const;
 	PipelineModel *getPipelineModel() const;
 	VariableModel *getVariableModel() const;
+	QString getCurrentUser() const { return m_currentUser; }
 
 	Q_INVOKABLE void addVariable();
 	Q_INVOKABLE void removeVariable(int index);
@@ -52,6 +54,7 @@ signals:
 	void pipelineModelChanged();
 	void projectModelChanged();
 	void variableModelChanged();
+	void currentUserChanged(QString);
 
 private:
 	void parseProjects(QJsonDocument const &doc);
@@ -59,11 +62,14 @@ private:
 	void parseMRs(int projectId, QJsonDocument const &doc);
 	void parseVariables(QJsonDocument const &doc);
 	void parseBranches(int projectId, QJsonDocument const &doc);
+	void parseCurrentUser(QJsonDocument const &doc);
 
 	void loadProjectBranches(int projectId);
 	void loadProjectAvatar(int projectId, QString const &avatarUrl);
 	void loadProjectPipelines(int projectId);
 	void loadProjectMRs(int projectId);
+
+	void loadCurrentUser();
 
 	void readSettings();
 
@@ -77,6 +83,8 @@ private:
 	QPointer<QNetworkAccessManager> m_networkManager;
 
 	QTimer m_updateTimer;
+	
+	QString m_currentUser;
 
 	int m_currentProject{-1};
 

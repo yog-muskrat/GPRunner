@@ -20,6 +20,8 @@ Window {
                 onCurrentProjectChanged: ref.model = gpm.getProjectBranches(currentProject)
             }
 
+            Text { text: gpm.currentUser }
+
             Button {
                 Layout.fillWidth: true
                 text: qsTr("Load projects")

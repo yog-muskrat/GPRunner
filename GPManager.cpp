@@ -34,6 +34,8 @@ GPManager::GPManager(QObject *parent)
 	m_updateTimer.setSingleShot(true);
 	m_updateTimer.setInterval(UpdateInterval);
 	connect(&m_updateTimer, &QTimer::timeout, this, &GPManager::update);
+
+	loadCurrentUser();
 }
 
 void GPManager::loadProjects()
@@ -197,6 +199,26 @@ void GPManager::loadProjectMRs(int projectId)
 			reply->deleteLater();
 
 			parseMRs(projectId, doc);
+		});
+}
+
+void GPManager::loadCurrentUser()
+{
+	QNetworkRequest req;
+	req.setRawHeader("PRIVATE-TOKEN", m_settings.privateToken.toUtf8());
+	req.setUrl(QUrl(QString("%1/api/v4/user").arg(m_settings.gitlabRoot)));
+
+	auto reply = m_networkManager->get(req);
+
+	connect(
+		reply,
+		&QNetworkReply::finished,
+		[this, reply]
+		{
+			auto doc = QJsonDocument::fromJson(reply->readAll());
+			reply->deleteLater();
+
+			parseCurrentUser(doc);
 		});
 }
 
@@ -395,6 +417,15 @@ void GPManager::parseBranches(int projectId, QJsonDocument const &doc)
 		prj->branches = result;
 		m_projectModel->addProject(std::move(*prj));
 	}
+}
+
+void GPManager::parseCurrentUser(QJsonDocument const &doc)
+{
+	auto const obj = doc.object();
+
+	m_currentUser = QString("%1 (%2)").arg(obj.value("username").toString(), obj.value("email").toString());
+
+	Q_EMIT currentUserChanged(m_currentUser);
 }
 
 void GPManager::readSettings()
