@@ -27,8 +27,6 @@ Rectangle {
 
             model:             gpm.variableModel
             selectionModel:    ItemSelectionModel { }
-            selectionBehavior: TableView.SelectRows
-            selectionMode:     TableView.SingleSelection
 
             delegate: Rectangle {
                 required property bool current
