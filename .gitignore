@@ -1,4 +1,5 @@
 settings.json
 /.vs/GPRunner
 /x64/Debug
+/x64/Release
 *.user
