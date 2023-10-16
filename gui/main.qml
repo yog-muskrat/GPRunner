@@ -20,13 +20,13 @@ Window {
                 onCurrentProjectChanged: ref.model = gpm.getProjectBranches(currentProject)
             }
 
-            Text { text: gpm.currentUser }
-
             Button {
                 Layout.fillWidth: true
                 text: qsTr("Load projects")
                 onClicked: gpm.loadProjects()
             }
+
+            Text { text: "Logged as " + gpm.currentUser }
         }
 
         PipelineTable{

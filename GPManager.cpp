@@ -423,7 +423,7 @@ void GPManager::parseCurrentUser(QJsonDocument const &doc)
 {
 	auto const obj = doc.object();
 
-	m_currentUser = QString("%1 (%2)").arg(obj.value("username").toString(), obj.value("email").toString());
+	m_currentUser = obj.value("username").toString();
 
 	Q_EMIT currentUserChanged(m_currentUser);
 }
