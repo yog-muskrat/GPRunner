@@ -1,5 +1,6 @@
 #include <QGuiApplication>
 #include <QQmlContext>
+#include <QIcon>
 #include <QQmlApplicationEngine>
 
 #include "GPManager.h"
@@ -11,6 +12,7 @@ int main(int argc, char *argv[])
 #endif
 
     QGuiApplication app(argc, argv);
+	app.setWindowIcon(QIcon(":/icons/gitlab.png"));
 
     GPManager manager;
 
