@@ -8,6 +8,7 @@
 #include "ProjectModel.h"
 #include "PipelineModel.h"
 #include "VariableModel.h"
+#include "MRModel.h"
 
 class QJsonDocument;
 class QJsonArray;
@@ -18,6 +19,7 @@ class GPManager : public QObject
 
 	Q_PROPERTY(QObject *projectModel READ getProjectModel NOTIFY projectModelChanged)
 	Q_PROPERTY(QObject *pipelineModel READ getPipelineModel NOTIFY pipelineModelChanged)
+	Q_PROPERTY(QObject *mrModel READ getMRModel NOTIFY mrModelChanged)
 	Q_PROPERTY(QObject *variableModel READ getVariableModel NOTIFY variableModelChanged)
 	Q_PROPERTY(QString currentUser READ getCurrentUser NOTIFY currentUserChanged)
 
@@ -44,6 +46,7 @@ public:
 
 	ProjectModel *getProjectModel() const;
 	PipelineModel *getPipelineModel() const;
+	MRModel *getMRModel() const;
 	VariableModel *getVariableModel() const;
 	QString getCurrentUser() const { return m_currentUser; }
 
@@ -52,6 +55,7 @@ public:
 
 signals:
 	void pipelineModelChanged();
+	void mrModelChanged();
 	void projectModelChanged();
 	void variableModelChanged();
 	void currentUserChanged(QString);
@@ -79,6 +83,7 @@ private:
 
 	QPointer<ProjectModel> m_projectModel;
 	QPointer<PipelineModel> m_pipelineModel;
+	QPointer<MRModel> m_mrModel;
 	QPointer<VariableModel> m_variableModel;
 	QPointer<QNetworkAccessManager> m_networkManager;
 

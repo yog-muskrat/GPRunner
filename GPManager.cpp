@@ -26,6 +26,7 @@ GPManager::GPManager(QObject *parent)
 
 	m_projectModel = new ProjectModel(this);
 	m_pipelineModel = new PipelineModel(this);
+	m_mrModel = new MRModel(this);
 	m_variableModel = new VariableModel(this);
 
 	m_networkManager = new QNetworkAccessManager;
@@ -64,6 +65,7 @@ void GPManager::setCurrentProject(int projectId)
 	if (projectId != m_currentProject)
 	{
 		m_pipelineModel->clear();
+		m_mrModel->clear();
 		m_variableModel->clear();
 	}
 
@@ -72,6 +74,7 @@ void GPManager::setCurrentProject(int projectId)
 	if (auto prj = m_projectModel->findProject(projectId))
 	{
 		for (auto pipeline : prj->pipelines) m_pipelineModel->addPipeline(pipeline);
+		for (auto mr : prj->openMRs) m_mrModel->addMR(std::move(mr));
 	}
 	
 	m_updateTimer.start();
@@ -273,6 +276,11 @@ PipelineModel *GPManager::getPipelineModel() const
 	return m_pipelineModel.get();
 }
 
+MRModel *GPManager::getMRModel() const
+{
+	return m_mrModel.get();
+}
+
 VariableModel *GPManager::getVariableModel() const
 {
 	return m_variableModel.get();
@@ -359,7 +367,24 @@ void GPManager::parseMRs(int projectId, QJsonDocument const &doc)
 	for (auto const &mr : doc.array())
 	{
 		auto const obj = mr.toObject();
-		mrs.push_back({.id = obj.value("id").toInt()});
+		mrs.push_back(
+			{
+		     .id = obj.value("id").toInt(),
+		     .created = QDateTime::fromString(obj.value("created_at").toString(), Qt::DateFormat::ISODate),
+		     .updated = QDateTime::fromString(obj.value("updated_at").toString(), Qt::DateFormat::ISODate),
+		     .title = obj.value("title").toString(),
+		     .status = obj.value("state").toString(),
+		     .author = obj.value("author").toObject().value("username").toString(),
+		     .assignee = obj.value("assignee").toObject().value("username").toString(),
+		     .reviewer = obj.value("reviewers").toArray().first().toObject().value("username").toString(),
+		     .sourceBranch = obj.value("source_branch").toString(),
+		     .targetBranch = obj.value("target_branch").toString()
+			});
+	}
+
+	if (projectId == m_currentProject)
+	{
+		for (auto mr : mrs) m_mrModel->addMR(std::move(mr));
 	}
 
 	project->openMRs = std::move(mrs);

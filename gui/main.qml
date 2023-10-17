@@ -61,9 +61,18 @@ Window {
             Text { text: "Logged as " + gpm.currentUser }
         }
 
-        PipelineTable{
+        ColumnLayout {
             SplitView.minimumWidth: 750
-            SplitView.fillWidth:    true
+
+            PipelineTable {
+                Layout.fillWidth:  true
+                Layout.fillHeight: true
+            }
+
+            MRTable {
+                Layout.fillWidth:  true
+                Layout.fillHeight: true
+            }
         }
 
         ColumnLayout {

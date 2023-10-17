@@ -25,6 +25,15 @@ namespace gpr
     struct MR
     {
 		int id{};
+		QDateTime created;
+		QDateTime updated;
+		QString title{};
+		QString status{};
+		QString author{};
+		QString assignee{};
+		QString reviewer{};
+		QString sourceBranch{};
+		QString targetBranch{};
     };
 
     struct Project

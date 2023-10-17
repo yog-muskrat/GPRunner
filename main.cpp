@@ -21,6 +21,7 @@ int main(int argc, char *argv[])
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
     engine.load(QUrl(QStringLiteral("qrc:/ProjectList.qml")));
     engine.load(QUrl(QStringLiteral("qrc:/PipelineTable.qml")));
+    engine.load(QUrl(QStringLiteral("qrc:/MRTable.qml")));
     engine.load(QUrl(QStringLiteral("qrc:/PipelineVariables.qml")));
     engine.load(QUrl(QStringLiteral("qrc:/CommonHeaderView.qml")));
 
