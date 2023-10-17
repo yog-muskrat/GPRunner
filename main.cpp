@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
 #endif
 
     QGuiApplication app(argc, argv);
-	app.setWindowIcon(QIcon(":/icons/gitlab.png"));
+	app.setWindowIcon(QIcon(":/icons/gitlab-green.png"));
 
     GPManager manager;
 

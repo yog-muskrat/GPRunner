@@ -8,5 +8,6 @@
     </qresource>
     <qresource prefix="/icons">
         <file alias="gitlab.png">icons/gitlab.png</file>
+        <file alias="gitlab-green.png">icons/gitlab-green.png</file>
     </qresource>
 </RCC>

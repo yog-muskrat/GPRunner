@@ -21,7 +21,7 @@ Window {
 
     SystemTrayIcon {
         visible: true
-        icon.source: "qrc:/icons/gitlab.png"
+        icon.source: "qrc:/icons/gitlab-green.png"
 
         onActivated: {
             mainWindow.show()
