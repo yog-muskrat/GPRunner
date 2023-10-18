@@ -27,7 +27,7 @@ public:
 	{}
 
 	void clear();
-	void addMR(gpr::MR mr);
+	void setMRs(std::vector<gpr::MR> mrs);
 
 	int rowCount(QModelIndex const & = {}) const override;
 	int columnCount(QModelIndex const & = {}) const override;
@@ -35,5 +35,5 @@ public:
 	QVariant data(QModelIndex const &index, int role = Qt::ItemDataRole::DisplayRole) const override;
 
 private:
-	QVector<gpr::MR> m_mrs;
+	std::vector<gpr::MR> m_mrs;
 };

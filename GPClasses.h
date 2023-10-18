@@ -5,25 +5,26 @@
 
 namespace gpr
 {
-    struct Settings
-    {
-        QString gitlabRoot{};
-        QString privateToken{};
-    };
+	struct Settings
+	{
+		QString gitlabRoot{};
+		QString privateToken{};
+	};
 
+	struct Pipeline
+	{
+		int id{};
+		QString status;
+		QString source;
+		QString ref;
+		QDateTime created;
+		QDateTime updated;
 
-    struct Pipeline
-    {
-        int id{};
-        QString status;
-        QString source;
-        QString ref;
-        QDateTime created;
-        QDateTime updated;
-    };
+		friend auto operator<=>(Pipeline const &, Pipeline const &) = default;
+	};
 
-    struct MR
-    {
+	struct MR
+	{
 		int id{};
 		QDateTime created;
 		QDateTime updated;
@@ -34,23 +35,29 @@ namespace gpr
 		QString reviewer{};
 		QString sourceBranch{};
 		QString targetBranch{};
-    };
 
-    struct Project
-    {
-        int id{};
-        QString name;
-        QStringList branches;
-        QPixmap avatar; // TODO
+		friend auto operator<=>(MR const &, MR const &) = default;
+	};
+
+	struct Project
+	{
+		int id{};
+		QString name;
+		QStringList branches;
+		// TODO: QPixmap avatar;
 
 		std::vector<MR> openMRs;
 		std::vector<Pipeline> pipelines;
-    };
 
-    struct Variable
-    {
-        QString key;
-        QString value;
-        bool used{ true };
-    };
-}
+		friend auto operator<=>(Project const &, Project const &) = default;
+	};
+
+	struct Variable
+	{
+		QString key;
+		QString value;
+		bool used{true};
+
+		friend auto operator<=>(Variable const &, Variable const &) = default;
+	};
+} // namespace gpr

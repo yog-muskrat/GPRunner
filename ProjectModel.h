@@ -6,34 +6,36 @@
 
 class ProjectModel : public QAbstractTableModel
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
-    enum Column
-    {
-        Name,
-        Count
-    };
+	enum Column
+	{
+		Name,
+		Count
+	};
 
-    enum Role
-    {
-        ProjectIdRole = Qt::ItemDataRole::UserRole
-    };
+	enum Role
+	{
+		ProjectIdRole = Qt::ItemDataRole::UserRole
+	};
 
-    ProjectModel(QObject *parent = nullptr) : QAbstractTableModel(parent) {}
+	ProjectModel(QObject *parent = nullptr)
+		: QAbstractTableModel(parent)
+	{}
 
-    void clear();
+	void clear();
 
-    void addProject(gpr::Project project);
+	void addProject(gpr::Project project);
 
-    std::optional<gpr::Project> findProject(int projectId) const;
+	std::optional<gpr::Project> findProject(int projectId) const;
 
-    int rowCount(QModelIndex const & = {}) const override;
-    int columnCount(QModelIndex const& = {}) const override;
+	int rowCount(QModelIndex const & = {}) const override;
+	int columnCount(QModelIndex const & = {}) const override;
 
-    QVariant data(QModelIndex const &index, int role = Qt::ItemDataRole::DisplayRole) const override;
-    
-    QHash<int, QByteArray> roleNames() const override;
+	QVariant data(QModelIndex const &index, int role = Qt::ItemDataRole::DisplayRole) const override;
+
+	QHash<int, QByteArray> roleNames() const override;
 
 private:
-    QVector<gpr::Project> m_projects;
+	std::vector<gpr::Project> m_projects;
 };

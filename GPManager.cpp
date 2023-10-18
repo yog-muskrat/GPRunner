@@ -74,7 +74,7 @@ void GPManager::setCurrentProject(int projectId)
 	if (auto prj = m_projectModel->findProject(projectId))
 	{
 		for (auto pipeline : prj->pipelines) m_pipelineModel->addPipeline(pipeline);
-		for (auto mr : prj->openMRs) m_mrModel->addMR(std::move(mr));
+		m_mrModel->setMRs(std::move(prj->openMRs));
 	}
 	
 	m_updateTimer.start();
@@ -384,7 +384,7 @@ void GPManager::parseMRs(int projectId, QJsonDocument const &doc)
 
 	if (projectId == m_currentProject)
 	{
-		for (auto mr : mrs) m_mrModel->addMR(std::move(mr));
+		m_mrModel->setMRs(mrs);
 	}
 
 	project->openMRs = std::move(mrs);

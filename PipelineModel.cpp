@@ -11,9 +11,13 @@ void PipelineModel::addPipeline(gpr::Pipeline pipeline)
 {
 	if (auto const pos = std::ranges::find(m_pipelines, pipeline.id, &gpr::Pipeline::id); pos != m_pipelines.cend())
 	{
-		auto const row = std::ranges::distance(m_pipelines.cbegin(), pos);
-		*pos = std::move(pipeline);
-		Q_EMIT dataChanged(index(row, 0), index(row, Column::Count - 1));
+		if (*pos != pipeline)
+		{
+			auto const row = std::ranges::distance(m_pipelines.cbegin(), pos);
+			*pos = std::move(pipeline);
+			Q_EMIT dataChanged(index(row, 0), index(row, Column::Count - 1));
+		}
+
 		return;
 	}
 

@@ -9,20 +9,38 @@ void MRModel::clear()
 	endResetModel();
 }
 
-void MRModel::addMR(gpr::MR mr)
+void MRModel::setMRs(std::vector<gpr::MR> mrs)
 {
-	if (auto const pos = std::ranges::find(m_mrs, mr.id, &gpr::MR::id); pos != m_mrs.cend())
+	for (int row = rowCount() - 1; row >= 0; --row)
 	{
-		auto const row = std::ranges::distance(m_mrs.cbegin(), pos);
-		*pos = std::move(mr);
-		Q_EMIT dataChanged(index(row, 0), index(row, Column::Count - 1));
-		return;
+		if (!std::ranges::contains(mrs, m_mrs[row].id, &gpr::MR::id))
+		{
+			beginRemoveRows({}, row, row);
+			m_mrs.erase(std::next(m_mrs.begin(), row));
+			endRemoveRows();
+		}
 	}
 
-	beginResetModel();
-	m_mrs.push_back(std::move(mr));
-	std::ranges::sort(m_mrs, std::ranges::greater{}, &gpr::MR::updated);
-	endResetModel();
+	if (mrs.size() != m_mrs.size())
+	{
+		beginResetModel();
+		m_mrs = std::move(mrs);
+		std::ranges::sort(m_mrs, std::ranges::greater{}, &gpr::MR::updated);
+		endResetModel();
+	}
+
+	for (auto &mr : mrs)
+	{
+		if (auto const pos = std::ranges::find(m_mrs, mr.id, &gpr::MR::id); pos != m_mrs.cend())
+		{
+			if (*pos != mr)
+			{
+				auto const row = std::ranges::distance(m_mrs.cbegin(), pos);
+				*pos = std::move(mr);
+				Q_EMIT dataChanged(index(row, 0), index(row, Column::Count - 1));
+			}
+		}
+	}
 }
 
 int MRModel::rowCount(QModelIndex const &) const

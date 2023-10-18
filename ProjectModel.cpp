@@ -13,9 +13,12 @@ void ProjectModel::addProject(gpr::Project project)
 {
 	if (auto const pos = std::ranges::find(m_projects, project.id, &gpr::Project::id); pos != m_projects.cend())
 	{
-		auto const row = std::ranges::distance(m_projects.cbegin(), pos);
-		*pos = project;
-		Q_EMIT dataChanged(index(row, 0), index(row, Column::Count - 1));
+		if (*pos != project)
+		{
+			auto const row = std::ranges::distance(m_projects.cbegin(), pos);
+			*pos = project;
+			Q_EMIT dataChanged(index(row, 0), index(row, Column::Count - 1));
+		}
 		return;
 	}
 
