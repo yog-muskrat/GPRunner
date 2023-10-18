@@ -74,15 +74,15 @@ Rectangle {
             spacing: 0
 
             Button {
-                Layout.fillWidth: true
-                Layout.horizontalStretchFactor: 1
+                //Layout.fillWidth: true
+                //Layout.horizontalStretchFactor: 1
                 text: "Добавить"
                 onClicked: gpm.addVariable()
             }
 
             Button {
-                Layout.fillWidth: true
-                Layout.horizontalStretchFactor: 1
+                //Layout.fillWidth: true
+                //Layout.horizontalStretchFactor: 1
                 enabled: variables.currentRow > 0
                 text: "Удалить"
                 onClicked: gpm.removeVariable(variables.currentRow)
