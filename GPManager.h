@@ -5,10 +5,10 @@
 #include <QPointer>
 #include <QNetworkAccessManager>
 
-#include "ProjectModel.h"
-#include "PipelineModel.h"
-#include "VariableModel.h"
-#include "MRModel.h"
+#include "model/ProjectModel.h"
+#include "model/PipelineModel.h"
+#include "model/VariableModel.h"
+#include "model/MRModel.h"
 
 class QJsonDocument;
 class QJsonArray;
