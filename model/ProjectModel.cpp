@@ -1,6 +1,7 @@
-#include "ProjectModel.h"
-
 #include <algorithm>
+#include <cassert>
+
+#include "model/ProjectModel.h"
 
 void ProjectModel::clear()
 {
@@ -9,32 +10,33 @@ void ProjectModel::clear()
 	endResetModel();
 }
 
-void ProjectModel::addProject(gpr::Project project)
+void ProjectModel::addProject(gpr::api::Project::Data projectData)
 {
-	if (auto const pos = std::ranges::find(m_projects, project.id, &gpr::Project::id); pos != m_projects.cend())
+	if (auto const pos = std::ranges::find(m_projects, projectData.id, &gpr::api::Project::id); pos != m_projects.cend())
 	{
-		if (*pos != project)
-		{
-			auto const row = std::ranges::distance(m_projects.cbegin(), pos);
-			*pos = project;
-			Q_EMIT dataChanged(index(row, 0), index(row, Column::Count - 1));
-		}
-		return;
+		auto const row = std::ranges::distance(m_projects.cbegin(), pos);
+		(*pos)->update(std::move(projectData));
 	}
+	else
+	{
+		beginResetModel();
+		auto project = new gpr::api::Project(std::move(projectData), this);
 
-	beginResetModel();
-	m_projects.push_back(std::move(project));
-	std::ranges::sort(m_projects, {}, &gpr::Project::name);
-	endResetModel();
+		connect(project, &gpr::api::Project::modified, [this, project] { onProjectUpdated(project); });
+
+		m_projects.push_back(std::move(project));
+		endResetModel();
+	}
 }
 
-std::optional<gpr::Project> ProjectModel::findProject(int projectId) const
+QPointer<gpr::api::Project> ProjectModel::findProject(int projectId) const
 {
-	if (auto pos = std::ranges::find(m_projects, projectId, &gpr::Project::id); pos != m_projects.cend())
+	if (auto const pos = std::ranges::find(m_projects, projectId, &gpr::api::Project::id); pos != m_projects.cend())
 	{
 		return *pos;
 	}
-	return std::nullopt;
+
+	return nullptr;
 }
 
 int ProjectModel::rowCount(QModelIndex const &) const
@@ -57,19 +59,19 @@ QVariant ProjectModel::data(QModelIndex const &index, int role) const
 	{
 		if (index.column() == Column::Name)
 		{
-			auto result = prj.name;
+			auto result = prj->name();
 
-			if (!prj.openMRs.empty()) result += QString("[MR: %1]").arg(prj.openMRs.size());
-			
-			auto const runningPipelines = std::ranges::count(prj.pipelines, QString("running"), &gpr::Pipeline::status);
+			if (!prj->openMRs().empty()) result += QString("[MR: %1]").arg(prj->openMRs().size());
+
+			auto const runningPipelines = std::ranges::count(prj->pipelines(), QString("running"), &gpr::api::Pipeline::status);
 			if (runningPipelines > 0) result += QString("[PL: %1]").arg(runningPipelines);
-			
+
 			return result;
 		}
 	}
 	else if (role == Role::ProjectIdRole)
 	{
-		return prj.id;
+		return prj->id();
 	}
 
 	return QVariant();
@@ -80,4 +82,17 @@ QHash<int, QByteArray> ProjectModel::roleNames() const
 	auto names = QAbstractTableModel::roleNames();
 	names.insert(Role::ProjectIdRole, "projectId");
 	return names;
+}
+
+void ProjectModel::onProjectUpdated(QPointer<gpr::api::Project> project)
+{
+	if (auto const pos = std::ranges::find(m_projects, project); pos != m_projects.cend())
+	{
+		auto const row = std::ranges::distance(m_projects.cbegin(), pos);
+		Q_EMIT dataChanged(index(row, 0), index(row, Column::Count - 1));
+	}
+	else
+	{
+		assert(false && "Invalid project");
+	}
 }

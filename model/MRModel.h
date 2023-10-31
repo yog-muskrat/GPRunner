@@ -2,7 +2,7 @@
 
 #include <QAbstractTableModel>
 
-#include "GPClasses.h"
+#include "model/classes/Project.h"
 
 class MRModel : public QAbstractTableModel
 {
@@ -27,7 +27,7 @@ public:
 	{}
 
 	void clear();
-	void setMRs(std::vector<gpr::MR> mrs);
+	void setProject(QPointer<gpr::api::Project> project);
 
 	int rowCount(QModelIndex const & = {}) const override;
 	int columnCount(QModelIndex const & = {}) const override;
@@ -35,5 +35,16 @@ public:
 	QVariant data(QModelIndex const &index, int role = Qt::ItemDataRole::DisplayRole) const override;
 
 private:
-	std::vector<gpr::MR> m_mrs;
+	void connectProject(QPointer<gpr::api::Project> project);
+	void disconnectProject(QPointer<gpr::api::Project> project);
+	void connectMR(QPointer<gpr::api::MR> mr);
+	void disconnectMR(QPointer<gpr::api::MR> mr);
+
+	void onMRAdded(QPointer<gpr::api::MR> mr);
+	void onMRRemoved(QPointer<gpr::api::MR> mr);
+	void onMRUpdated();
+
+	int getMRIndex(QPointer<gpr::api::MR> mr);
+
+	QPointer<gpr::api::Project> m_project;
 };

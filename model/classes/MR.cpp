@@ -1,0 +1,116 @@
+#include <cassert>
+
+#include "model/classes/MR.h"
+
+namespace gpr::api
+{
+	MR::MR(Data data, QObject *parent)
+		: QObject(parent)
+		, m_data{std::move(data)}
+	{}
+
+	int MR::id() const
+	{
+		return m_data.id;
+	}
+
+	QDateTime MR::createdAt() const
+	{
+		return m_data.created;
+	}
+
+	void MR::update(Data data)
+	{
+		if (data.id != m_data.id)
+		{
+			assert(false && "Invalid MR data");
+			return;
+		}
+
+		m_data = std::move(data);
+		Q_EMIT modified();
+	}
+
+	void MR::setCreatedAt(QDateTime time)
+	{
+		m_data.created = time;
+		Q_EMIT modified();
+	}
+
+	QDateTime MR::updatedAt() const
+	{
+		return m_data.updated;
+	}
+
+	void MR::setUpdatedAt(QDateTime time)
+	{
+		m_data.updated = time;
+		Q_EMIT modified();
+	}
+
+	QString MR::title() const
+	{
+		return m_data.title;
+	}
+
+	void MR::setTitle(QString title)
+	{
+		m_data.title = std::move(title);
+		Q_EMIT modified();
+	}
+
+	QString MR::author() const
+	{
+		return m_data.author;
+	}
+
+	void MR::setAuthor(QString author)
+	{
+		m_data.author = std::move(author);
+		Q_EMIT modified();
+	}
+
+	QString MR::assignee() const
+	{
+		return m_data.assignee;
+	}
+
+	void MR::setAssignee(QString assignee)
+	{
+		m_data.assignee = std::move(assignee);
+		Q_EMIT modified();
+	}
+
+	QString MR::reviewer() const
+	{
+		return m_data.reviewer;
+	}
+
+	void MR::setReviewer(QString reviewer)
+	{
+		m_data.reviewer = std::move(reviewer);
+		Q_EMIT modified();
+	}
+
+	QString MR::sourceBranch() const
+	{
+		return m_data.sourceBranch;
+	}
+
+	void MR::setSourceBranch(QString sourceBranch)
+	{
+		m_data.sourceBranch = std::move(sourceBranch);
+		Q_EMIT modified();
+	}
+
+	QString MR::targetBranch() const
+	{
+		return m_data.targetBranch;
+	}
+
+	void MR::setTargetBranch(QString targetBranch)
+	{
+		m_data.targetBranch = std::move(targetBranch);
+		Q_EMIT modified();
+	}
+} // namespace gpr::api

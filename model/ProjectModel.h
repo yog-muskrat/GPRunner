@@ -3,6 +3,7 @@
 #include <QAbstractTableModel>
 
 #include "GPClasses.h"
+#include "model/classes/Project.h"
 
 class ProjectModel : public QAbstractTableModel
 {
@@ -25,9 +26,9 @@ public:
 
 	void clear();
 
-	void addProject(gpr::Project project);
+	void addProject(gpr::api::Project::Data projectData);
 
-	std::optional<gpr::Project> findProject(int projectId) const;
+	QPointer<gpr::api::Project> findProject(int projectId) const;
 
 	int rowCount(QModelIndex const & = {}) const override;
 	int columnCount(QModelIndex const & = {}) const override;
@@ -37,5 +38,7 @@ public:
 	QHash<int, QByteArray> roleNames() const override;
 
 private:
-	std::vector<gpr::Project> m_projects;
+	void onProjectUpdated(QPointer<gpr::api::Project> project);
+
+	std::vector<QPointer<gpr::api::Project>> m_projects;
 };

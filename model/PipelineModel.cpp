@@ -2,34 +2,25 @@
 
 void PipelineModel::clear()
 {
-	beginResetModel();
-	m_pipelines.clear();
-	endResetModel();
+	setProject(nullptr);
 }
 
-void PipelineModel::addPipeline(gpr::Pipeline pipeline)
+void PipelineModel::setProject(QPointer<gpr::api::Project> project)
 {
-	if (auto const pos = std::ranges::find(m_pipelines, pipeline.id, &gpr::Pipeline::id); pos != m_pipelines.cend())
-	{
-		if (*pos != pipeline)
-		{
-			auto const row = std::ranges::distance(m_pipelines.cbegin(), pos);
-			*pos = std::move(pipeline);
-			Q_EMIT dataChanged(index(row, 0), index(row, Column::Count - 1));
-		}
-
-		return;
-	}
-
 	beginResetModel();
-	m_pipelines.push_back(std::move(pipeline));
-	std::ranges::sort(m_pipelines, std::ranges::greater{}, &gpr::Pipeline::updated);
+	if (m_project) disconnectProject(m_project);
+
+	m_project = project;
+
+	if (m_project) connectProject(m_project);
 	endResetModel();
 }
 
 int PipelineModel::rowCount(QModelIndex const &) const
 {
-	return m_pipelines.size();
+	if (!m_project) return 0;
+
+	return m_project->pipelines().size();
 }
 
 int PipelineModel::columnCount(QModelIndex const &) const
@@ -61,31 +52,31 @@ QVariant PipelineModel::data(QModelIndex const &index, int role) const
 {
 	if (!checkIndex(index)) return {};
 
-	auto const &pipeline = m_pipelines[index.row()];
+	auto const pipeline = m_project->pipelines().at(index.row());
 
 	if (role == Qt::DisplayRole)
 	{
-		if (index.column() == Column::Id) return pipeline.id;
-		if (index.column() == Column::Ref) return pipeline.ref;
-		if (index.column() == Column::Status) return pipeline.status;
-		if (index.column() == Column::Source) return pipeline.source;
+		if (index.column() == Column::Id) return pipeline->id();
+		if (index.column() == Column::Ref) return pipeline->ref();
+		if (index.column() == Column::Status) return pipeline->status();
+		if (index.column() == Column::Source) return pipeline->source();
 		if (index.column() == Column::Created)
 		{
-			auto const format = pipeline.created.date() == QDate::currentDate() ? "hh:mm" : "dd.MM.yyyy hh:mm";
+			auto const format = pipeline->createdAt().date() == QDate::currentDate() ? "hh:mm" : "dd.MM.yyyy hh:mm";
 
-			return pipeline.created.toLocalTime().toString(format);
+			return pipeline->createdAt().toLocalTime().toString(format);
 		}
 		if (index.column() == Column::Updated)
 		{
-			auto const format = pipeline.updated.date() == QDate::currentDate() ? "hh:mm" : "dd.MM.yyyy hh:mm";
+			auto const format = pipeline->updatedAt().date() == QDate::currentDate() ? "hh:mm" : "dd.MM.yyyy hh:mm";
 
-			return pipeline.updated.toLocalTime().toString(format);
+			return pipeline->updatedAt().toLocalTime().toString(format);
 		}
 	}
 
-	if (role == Role::PipelineIdRole) return pipeline.id;
-	if (role == Role::PipelineStatusRole) return pipeline.status;
-	if (role == Role::PipelineSourceRole) return pipeline.source;
+	if (role == Role::PipelineIdRole) return pipeline->id();
+	if (role == Role::PipelineStatusRole) return pipeline->status();
+	if (role == Role::PipelineSourceRole) return pipeline->source();
 
 	return QVariant();
 }
@@ -98,4 +89,71 @@ QHash<int, QByteArray> PipelineModel::roleNames() const
 	names.insert(Role::PipelineStatusRole, "pipelineStatus");
 
 	return names;
+}
+
+void PipelineModel::connectProject(QPointer<gpr::api::Project> project)
+{
+	connect(project, &gpr::api::Project::pipelineAdded, this, &PipelineModel::onPipelineAdded);
+	connect(project, &gpr::api::Project::pipelineRemoved, this, &PipelineModel::onPipelineRemoved);
+
+	for (auto const &pipeline : project->pipelines()) connectPipeline(pipeline);
+}
+
+void PipelineModel::disconnectProject(QPointer<gpr::api::Project> project)
+{
+	disconnect(project, &gpr::api::Project::pipelineAdded, this, &PipelineModel::onPipelineAdded);
+	disconnect(project, &gpr::api::Project::pipelineRemoved, this, &PipelineModel::onPipelineRemoved);
+
+	for (auto const &pipeline : project->pipelines()) disconnectPipeline(pipeline);
+}
+
+void PipelineModel::connectPipeline(QPointer<gpr::api::Pipeline> pipeline)
+{
+	connect(pipeline, &gpr::api::Pipeline::modified, this, &PipelineModel::onPipelineUpdated);
+}
+
+void PipelineModel::disconnectPipeline(QPointer<gpr::api::Pipeline> pipeline)
+{
+	disconnect(pipeline, &gpr::api::Pipeline::modified, this, &PipelineModel::onPipelineUpdated);
+}
+
+void PipelineModel::onPipelineAdded(QPointer<gpr::api::Pipeline> pipeline)
+{
+	auto const idx = getPipelineIndex(pipeline);
+
+	beginInsertRows({}, idx, idx);
+	connectPipeline(pipeline);
+	endInsertRows();
+}
+
+void PipelineModel::onPipelineRemoved(QPointer<gpr::api::Pipeline> pipeline)
+{
+	auto const idx = getPipelineIndex(pipeline);
+
+	beginRemoveRows({}, idx, idx);
+	disconnectPipeline(pipeline);
+	endRemoveRows();
+}
+
+void PipelineModel::onPipelineUpdated()
+{
+	auto pipeline = qobject_cast<gpr::api::Pipeline*>(sender());
+	if (!pipeline) return;
+
+	auto const idx = getPipelineIndex(pipeline);
+
+	Q_EMIT dataChanged(index(idx, 0), index(idx, Column::Count - 1));
+}
+
+int PipelineModel::getPipelineIndex(QPointer<gpr::api::Pipeline> pipeline)
+{
+	auto const &pipelines = m_project->pipelines();
+	auto const pos = std::ranges::find(pipelines, pipeline);
+	if (pos == pipelines.cend())
+	{
+		assert(false && "Invalid mr");
+		return -1;
+	}
+
+	return static_cast<int>(std::ranges::distance(pipelines.cbegin(), pos));
 }

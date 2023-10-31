@@ -7,6 +7,9 @@
     <Filter Include="model">
       <UniqueIdentifier>{e39ef0a5-2628-46ce-a543-46ca9d0ed922}</UniqueIdentifier>
     </Filter>
+    <Filter Include="model\classes">
+      <UniqueIdentifier>{6176dead-0ef6-4cae-8105-e7c82d27d1d5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="model\VariableModel.cpp">
@@ -23,6 +26,18 @@
     </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="GPManager.cpp" />
+    <ClCompile Include="model\classes\Project.cpp">
+      <Filter>model\classes</Filter>
+    </ClCompile>
+    <ClCompile Include="model\classes\MR.cpp">
+      <Filter>model\classes</Filter>
+    </ClCompile>
+    <ClCompile Include="model\classes\Pipeline.cpp">
+      <Filter>model\classes</Filter>
+    </ClCompile>
+    <ClCompile Include="model\classes\Parser.cpp">
+      <Filter>model\classes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="model\VariableModel.h">
@@ -38,6 +53,15 @@
       <Filter>model</Filter>
     </QtMoc>
     <QtMoc Include="GPManager.h" />
+    <QtMoc Include="model\classes\Project.h">
+      <Filter>model\classes</Filter>
+    </QtMoc>
+    <QtMoc Include="model\classes\MR.h">
+      <Filter>model\classes</Filter>
+    </QtMoc>
+    <QtMoc Include="model\classes\Pipeline.h">
+      <Filter>model\classes</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
@@ -68,5 +92,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GPClasses.h" />
+    <ClInclude Include="model\classes\Parser.h">
+      <Filter>model\classes</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

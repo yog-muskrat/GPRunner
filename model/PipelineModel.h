@@ -2,7 +2,7 @@
 
 #include <QAbstractTableModel>
 
-#include "GPClasses.h"
+#include "model/classes/Project.h"
 
 class PipelineModel : public QAbstractTableModel
 {
@@ -31,7 +31,7 @@ public:
 	{}
 
 	void clear();
-	void addPipeline(gpr::Pipeline pipeline);
+	void setProject(QPointer<gpr::api::Project> project);
 
 	int rowCount(QModelIndex const & = {}) const override;
 	int columnCount(QModelIndex const & = {}) const override;
@@ -40,5 +40,17 @@ public:
 	QHash<int, QByteArray> roleNames() const override;
 
 private:
-	std::vector<gpr::Pipeline> m_pipelines;
+	void connectProject(QPointer<gpr::api::Project> project);
+	void disconnectProject(QPointer<gpr::api::Project> project);
+	void connectPipeline(QPointer<gpr::api::Pipeline> pipeline);
+	void disconnectPipeline(QPointer<gpr::api::Pipeline> pipeline);
+
+	void onPipelineAdded(QPointer<gpr::api::Pipeline> pipeline);
+	void onPipelineRemoved(QPointer<gpr::api::Pipeline> pipeline);
+	void onPipelineUpdated();
+
+	int getPipelineIndex(QPointer<gpr::api::Pipeline> pipeline);
+
+	QPointer<gpr::api::Project> m_project;
+	std::vector<QMetaObject::Connection> m_connections;
 };

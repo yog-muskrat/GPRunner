@@ -12,6 +12,8 @@
 #include <ranges>
 #include <format>
 
+#include "model/classes/Parser.h"
+
 namespace
 {
 	QString const SettingsFile{"./settings.json"};
@@ -71,11 +73,10 @@ void GPManager::setCurrentProject(int projectId)
 
 	m_currentProject = projectId;
 
-	if (auto prj = m_projectModel->findProject(projectId))
-	{
-		for (auto pipeline : prj->pipelines) m_pipelineModel->addPipeline(pipeline);
-		m_mrModel->setMRs(std::move(prj->openMRs));
-	}
+	auto prj = m_projectModel->findProject(projectId);
+
+	m_pipelineModel->setProject(prj);
+	m_mrModel->setProject(prj);
 	
 	m_updateTimer.start();
 }
@@ -93,6 +94,8 @@ void GPManager::loadProjectPipelines(int projectId)
 		&QNetworkReply::finished,
 		[this, reply, projectId]
 		{
+			if (reply->error()) return;
+
 			parsePipelines(projectId, QJsonDocument::fromJson(reply->readAll()));
 			reply->deleteLater();
 		});
@@ -109,9 +112,7 @@ void GPManager::runPipeline(QString const &ref)
 	param.insert("ref", ref);
 	param.insert("variables", prepareVariables());
 
-	auto paramsStr = QJsonDocument(param).toJson(QJsonDocument::Compact);
-
-	qDebug() << "Run pipeline variables: " << paramsStr;
+	qDebug() << "Run pipeline variables: " << QJsonDocument(param).toJson(QJsonDocument::Compact);
 
 	auto reply = m_networkManager->post(req, QJsonDocument(param).toJson(QJsonDocument::Compact));
 
@@ -128,7 +129,7 @@ void GPManager::runPipeline(QString const &ref)
 
 QStringList GPManager::getProjectBranches(int projectId)
 {
-	if (auto prj = m_projectModel->findProject(projectId)) return prj->branches;
+	if (auto prj = m_projectModel->findProject(projectId)) return prj->branches();
 	return QStringList{"master"};
 }
 
@@ -172,17 +173,13 @@ void GPManager::loadProjectBranches(int projectId)
 		&QNetworkReply::finished,
 		[this, reply, projectId]
 		{
+			if (reply->error()) return;
+
 			auto doc = QJsonDocument::fromJson(reply->readAll());
 			reply->deleteLater();
-			qDebug() << "Get project branches response: " << doc.toJson();
 
 			parseBranches(projectId, doc);
 		});
-}
-
-void GPManager::loadProjectAvatar(int /*projectId*/, QString const &/*avatarUrl*/)
-{
-	// TODO:
 }
 
 void GPManager::loadProjectMRs(int projectId)
@@ -198,6 +195,8 @@ void GPManager::loadProjectMRs(int projectId)
 		&QNetworkReply::finished,
 		[this, reply, projectId]
 		{
+			if (reply->error()) return;
+
 			auto doc = QJsonDocument::fromJson(reply->readAll());
 			reply->deleteLater();
 
@@ -305,18 +304,10 @@ void GPManager::parseProjects(QJsonDocument const &doc)
 {
 	m_projectModel->clear();
 
-	for (auto const &prj : doc.array())
+	for (auto prj : doc.array() | std::views::transform(&QJsonValueRef::toObject) | std::views::transform(gpr::api::parseProject))
 	{
-		auto const prjId = prj.toObject().value("id").toInt();
-
-		m_projectModel->addProject({.id = prjId, .name = prj.toObject().value("name").toString()});
-
-		loadProjectBranches(prjId);
-
-		if (auto const avatarUrl = prj.toObject().value("avatar_url").toString(); !avatarUrl.isEmpty())
-		{
-			loadProjectAvatar(prjId, avatarUrl);
-		}
+		m_projectModel->addProject(prj);
+		loadProjectBranches(prj.id);
 	}
 }
 
@@ -329,28 +320,10 @@ void GPManager::parsePipelines(int projectId, QJsonDocument const &doc)
 		return;
 	}
 
-	std::vector<gpr::Pipeline> pipelines;
+	auto pipelines = doc.array() | std::views::transform(&QJsonValueRef::toObject)
+	               | std::views::transform(gpr::api::parsePipeline) | std::ranges::to<std::vector>();
 
-	for (auto const &pipeline : doc.array())
-	{
-		auto const obj = pipeline.toObject();
-
-		pipelines.push_back(
-			{.id = obj.value("id").toInt(),
-		     .status = obj.value("status").toString(),
-		     .source = obj.value("source").toString(),
-		     .ref = obj.value("ref").toString(),
-		     .created = QDateTime::fromString(obj.value("created_at").toString(), Qt::DateFormat::ISODate),
-		     .updated = QDateTime::fromString(obj.value("updated_at").toString(), Qt::DateFormat::ISODate)});
-	}
-
-	if (projectId == m_currentProject)
-	{
-		for (auto const &pipeline : pipelines) m_pipelineModel->addPipeline(pipeline);
-	}
-
-	project->pipelines = std::move(pipelines);
-	m_projectModel->addProject(std::move(*project));
+	project->updatePipelines(std::move(pipelines));
 }
 
 void GPManager::parseMRs(int projectId, QJsonDocument const &doc)
@@ -362,33 +335,10 @@ void GPManager::parseMRs(int projectId, QJsonDocument const &doc)
 		return;
 	}
 
-	std::vector<gpr::MR> mrs;
+	auto mrs = doc.array() | std::views::transform(&QJsonValueRef::toObject) | std::views::transform(gpr::api::parseMR)
+	         | std::ranges::to<std::vector>();
 
-	for (auto const &mr : doc.array())
-	{
-		auto const obj = mr.toObject();
-		mrs.push_back(
-			{
-		     .id = obj.value("id").toInt(),
-		     .created = QDateTime::fromString(obj.value("created_at").toString(), Qt::DateFormat::ISODate),
-		     .updated = QDateTime::fromString(obj.value("updated_at").toString(), Qt::DateFormat::ISODate),
-		     .title = obj.value("title").toString(),
-		     .status = obj.value("state").toString(),
-		     .author = obj.value("author").toObject().value("username").toString(),
-		     .assignee = obj.value("assignee").toObject().value("username").toString(),
-		     .reviewer = obj.value("reviewers").toArray().first().toObject().value("username").toString(),
-		     .sourceBranch = obj.value("source_branch").toString(),
-		     .targetBranch = obj.value("target_branch").toString()
-			});
-	}
-
-	if (projectId == m_currentProject)
-	{
-		m_mrModel->setMRs(mrs);
-	}
-
-	project->openMRs = std::move(mrs);
-	m_projectModel->addProject(std::move(*project));
+	project->updateMRs(std::move(mrs));
 }
 
 void GPManager::parseVariables(QJsonDocument const &doc)
@@ -439,8 +389,7 @@ void GPManager::parseBranches(int projectId, QJsonDocument const &doc)
 
 	if (auto prj = m_projectModel->findProject(projectId))
 	{
-		prj->branches = result;
-		m_projectModel->addProject(std::move(*prj));
+		prj->setBranches(std::move(result));
 	}
 }
 
@@ -476,6 +425,7 @@ void GPManager::update()
 	{
 		loadProjectMRs(id);
 		loadProjectPipelines(id);
+		loadProjectBranches(id);
 	}
 
 	m_updateTimer.start();

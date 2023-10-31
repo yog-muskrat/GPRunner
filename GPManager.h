@@ -69,7 +69,6 @@ private:
 	void parseCurrentUser(QJsonDocument const &doc);
 
 	void loadProjectBranches(int projectId);
-	void loadProjectAvatar(int projectId, QString const &avatarUrl);
 	void loadProjectPipelines(int projectId);
 	void loadProjectMRs(int projectId);
 
