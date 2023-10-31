@@ -47,10 +47,7 @@ Window {
         ColumnLayout {
             SplitView.minimumWidth: 200
 
-            ProjectList {
-                id: projects
-                onCurrentProjectChanged: ref.model = gpm.getProjectBranches(currentProject)
-            }
+            ProjectList { id: projects }
 
             Button {
                 Layout.fillWidth: true
@@ -62,52 +59,15 @@ Window {
         }
 
         ColumnLayout {
-            SplitView.minimumWidth: 750
-
-            PipelineTable {
+            Pipelines {
                 Layout.fillWidth:  true
                 Layout.fillHeight: true
+                currentProject: projects.currentProject
             }
 
             MRTable {
                 Layout.fillWidth:  true
                 Layout.fillHeight: true
-            }
-        }
-
-        ColumnLayout {
-            SplitView.minimumWidth: 250
-
-            PipelineVariables{
-                Layout.fillWidth:  true
-                Layout.fillHeight: true
-                enabled: projects.currentProject > 0
-            }
-
-            RowLayout {
-                Text { text: "Ref"}
-
-                ComboBox {
-                    id: ref
-
-                    Layout.fillWidth: true
-                    Layout.horizontalStretchFactor: 1
-
-                    enabled:  projects.currentProject > 0
-                    editable: true
-
-                    model: ["master"]
-                }
-                Button {
-                    text: "Get vars"
-                    enabled: projects.currentProject > 0
-                    onClicked: gpm.loadPipelineVariables(ref.currentText)
-                }
-                Button {
-                    text: "Run pipeline"
-                    enabled: projects.currentProject > 0
-                    onClicked: gpm.runPipeline(ref.currentText)
-                   }
             }
         }
     }

@@ -3,9 +3,10 @@
         <file>main.qml</file>
         <file>PipelineTable.qml</file>
         <file>ProjectList.qml</file>
-        <file>PipelineVariables.qml</file>
+        <file>PipelineVariablesTable.qml</file>
         <file>CommonHeaderView.qml</file>
         <file>MRTable.qml</file>
+        <file>Pipelines.qml</file>
     </qresource>
     <qresource prefix="/icons">
         <file alias="gitlab.png">icons/gitlab.png</file>

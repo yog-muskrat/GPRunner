@@ -109,8 +109,9 @@
     <None Include="gui\CommonHeaderView.qml" />
     <None Include="gui\MRTable.qml" />
     <None Include="gui\PipelineTable.qml" />
-    <None Include="gui\PipelineVariables.qml" />
+    <None Include="gui\PipelineVariablesTable.qml" />
     <None Include="gui\ProjectList.qml" />
+    <None Include="gui\Pipelines.qml" />
     <QtRcc Include="gui\qml.qrc" />
     <None Include="cpp.hint" />
     <None Include="gui\main.qml" />

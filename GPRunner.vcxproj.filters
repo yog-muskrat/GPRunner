@@ -74,7 +74,7 @@
     <None Include="gui\ProjectList.qml">
       <Filter>gui</Filter>
     </None>
-    <None Include="gui\PipelineVariables.qml">
+    <None Include="gui\PipelineVariablesTable.qml">
       <Filter>gui</Filter>
     </None>
     <None Include=".clang-format" />
@@ -82,6 +82,9 @@
       <Filter>gui</Filter>
     </None>
     <None Include="gui\MRTable.qml">
+      <Filter>gui</Filter>
+    </None>
+    <None Include="gui\Pipelines.qml">
       <Filter>gui</Filter>
     </None>
   </ItemGroup>

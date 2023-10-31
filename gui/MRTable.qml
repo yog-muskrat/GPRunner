@@ -15,31 +15,33 @@ Rectangle {
             syncView: mrs
         }
 
-        TableView {
-            id: mrs
-
+        ScrollView {
             Layout.fillHeight: true
             Layout.fillWidth:  true
 
-            focus: true
-            clip:  true
+            TableView {
+                id: mrs
 
-            model:    gpm.mrModel
-            delegate: Item {
-                implicitWidth: itemText.implicitWidth
-                implicitHeight: itemText.implicitHeight
+                focus: true
+                clip:  true
 
-                Rectangle {
-                    anchors.fill: parent
-                    color: (row % 2) == 0 ? "#EFEFEF" : "transparent"
-                }
+                model:    gpm.mrModel
+                delegate: Item {
+                    implicitWidth: itemText.implicitWidth
+                    implicitHeight: itemText.implicitHeight
 
-                Text {
-                    id: itemText
+                    Rectangle {
+                        anchors.fill: parent
+                        color: (row % 2) == 0 ? "#EFEFEF" : "transparent"
+                    }
 
-                    anchors.fill: parent
-                    padding: 5
-                    text: display
+                    Text {
+                        id: itemText
+
+                        anchors.fill: parent
+                        padding: 5
+                        text: display
+                    }
                 }
             }
         }
