@@ -1,7 +1,10 @@
 #include <algorithm>
 #include <cassert>
 
+#include <QFont>
+
 #include "model/ProjectModel.h"
+#include "GPManager.h"
 
 void ProjectModel::clear()
 {
@@ -69,6 +72,23 @@ QVariant ProjectModel::data(QModelIndex const &index, int role) const
 			return result;
 		}
 	}
+	else if (role == Qt::ItemDataRole::FontRole)
+	{
+		QFont font;
+
+		bool const bold = std::ranges::any_of(
+			prj->openMRs(),
+			[this](QPointer<gpr::api::MR> const &mr)
+			{
+				return mr->author() == m_manager.getCurrentUser()
+					|| mr->assignee() == m_manager.getCurrentUser()
+					|| mr->reviewer() == m_manager.getCurrentUser();
+			});
+
+		font.setBold(bold);
+
+		return font;
+	}
 	else if (role == Role::ProjectIdRole)
 	{
 		return prj->id();
@@ -81,6 +101,7 @@ QHash<int, QByteArray> ProjectModel::roleNames() const
 {
 	auto names = QAbstractTableModel::roleNames();
 	names.insert(Role::ProjectIdRole, "projectId");
+	names.insert(Qt::FontRole, "font");
 	return names;
 }
 

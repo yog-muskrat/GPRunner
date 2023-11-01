@@ -1,5 +1,8 @@
 #include <ranges>
 
+#include <QFont>
+
+#include "GPManager.h"
 #include "MRModel.h"
 
 void MRModel::clear()
@@ -81,8 +84,30 @@ QVariant MRModel::data(QModelIndex const &index, int role) const
 			}
 		}
 	}
+	else if (role == Qt::ItemDataRole::FontRole)
+	{
+		QFont font;
+
+		switch (index.column())
+		{
+			case Column::Author:   font.setBold(mr->author()   == m_manager.getCurrentUser()); break;
+			case Column::Assignee: font.setBold(mr->assignee() == m_manager.getCurrentUser()); break;
+			case Column::Reviewer: font.setBold(mr->reviewer() == m_manager.getCurrentUser()); break;
+			default: break;
+		}
+
+		return font;
+	}
 
 	return QVariant();
+}
+
+QHash<int, QByteArray> MRModel::roleNames() const
+{
+	auto names = QAbstractTableModel::roleNames();
+	names.insert(Qt::FontRole, "font");
+
+	return names;
 }
 
 void MRModel::connectProject(QPointer<gpr::api::Project> project)

@@ -43,7 +43,7 @@ Rectangle {
                         leftPadding:  column == 0  ? implicitHeight + 5 : 5
                         rightPadding: 5
 
-                        text: display
+                        text: model.display
                         font.pointSize: 12
                         color: getTextColor(pipelineStatus)
                     }

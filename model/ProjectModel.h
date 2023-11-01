@@ -5,6 +5,8 @@
 #include "GPClasses.h"
 #include "model/classes/Project.h"
 
+class GPManager;
+
 class ProjectModel : public QAbstractTableModel
 {
 	Q_OBJECT
@@ -20,8 +22,8 @@ public:
 		ProjectIdRole = Qt::ItemDataRole::UserRole
 	};
 
-	ProjectModel(QObject *parent = nullptr)
-		: QAbstractTableModel(parent)
+	ProjectModel(GPManager &manager, QObject *parent = nullptr)
+		: QAbstractTableModel(parent), m_manager{manager}
 	{}
 
 	void clear();
@@ -41,4 +43,5 @@ private:
 	void onProjectUpdated(QPointer<gpr::api::Project> project);
 
 	std::vector<QPointer<gpr::api::Project>> m_projects;
+	GPManager &m_manager;
 };

@@ -4,6 +4,8 @@
 
 #include "model/classes/Project.h"
 
+class GPManager;
+
 class MRModel : public QAbstractTableModel
 {
 	Q_OBJECT
@@ -22,8 +24,9 @@ public:
 		Count
 	};
 
-	MRModel(QObject *parent = nullptr)
+	MRModel(GPManager &manager, QObject *parent = nullptr)
 		: QAbstractTableModel(parent)
+		, m_manager{manager}
 	{}
 
 	void clear();
@@ -33,6 +36,7 @@ public:
 	int columnCount(QModelIndex const & = {}) const override;
 	QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
 	QVariant data(QModelIndex const &index, int role = Qt::ItemDataRole::DisplayRole) const override;
+	QHash<int, QByteArray> roleNames() const override;
 
 private:
 	void connectProject(QPointer<gpr::api::Project> project);
@@ -47,4 +51,5 @@ private:
 	int getMRIndex(QPointer<gpr::api::MR> mr);
 
 	QPointer<gpr::api::Project> m_project;
+	GPManager &m_manager;
 };

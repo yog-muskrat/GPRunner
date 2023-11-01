@@ -35,7 +35,7 @@ Rectangle {
                         anchors.fill: parent
                         padding: 2
                         text: display
-                        font.pointSize: 12.
+                        font: model.font
                     }
     
                     MouseArea { 

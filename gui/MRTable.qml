@@ -40,7 +40,8 @@ Rectangle {
 
                         anchors.fill: parent
                         padding: 5
-                        text: display
+                        text: model.display
+                        font: model.font
                     }
                 }
             }

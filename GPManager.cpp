@@ -26,9 +26,9 @@ GPManager::GPManager(QObject *parent)
 {
 	readSettings();
 
-	m_projectModel = new ProjectModel(this);
+	m_projectModel = new ProjectModel(*this, this);
 	m_pipelineModel = new PipelineModel(this);
-	m_mrModel = new MRModel(this);
+	m_mrModel = new MRModel(*this, this);
 	m_variableModel = new VariableModel(this);
 
 	m_networkManager = new QNetworkAccessManager;
