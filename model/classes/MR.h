@@ -3,6 +3,8 @@
 #include <QObject>
 #include <QDateTime>
 
+#include "GPClasses.h"
+
 namespace gpr::api
 {
 	class MR : public QObject
@@ -12,6 +14,7 @@ namespace gpr::api
 		struct Data
 		{
 			int id {-1};
+			int iid {-1};
 
 			QDateTime created;
 			QDateTime updated;
@@ -27,6 +30,7 @@ namespace gpr::api
 		MR(Data data, QObject *parent = 0);
 
 		int id() const;
+		int iid() const;
 
 		void update(Data data);
 
@@ -61,5 +65,7 @@ namespace gpr::api
 
 	private:
 		Data m_data;
+
+		std::vector<Discussion> m_discussions;
 	};
 } // namespace gpr::api

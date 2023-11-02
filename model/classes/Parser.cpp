@@ -26,6 +26,7 @@ namespace gpr::api
 	{
 		return {
 			.id = json.value("id").toInt(),
+			.iid = json.value("iid").toInt(),
 			.created = QDateTime::fromString(json.value("created_at").toString(), Qt::DateFormat::ISODate),
 			.updated = QDateTime::fromString(json.value("updated_at").toString(), Qt::DateFormat::ISODate),
 			.title = json.value("title").toString(),

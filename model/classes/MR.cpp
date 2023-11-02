@@ -14,6 +14,11 @@ namespace gpr::api
 		return m_data.id;
 	}
 
+	int MR::iid() const
+	{
+		return m_data.iid;
+	}
+
 	QDateTime MR::createdAt() const
 	{
 		return m_data.created;
