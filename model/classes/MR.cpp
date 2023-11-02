@@ -118,4 +118,15 @@ namespace gpr::api
 		m_data.targetBranch = std::move(targetBranch);
 		Q_EMIT modified();
 	}
+
+	std::vector<Discussion> const &MR::discussions() const
+	{
+		return m_discussions;
+	}
+
+	void MR::updateDiscussions(std::vector<Discussion> discussions)
+	{
+		m_discussions = std::move(discussions);
+		Q_EMIT modified();
+	}
 } // namespace gpr::api

@@ -1,4 +1,4 @@
-#include <ranges>
+﻿#include <ranges>
 
 #include <QFont>
 
@@ -44,6 +44,7 @@ QVariant MRModel::headerData(int section, Qt::Orientation orientation, int role)
 		case Column::Id: return "ID";
 		case Column::Title: return "Title";
 		case Column::Author: return "Author";
+		case Column::Discussions: return "Discussions";
 		case Column::Assignee: return "Assignee";
 		case Column::Reviewer: return "Reviewer";
 		case Column::SourceBranch: return "Source branch";
@@ -68,6 +69,22 @@ QVariant MRModel::data(QModelIndex const &index, int role) const
 			case Column::Id: return mr->id();
 			case Column::Title: return mr->title();
 			case Column::Author: return mr->author();
+			case Column::Discussions:
+			{
+				auto const count = mr->discussions().size();
+				if(count > 0)
+				{
+					auto result = QString("🗨[%1]").arg(count);
+
+					if(auto const resolvable = std::ranges::count_if(mr->discussions(), &gpr::Discussion::isResolvable); resolvable > 0)
+					{
+						auto const resolved = std::ranges::count_if(mr->discussions(), &gpr::Discussion::isResolved);
+						result += QString("[%1/%2]").arg(resolved).arg(count);
+					}
+					return result;
+				}
+				return {};
+			}
 			case Column::Assignee: return mr->assignee();
 			case Column::Reviewer: return mr->reviewer();
 			case Column::SourceBranch: return mr->sourceBranch();

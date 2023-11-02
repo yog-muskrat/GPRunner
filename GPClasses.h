@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm>
+
 #include <QDateTime>
 #include <QPixmap>
 #include <QObject>
@@ -29,13 +31,17 @@ namespace gpr
 		QDateTime created;
 		QDateTime updated;
 
+		bool resolvable{};
 		bool resolved{};
 	};
 
 	struct Discussion
 	{
-		int id {};
-
+		QString id;
 		std::vector<Note> notes;
+
+		bool isEmpty() const { return notes.empty(); }
+		bool isResolvable() const { return std::ranges::any_of(notes, &Note::resolvable); }
+		bool isResolved() const { return std::ranges::all_of(notes, &Note::resolved); }
 	};
 } // namespace gpr

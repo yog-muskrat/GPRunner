@@ -15,6 +15,7 @@ public:
 		Id,
 		Title,
 		Author,
+		Discussions,
 		Assignee,
 		Reviewer,
 		SourceBranch,

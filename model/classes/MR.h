@@ -58,6 +58,9 @@ namespace gpr::api
 		QString targetBranch() const;
 		void setTargetBranch(QString targetBranch);
 
+		std::vector<Discussion> const &discussions() const;
+		void updateDiscussions(std::vector<Discussion> discussions);
+
 		friend auto operator<=>(MR const &, MR const &) = default;
 
 	Q_SIGNALS:

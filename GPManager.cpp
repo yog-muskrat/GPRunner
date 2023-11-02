@@ -84,6 +84,17 @@ void GPManager::loadProjectMRs(int projectId)
 	m_client.requestProjectMRs(projectId, std::bind_front(&GPManager::parseMRs, this, projectId));
 }
 
+void GPManager::loadProjectMRDiscussions(int projectId)
+{
+	auto prj = m_projectModel->findProject(projectId);
+	if (!prj) return;
+
+	for (auto const &mr : prj->openMRs())
+	{
+		m_client.requestMRDiscussions(projectId, mr->iid(), std::bind_front(&GPManager::parseMRDiscussions, this, projectId, mr->id()));
+	}
+}
+
 void GPManager::loadCurrentUser()
 {
 	m_client.requestCurrentUser(std::bind_front(&GPManager::parseCurrentUser, this));
@@ -180,10 +191,37 @@ void GPManager::parseMRs(int projectId, QJsonDocument const &doc)
 		return;
 	}
 
-	auto mrs = doc.array() | std::views::transform(&QJsonValueRef::toObject) | std::views::transform(gpr::api::parseMR)
-	         | std::ranges::to<std::vector>();
+	auto mrs = doc.array()
+		| std::views::transform(&QJsonValueRef::toObject)
+		| std::views::transform(gpr::api::parseMR)
+		| std::ranges::to<std::vector>();
 
 	project->updateMRs(std::move(mrs));
+}
+
+void GPManager::parseMRDiscussions(int projectId, int mrId, QJsonDocument const &doc)
+{
+	auto project = m_projectModel->findProject(projectId);
+	if (!project)
+	{
+		qDebug() << "Invalid project id: " << projectId;
+		return;
+	}
+
+	auto mr = project->findMR(mrId);
+	if(!mr)
+	{
+		qDebug() << "Invalid MR id: " << mrId;
+		return;
+	}
+
+	auto discussions = doc.array()
+		| std::views::transform(&QJsonValueRef::toObject)
+		| std::views::transform(gpr::api::parseDiscussion)
+		| std::views::filter(std::not_fn(&gpr::Discussion::isEmpty))
+		| std::ranges::to<std::vector>();
+
+	mr->updateDiscussions(std::move(discussions));
 }
 
 void GPManager::parseVariables(QJsonDocument const &doc)
@@ -259,6 +297,7 @@ void GPManager::update()
 		loadProjectMRs(id);
 		loadProjectPipelines(id);
 		loadProjectBranches(id);
+		loadProjectMRDiscussions(id);
 	}
 
 	m_updateTimer.start();
