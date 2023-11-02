@@ -1,12 +1,8 @@
 #include "GPManager.h"
 
-#include <QFile>
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QJsonObject>
-#include <QNetworkRequest>
-#include <QNetworkReply>
-#include <QUrlQuery>
 
 #include <thread>
 #include <ranges>
@@ -16,54 +12,27 @@
 
 namespace
 {
-	QString const SettingsFile{"./settings.json"};
-	std::string_view const VariablesPath{"%2Egitlab%2Fci%2Fpipeline_variables%2Ejson"};
 	std::chrono::milliseconds const UpdateInterval{3000};
 }
 
 GPManager::GPManager(QObject *parent)
 	: QObject(parent)
 {
-	readSettings();
-
-	m_projectModel = new ProjectModel(*this, this);
-	m_pipelineModel = new PipelineModel(this);
-	m_mrModel = new MRModel(*this, this);
-	m_variableModel = new VariableModel(this);
-
-	m_networkManager = new QNetworkAccessManager;
-	m_networkManager->connectToHost(m_settings.gitlabRoot, 443);
-
-	m_updateTimer.setSingleShot(true);
-	m_updateTimer.setInterval(UpdateInterval);
-	connect(&m_updateTimer, &QTimer::timeout, this, &GPManager::update);
-
-	loadCurrentUser();
+	initModels();
+	initUpdateTimer();
 }
 
-void GPManager::loadProjects()
+void GPManager::connect()
 {
-	QNetworkRequest req;
-	req.setRawHeader("PRIVATE-TOKEN", m_settings.privateToken.toUtf8());
-	req.setUrl(QUrl(QString{"%1/api/v4/projects"}.arg(m_settings.gitlabRoot)));
+	loadCurrentUser();
 
-	auto reply = m_networkManager->get(req);
+	m_client.requestProjects(std::bind_front(&GPManager::parseProjects, this));
 
-	connect(
-		reply,
-		&QNetworkReply::finished,
-		[this, reply]
-		{
-			parseProjects(QJsonDocument::fromJson(reply->readAll()));
-			reply->deleteLater();
-			m_updateTimer.start();
-		});
+	m_updateTimer.start();
 }
 
 void GPManager::setCurrentProject(int projectId)
 {
-	m_updateTimer.stop();
-
 	if (projectId != m_currentProject)
 	{
 		m_pipelineModel->clear();
@@ -77,54 +46,21 @@ void GPManager::setCurrentProject(int projectId)
 
 	m_pipelineModel->setProject(prj);
 	m_mrModel->setProject(prj);
-	
-	m_updateTimer.start();
+}
+
+void GPManager::loadProjects()
+{
+	m_client.requestProjects(std::bind_front(&GPManager::parseProjects, this));
 }
 
 void GPManager::loadProjectPipelines(int projectId)
 {
-	QNetworkRequest req;
-	req.setRawHeader("PRIVATE-TOKEN", m_settings.privateToken.toUtf8());
-	req.setUrl(QUrl(QString("%1/api/v4/projects/%2/pipelines").arg(m_settings.gitlabRoot).arg(projectId)));
-
-	auto reply = m_networkManager->get(req);
-
-	connect(
-		reply,
-		&QNetworkReply::finished,
-		[this, reply, projectId]
-		{
-			if (reply->error()) return;
-
-			parsePipelines(projectId, QJsonDocument::fromJson(reply->readAll()));
-			reply->deleteLater();
-		});
+	m_client.requestProjectPipelines(projectId, std::bind_front(&GPManager::parsePipelines, this, projectId));
 }
 
 void GPManager::runPipeline(QString const &ref)
 {
-	QNetworkRequest req;
-	req.setRawHeader("PRIVATE-TOKEN", m_settings.privateToken.toUtf8());
-	req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-	req.setUrl(QUrl(QString("%1/api/v4/projects/%2/pipeline").arg(m_settings.gitlabRoot).arg(m_currentProject)));
-
-	QJsonObject param;
-	param.insert("ref", ref);
-	param.insert("variables", prepareVariables());
-
-	qDebug() << "Run pipeline variables: " << QJsonDocument(param).toJson(QJsonDocument::Compact);
-
-	auto reply = m_networkManager->post(req, QJsonDocument(param).toJson(QJsonDocument::Compact));
-
-	connect(
-		reply,
-		&QNetworkReply::finished,
-		[this, reply]
-		{
-			qDebug() << "Run pipeline response: " << reply->readAll();
-
-			reply->deleteLater();
-		});
+	m_client.runPipeline(m_currentProject, ref, m_variableModel->variables());
 }
 
 QStringList GPManager::getProjectBranches(int projectId)
@@ -135,139 +71,32 @@ QStringList GPManager::getProjectBranches(int projectId)
 
 void GPManager::loadPipelineVariables(QString const &ref)
 {
-	QNetworkRequest req;
-	req.setRawHeader("PRIVATE-TOKEN", m_settings.privateToken.toUtf8());
-
-	auto const url = QString::fromStdString(std::format("{}/api/v4/projects/{}/repository/files/{}?ref={}", 
-	                     m_settings.gitlabRoot.toStdString(), m_currentProject, VariablesPath, ref.toStdString()));
-
-	qDebug() << "Request pipeline variables: " << url;
-
-	req.setUrl(QUrl(url));
-
-	auto reply = m_networkManager->get(req);
-
-	connect(
-		reply,
-		&QNetworkReply::finished,
-		[this, reply]
-		{
-			auto doc = QJsonDocument::fromJson(reply->readAll());
-			reply->deleteLater();
-			qDebug() << "Get pipeline variables response: " << doc.toJson();
-
-			parseVariables(doc);
-		});
+	m_client.requestPipelineVariables(m_currentProject, ref, std::bind_front(&GPManager::parseVariables, this));
 }
 
 void GPManager::loadProjectBranches(int projectId)
 {
-	QNetworkRequest req;
-	req.setRawHeader("PRIVATE-TOKEN", m_settings.privateToken.toUtf8());
-	req.setUrl(QUrl(QString("%1/api/v4/projects/%2/repository/branches").arg(m_settings.gitlabRoot).arg(projectId)));
-
-	auto reply = m_networkManager->get(req);
-
-	connect(
-		reply,
-		&QNetworkReply::finished,
-		[this, reply, projectId]
-		{
-			if (reply->error()) return;
-
-			auto doc = QJsonDocument::fromJson(reply->readAll());
-			reply->deleteLater();
-
-			parseBranches(projectId, doc);
-		});
+	m_client.requestProjectBranches(projectId, std::bind_front(&GPManager::parseBranches, this, projectId));
 }
 
 void GPManager::loadProjectMRs(int projectId)
 {
-	QNetworkRequest req;
-	req.setRawHeader("PRIVATE-TOKEN", m_settings.privateToken.toUtf8());
-	req.setUrl(QUrl(QString("%1/api/v4/projects/%2/merge_requests?state=opened").arg(m_settings.gitlabRoot).arg(projectId)));
-
-	auto reply = m_networkManager->get(req);
-
-	connect(
-		reply,
-		&QNetworkReply::finished,
-		[this, reply, projectId]
-		{
-			if (reply->error()) return;
-
-			auto doc = QJsonDocument::fromJson(reply->readAll());
-			reply->deleteLater();
-
-			parseMRs(projectId, doc);
-		});
+	m_client.requestProjectMRs(projectId, std::bind_front(&GPManager::parseMRs, this, projectId));
 }
 
 void GPManager::loadCurrentUser()
 {
-	QNetworkRequest req;
-	req.setRawHeader("PRIVATE-TOKEN", m_settings.privateToken.toUtf8());
-	req.setUrl(QUrl(QString("%1/api/v4/user").arg(m_settings.gitlabRoot)));
-
-	auto reply = m_networkManager->get(req);
-
-	connect(
-		reply,
-		&QNetworkReply::finished,
-		[this, reply]
-		{
-			auto doc = QJsonDocument::fromJson(reply->readAll());
-			reply->deleteLater();
-
-			parseCurrentUser(doc);
-		});
+	m_client.requestCurrentUser(std::bind_front(&GPManager::parseCurrentUser, this));
 }
 
 void GPManager::cancelPipeline(int pipelineId)
 {
-	if (m_currentProject <= 0 || pipelineId <= 0) return;
-
-	QNetworkRequest req;
-	req.setRawHeader("PRIVATE-TOKEN", m_settings.privateToken.toUtf8());
-	req.setUrl(QUrl(
-		QString("%1/api/v4/projects/%2/pipelines/%3/cancel").arg(m_settings.gitlabRoot).arg(m_currentProject).arg(pipelineId)));
-
-	auto reply = m_networkManager->post(req, QByteArray{});
-
-	connect(
-		reply,
-		&QNetworkReply::finished,
-		[this, reply]
-		{
-			auto doc = QJsonDocument::fromJson(reply->readAll());
-			qDebug() << doc.toJson();
-
-			reply->deleteLater();
-		});
+	m_client.cancelPipeline(m_currentProject, pipelineId);
 }
 
 void GPManager::retryPipeline(int pipelineId)
 {
-	if (m_currentProject <= 0 || pipelineId <= 0) return;
-
-	QNetworkRequest req;
-	req.setRawHeader("PRIVATE-TOKEN", m_settings.privateToken.toUtf8());
-	req.setUrl(QUrl(
-		QString("%1/api/v4/projects/%2/pipelines/%3/retry").arg(m_settings.gitlabRoot).arg(m_currentProject).arg(pipelineId)));
-
-	auto reply = m_networkManager->post(req, QByteArray{});
-
-	connect(
-		reply,
-		&QNetworkReply::finished,
-		[this, reply]
-		{
-			auto doc = QJsonDocument::fromJson(reply->readAll());
-			qDebug() << doc.toJson();
-
-			reply->deleteLater();
-		});
+	m_client.retryPipeline(m_currentProject, pipelineId);
 }
 
 PipelineModel *GPManager::getPipelineModel() const
@@ -298,6 +127,22 @@ void GPManager::removeVariable(int index)
 ProjectModel *GPManager::getProjectModel() const
 {
 	return m_projectModel.get();
+}
+
+void GPManager::initModels()
+{
+	m_projectModel = new ProjectModel(*this, this);
+	m_pipelineModel = new PipelineModel(this);
+	m_mrModel = new MRModel(*this, this);
+	m_variableModel = new VariableModel(this);
+}
+
+void GPManager::initUpdateTimer()
+{
+	m_updateTimer.setSingleShot(true);
+	m_updateTimer.setInterval(UpdateInterval);
+
+	QObject::connect(&m_updateTimer, &QTimer::timeout, this, &GPManager::update);
 }
 
 void GPManager::parseProjects(QJsonDocument const &doc)
@@ -402,18 +247,6 @@ void GPManager::parseCurrentUser(QJsonDocument const &doc)
 	Q_EMIT currentUserChanged(m_currentUser);
 }
 
-void GPManager::readSettings()
-{
-	if (!QFile::exists(SettingsFile)) return;
-
-	QFile settings{SettingsFile};
-	settings.open(QIODevice::ReadOnly);
-	auto doc = QJsonDocument::fromJson(settings.readAll());
-
-	m_settings.gitlabRoot = doc.object().value("gitlab-url").toString();
-	m_settings.privateToken = doc.object().value("private-token").toString();
-}
-
 void GPManager::update()
 {
 	m_updateTimer.stop();
@@ -429,19 +262,4 @@ void GPManager::update()
 	}
 
 	m_updateTimer.start();
-}
-
-QJsonArray GPManager::prepareVariables() const
-{
-	QJsonArray vars;
-
-	for (auto const &variable : m_variableModel->variables() | std::ranges::views::filter(&gpr::Variable::used))
-	{
-		QJsonObject var;
-		var.insert("key", variable.key);
-		var.insert("value", variable.value);
-		vars.append(var);
-	}
-
-	return vars;
 }

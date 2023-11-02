@@ -51,8 +51,8 @@ Window {
 
             Button {
                 Layout.fillWidth: true
-                text: qsTr("Load projects")
-                onClicked: gpm.loadProjects()
+                text: qsTr("Connect")
+                onClicked: gpm.connect()
             }
 
             Text { text: "Logged as " + gpm.currentUser }

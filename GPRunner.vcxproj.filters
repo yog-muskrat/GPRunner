@@ -10,6 +10,9 @@
     <Filter Include="model\classes">
       <UniqueIdentifier>{6176dead-0ef6-4cae-8105-e7c82d27d1d5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="client">
+      <UniqueIdentifier>{470d65b4-c275-4c9b-912f-bc5d3fa53b5d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="model\VariableModel.cpp">
@@ -37,6 +40,9 @@
     </ClCompile>
     <ClCompile Include="model\classes\Parser.cpp">
       <Filter>model\classes</Filter>
+    </ClCompile>
+    <ClCompile Include="client\Client.cpp">
+      <Filter>client</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -97,6 +103,9 @@
     <ClInclude Include="GPClasses.h" />
     <ClInclude Include="model\classes\Parser.h">
       <Filter>model\classes</Filter>
+    </ClInclude>
+    <ClInclude Include="client\Client.h">
+      <Filter>client</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

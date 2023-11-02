@@ -3,7 +3,8 @@
 #include <QTimer>
 #include <QObject>
 #include <QPointer>
-#include <QNetworkAccessManager>
+
+#include "client/Client.h"
 
 #include "model/ProjectModel.h"
 #include "model/PipelineModel.h"
@@ -26,7 +27,7 @@ class GPManager : public QObject
 public:
 	GPManager(QObject *parent = nullptr);
 
-	Q_INVOKABLE void loadProjects();
+	Q_INVOKABLE void connect();
 	Q_INVOKABLE void setCurrentProject(int projectId);
 	Q_INVOKABLE void runPipeline(QString const &ref);
 	Q_INVOKABLE QStringList getProjectBranches(int projectId);
@@ -61,6 +62,9 @@ signals:
 	void currentUserChanged(QString);
 
 private:
+	void initModels();
+	void initUpdateTimer();
+
 	void parseProjects(QJsonDocument const &doc);
 	void parsePipelines(int projectId, QJsonDocument const &doc);
 	void parseMRs(int projectId, QJsonDocument const &doc);
@@ -68,29 +72,23 @@ private:
 	void parseBranches(int projectId, QJsonDocument const &doc);
 	void parseCurrentUser(QJsonDocument const &doc);
 
+	void loadProjects();
 	void loadProjectBranches(int projectId);
 	void loadProjectPipelines(int projectId);
 	void loadProjectMRs(int projectId);
-
 	void loadCurrentUser();
 
-	void readSettings();
-
 	void update();
-
-	QJsonArray prepareVariables() const;
 
 	QPointer<ProjectModel> m_projectModel;
 	QPointer<PipelineModel> m_pipelineModel;
 	QPointer<MRModel> m_mrModel;
 	QPointer<VariableModel> m_variableModel;
-	QPointer<QNetworkAccessManager> m_networkManager;
+	gpr::Client m_client;
 
 	QTimer m_updateTimer;
 	
 	QString m_currentUser;
 
 	int m_currentProject{-1};
-
-	gpr::Settings m_settings;
 };

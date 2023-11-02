@@ -95,6 +95,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="client\Client.cpp" />
     <ClCompile Include="GPManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="model\classes\MR.cpp" />
@@ -120,6 +121,7 @@
     <QtMoc Include="GPManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="client\Client.h" />
     <ClInclude Include="GPClasses.h" />
     <ClInclude Include="model\classes\Parser.h" />
     <QtMoc Include="model\MRModel.h" />
