@@ -15,6 +15,33 @@ namespace gpr
 	{
 		QString const SettingsFile{"./settings.json"};
 		QString const VariablesPath{"%2Egitlab%2Fci%2Fpipeline_variables%2Ejson"};
+
+		namespace endpoint
+		{
+			QString const User                 {"/user"};
+			QString const Projects             {"/projects"};
+			QString const ProjectPipelines     {"/projects/%1/pipelines"};
+			QString const ProjectBranches      {"/projects/%1/repository/branches"};
+			QString const ProjectOpenMRs       {"/projects/%1/merge_requests?state=opened"};
+			QString const ProjectFile          {"/projects/%1/repository/files/%3?ref=%2"};
+			QString const ProjectMRDiscussions {"/projects/%1/merge_requests/%2/discussions"};
+			QString const ProjectPipelineRun   {"/projects/%1/pipeline"};
+			QString const ProjectPipelineCancel{"/projects/%1/pipelines/%2/cancel"};
+			QString const ProjectPipelineRetry {"/projects/%1/pipelines/%2/retry"};
+		} // namespace endpoint
+
+		template<typename T>
+		QString toArg(T &&value)
+		{
+			if constexpr (std::integral<std::remove_cvref_t<T>>)
+			{
+				return QString::number(value);
+			}
+			else
+			{
+				return QString(std::forward<T>(value));
+			}
+		}
 	} // namespace
 
 	Client::Client()
@@ -25,52 +52,43 @@ namespace gpr
 
 	void Client::requestCurrentUser(Callback callback)
 	{
-		auto req = prepareRequest("user");
-		auto reply = m_networkManager.get(req);
-		connectReplyCallback(reply, std::move(callback));
+		makeGetRequest(prepareRequest(endpoint::User), std::move(callback));
 	}
 
 	void Client::requestProjects(Callback callback)
 	{
-		auto req = prepareRequest("projects");
-		auto reply = m_networkManager.get(req);
-
-		connectReplyCallback(reply, std::move(callback));
+		makeGetRequest(prepareRequest(endpoint::Projects), std::move(callback));
 	}
 
 	void Client::requestProjectPipelines(int projectId, Callback callback)
 	{
-		auto req = prepareRequest(QString("projects/%1/pipelines").arg(projectId));
-		auto reply = m_networkManager.get(req);
-		connectReplyCallback(reply, std::move(callback));
+		makeGetRequest(prepareRequest(endpoint::ProjectPipelines, projectId), std::move(callback));
 	}
 
 	void Client::requestProjectBranches(int projectId, Callback callback)
 	{
-		auto req = prepareRequest(QString("projects/%1/repository/branches").arg(projectId));
-		auto reply = m_networkManager.get(req);
-		connectReplyCallback(reply, std::move(callback));
+		makeGetRequest(prepareRequest(endpoint::ProjectBranches, projectId), std::move(callback));
 	}
 
 	void Client::requestProjectMRs(int projectId, Callback callback)
 	{
-		auto req = prepareRequest(QString("projects/%1/merge_requests?state=opened").arg(projectId));
-		auto reply = m_networkManager.get(req);
-		connectReplyCallback(reply, std::move(callback));
+		makeGetRequest(prepareRequest(endpoint::ProjectOpenMRs, projectId), std::move(callback));
 	}
 
 	void Client::requestPipelineVariables(int projectId, QString const &ref, Callback callback)
 	{
-		auto str =  QString("projects/%1/repository/files/%3?ref=%2").arg(projectId).arg(ref).arg(VariablesPath);
+		makeGetRequest(prepareRequest(endpoint::ProjectFile, projectId, ref, VariablesPath), std::move(callback));
+	}
 
-		auto req = prepareRequest(str);
-		auto reply = m_networkManager.get(req);
-		connectReplyCallback(reply, std::move(callback));
+	void Client::requestMRDiscussions(int projectId, int mrIid, Callback callback)
+	{
+		// TODO: pagination
+		makeGetRequest(prepareRequest(endpoint::ProjectMRDiscussions, projectId, mrIid), std::move(callback));
 	}
 
 	void Client::runPipeline(int projectId, QString const &ref, std::vector<Variable> const &variables)
 	{
-		auto req = prepareRequest(QString("projects/%1/pipeline").arg(projectId));
+		auto req = prepareRequest(endpoint::ProjectPipelineRun, projectId);
 		req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
 		QJsonObject param;
@@ -84,23 +102,41 @@ namespace gpr
 
 	void Client::cancelPipeline(int projectId, int pipelineId)
 	{
-		auto req = prepareRequest(QString("projects/%1/pipelines/%3/cancel").arg(projectId).arg(pipelineId));
+		auto req = prepareRequest(endpoint::ProjectPipelineCancel, projectId, pipelineId);
 		auto reply = m_networkManager.post(req, QByteArray{});
 		connectReplyCallback(reply);
 	}
 
 	void Client::retryPipeline(int projectId, int pipelineId)
 	{
-		auto req = prepareRequest(QString("projects/%1/pipelines/%2/retry").arg(projectId).arg(pipelineId));
+		auto req = prepareRequest(endpoint::ProjectPipelineRetry, projectId, pipelineId);
 		auto reply = m_networkManager.post(req, QByteArray{});
 		connectReplyCallback(reply);
 	}
 
-	QNetworkRequest Client::prepareRequest(QString urlSubpath) const
+	void Client::makeGetRequest(QNetworkRequest request, Callback callback)
 	{
+		auto reply = m_networkManager.get(std::move(request));
+		connectReplyCallback(reply, std::move(callback));
+	}
+
+	void Client::makePostRequest(QNetworkRequest request, QByteArray data, Callback callback)
+	{
+		auto reply = m_networkManager.post(std::move(request),std::move(data));
+		connectReplyCallback(reply, std::move(callback));
+	}
+
+	template<typename... Ts>
+	QNetworkRequest Client::prepareRequest(QString urlSubpath, Ts &&...args) const
+	{
+		if constexpr (sizeof...(args) > 0)
+		{
+			urlSubpath = std::move(urlSubpath).arg(toArg(std::forward<Ts>(args))...);
+		}
+
 		QNetworkRequest request;
 		request.setRawHeader("PRIVATE-TOKEN", m_settings.privateToken.toUtf8());
-		request.setUrl(QUrl(QString("%1/api/v4/%2").arg(m_settings.gitlabRoot).arg(std::move(urlSubpath))));
+		request.setUrl(QUrl(QString("%1/api/v4%2").arg(m_settings.gitlabRoot).arg(std::move(urlSubpath))));
 		return request;
 	}
 

@@ -25,13 +25,18 @@ namespace gpr
 		void requestProjectBranches(int projectId, Callback callback);
 		void requestProjectMRs(int projectId, Callback callback);
 		void requestPipelineVariables(int projectId, QString const &ref, Callback callback);
+		void requestMRDiscussions(int projectId, int mrIid, Callback callback);
 
 		void runPipeline(int projectId, QString const &ref, std::vector<Variable> const &variables);
 		void cancelPipeline(int projectId, int pipelineId);
 		void retryPipeline(int projectId, int pipelineId);
 
 	private:
-		QNetworkRequest prepareRequest(QString urlSubpath) const;
+		void makeGetRequest(QNetworkRequest request, Callback callback);
+		void makePostRequest(QNetworkRequest request, QByteArray data, Callback callback);
+
+		template<typename ...Ts>
+		QNetworkRequest prepareRequest(QString urlSubpath, Ts && ...args) const;
 		QJsonArray prepareVariables(std::vector<Variable> const &variables) const;
 
 		void readSettings();
