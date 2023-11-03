@@ -25,14 +25,16 @@ Rectangle {
                 focus: true
                 clip: true
 
-                model:    gpm.pipelineModel
+                model:          gpm.pipelineModel
+                selectionModel: ItemSelectionModel { }
+
                 delegate: Item {
                     implicitWidth: itemText.implicitWidth
                     implicitHeight: itemText.implicitHeight
 
                     Rectangle {
                         anchors.fill: parent
-                        color: (row % 2) == 0 ? "#EFEFEF" : "transparent"
+                        color: row == pipelines.currentRow ? "#DEDEFE" : ((row % 2) == 0 ? "#EFEFEF" : "transparent")
                     }
 
                     Text {
@@ -42,22 +44,26 @@ Rectangle {
 
                         leftPadding:  column == 0  ? implicitHeight + 5 : 5
                         rightPadding: 5
+                        topPadding: 5
+                        bottomPadding: 5
 
                         text: model.display
-                        font.pointSize: 12
+                        font: model.font
                         color: getTextColor(pipelineStatus)
                     }
 
-                    RoundButton {
-                        anchors.left: itemText.left
-                        anchors.top:  itemText.top
-
-                        implicitWidth:  itemText.implicitHeight
-                        implicitHeight: itemText.implicitHeight
-
+                    MouseArea {
+                        cursorShape: Qt.PointingHandCursor
+                        width:  itemText.implicitHeight
+                        height: itemText.implicitHeight
                         visible:   getButtonVisible(column, pipelineStatus)
-                        text:      getButtonText(pipelineStatus)
                         onClicked: (pipelineStatus == "running" || pipelineStatus == "pending") ? gpm.cancelPipeline(pipelineId) : gpm.retryPipeline(pipelineId)
+
+                        Text {
+                            anchors.centerIn: parent
+                            text:      getButtonText(pipelineStatus)
+                            font: model.font
+                        }
                     }
 
                     function getTextColor(status) {

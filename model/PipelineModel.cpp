@@ -1,3 +1,5 @@
+#include <QFont>
+
 #include "PipelineModel.h"
 
 void PipelineModel::clear()
@@ -77,6 +79,7 @@ QVariant PipelineModel::data(QModelIndex const &index, int role) const
 	if (role == Role::PipelineIdRole) return pipeline->id();
 	if (role == Role::PipelineStatusRole) return pipeline->status();
 	if (role == Role::PipelineSourceRole) return pipeline->source();
+	if (role == Qt::ItemDataRole::FontRole) return QFont{};
 
 	return QVariant();
 }
@@ -84,6 +87,7 @@ QVariant PipelineModel::data(QModelIndex const &index, int role) const
 QHash<int, QByteArray> PipelineModel::roleNames() const
 {
 	auto names = QAbstractTableModel::roleNames();
+	names.insert(Qt::FontRole, "font");
 	names.insert(Role::PipelineIdRole, "pipelineId");
 	names.insert(Role::PipelineSourceRole, "pipelineSource");
 	names.insert(Role::PipelineStatusRole, "pipelineStatus");

@@ -35,8 +35,8 @@ Rectangle {
                     implicitWidth:  textItem.implicitWidth
                     implicitHeight: textItem.implicitHeight
 
-                    color: current ? "#AEAEFE" : "#FEFEFE"
-                    border { width: 1; color: current ? "#8484FE" : "#AEAEAE" }
+                    color: row == variables.currentRow ? "#DEDEFE" : ((row % 2) == 0 ? "#EFEFEF" : "transparent")
+                    border.width: current ? 1 : 0
 
                     Text {
                         id: textItem

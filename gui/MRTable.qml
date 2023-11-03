@@ -29,22 +29,25 @@ Rectangle {
                 selectionModel: ItemSelectionModel { }
 
                 delegate: Item {
-                    required property bool current
-                    required property bool selected
-
                     implicitWidth: itemText.implicitWidth
                     implicitHeight: itemText.implicitHeight
 
                     Rectangle {
                         anchors.fill: parent
-                        border.width: current ? 1 : 0
-                        color: selected ? "#DEDEFE" : ((row % 2) == 0 ? "#EFEFEF" : "transparent")
+                        color: row == mrs.currentRow ? "#DEDEFE" : ((row % 2) == 0 ? "#EFEFEF" : "transparent")
 
-                        RoundButton {
-                            text: "🌐"
-                            flat: true
+                        MouseArea {
+                            cursorShape: Qt.PointingHandCursor
+                            width:  itemText.implicitHeight
+                            height: itemText.implicitHeight
                             visible: column == 0
                             onClicked: Qt.openUrlExternally(model.url)
+
+                            Text {
+                                anchors.centerIn: parent
+                                text: "🌐"
+                                font: model.font
+                            }
                         }
 
                         Text {
