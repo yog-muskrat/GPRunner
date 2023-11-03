@@ -84,7 +84,7 @@ void GPManager::loadProjectMRs(int projectId)
 	m_client.requestProjectMRs(projectId, std::bind_front(&GPManager::parseMRs, this, projectId));
 }
 
-void GPManager::loadProjectMRDiscussions(int projectId)
+void GPManager::loadProjectMRInfo(int projectId)
 {
 	auto prj = m_projectModel->findProject(projectId);
 	if (!prj) return;
@@ -92,6 +92,7 @@ void GPManager::loadProjectMRDiscussions(int projectId)
 	for (auto const &mr : prj->openMRs())
 	{
 		m_client.requestMRDiscussions(projectId, mr->iid(), std::bind_front(&GPManager::parseMRDiscussions, this, projectId, mr->id()));
+		m_client.requestMRApprovals(projectId, mr->iid(), std::bind_front(&GPManager::parseMRApprovals, this, projectId, mr->id()));
 	}
 }
 
@@ -224,6 +225,25 @@ void GPManager::parseMRDiscussions(int projectId, int mrId, QJsonDocument const 
 	mr->updateDiscussions(std::move(discussions));
 }
 
+void GPManager::parseMRApprovals(int projectId, int mrId, QJsonDocument const &doc)
+{
+	auto project = m_projectModel->findProject(projectId);
+	if (!project)
+	{
+		qDebug() << "Invalid project id: " << projectId;
+		return;
+	}
+
+	auto mr = project->findMR(mrId);
+	if(!mr)
+	{
+		qDebug() << "Invalid MR id: " << mrId;
+		return;
+	}
+
+	mr->setApprovedBy(gpr::api::parseApprovals(doc.object()));
+}
+
 void GPManager::parseVariables(QJsonDocument const &doc)
 {
 	if (auto const content = doc.object().value("content"); !content.isNull())
@@ -297,7 +317,7 @@ void GPManager::update()
 		loadProjectMRs(id);
 		loadProjectPipelines(id);
 		loadProjectBranches(id);
-		loadProjectMRDiscussions(id);
+		loadProjectMRInfo(id);
 	}
 
 	m_updateTimer.start();

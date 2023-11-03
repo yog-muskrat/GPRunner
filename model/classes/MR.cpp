@@ -135,14 +135,14 @@ namespace gpr::api
 		Q_EMIT modified();
 	}
 
-	QStringList MR::approvedBy() const
+	std::vector<QString> const &MR::approvedBy() const
 	{
-		return m_data.approvedBy;
+		return m_approvedBy;
 	}
 
-	void MR::setApprovedBy(QStringList list)
+	void MR::setApprovedBy(std::vector<QString> list)
 	{
-		m_data.approvedBy = std::move(list);
+		m_approvedBy = std::move(list);
 		Q_EMIT modified();
 	}
 

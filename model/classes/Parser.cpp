@@ -69,4 +69,12 @@ namespace gpr::api
 
 		return discussion;
 	}
+
+	std::vector<QString> parseApprovals(QJsonObject const &json)
+	{
+		return json["approved_by"].toArray()
+			| std::views::transform(&QJsonValueRef::toObject)
+			| std::views::transform([](auto const &obj) { return obj["user"]["username"].toString();})
+			| std::ranges::to<std::vector>();
+	}
 } // namespace gpr::api

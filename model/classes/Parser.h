@@ -12,4 +12,5 @@ namespace gpr::api
 	Pipeline::Data parsePipeline(QJsonObject const &json);
 	MR::Data parseMR(QJsonObject const &json);
 	Discussion parseDiscussion(QJsonObject const &json);
+	std::vector<QString> parseApprovals(QJsonObject const &json);
 } // namespace gpr::api

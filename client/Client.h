@@ -26,6 +26,7 @@ namespace gpr
 		void requestProjectMRs(int projectId, Callback callback);
 		void requestPipelineVariables(int projectId, QString const &ref, Callback callback);
 		void requestMRDiscussions(int projectId, int mrIid, Callback callback);
+		void requestMRApprovals(int projectId, int mrIid, Callback callback);
 
 		void runPipeline(int projectId, QString const &ref, std::vector<Variable> const &variables);
 		void cancelPipeline(int projectId, int pipelineId);

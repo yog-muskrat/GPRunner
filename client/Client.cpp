@@ -25,6 +25,7 @@ namespace gpr
 			QString const ProjectOpenMRs       {"/projects/%1/merge_requests?state=opened"};
 			QString const ProjectFile          {"/projects/%1/repository/files/%3?ref=%2"};
 			QString const ProjectMRDiscussions {"/projects/%1/merge_requests/%2/discussions"};
+			QString const ProjectMRApprovals   {"/projects/%1/merge_requests/%2/approvals"};
 			QString const ProjectPipelineRun   {"/projects/%1/pipeline"};
 			QString const ProjectPipelineCancel{"/projects/%1/pipelines/%2/cancel"};
 			QString const ProjectPipelineRetry {"/projects/%1/pipelines/%2/retry"};
@@ -84,6 +85,11 @@ namespace gpr
 	{
 		// TODO: pagination
 		makeGetRequest(prepareRequest(endpoint::ProjectMRDiscussions, projectId, mrIid), std::move(callback));
+	}
+
+	void Client::requestMRApprovals(int projectId, int mrIid, Callback callback)
+	{
+		makeGetRequest(prepareRequest(endpoint::ProjectMRApprovals, projectId, mrIid), std::move(callback));
 	}
 
 	void Client::runPipeline(int projectId, QString const &ref, std::vector<Variable> const &variables)

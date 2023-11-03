@@ -91,8 +91,18 @@ QVariant MRModel::data(QModelIndex const &index, int role) const
 				}
 				return result;
 			}
-			case Column::Assignee: return mr->assignee();
-			case Column::Reviewer: return mr->reviewer();
+			case Column::Assignee:
+			{
+				auto result = mr->assignee();
+				if(std::ranges::contains(mr->approvedBy(), result)) result.prepend("✅");
+				return result;
+			}
+			case Column::Reviewer:
+			{
+				auto result = mr->reviewer();
+				if(std::ranges::contains(mr->approvedBy(), result)) result.prepend("✅");
+				return result;
+			}
 			case Column::SourceBranch: return mr->sourceBranch();
 			case Column::TargetBranch: return mr->targetBranch();
 			case Column::Created:
