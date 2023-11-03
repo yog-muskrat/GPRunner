@@ -45,7 +45,8 @@ namespace gpr::api
 			.assignee = json.value("assignee").toObject().value("username").toString(),
 			.reviewer = json.value("reviewers").toArray().first().toObject().value("username").toString(),
 			.sourceBranch = json.value("source_branch").toString(),
-			.targetBranch = json.value("target_branch").toString()};
+			.targetBranch = json.value("target_branch").toString(),
+			.url = json.value("web_url").toString()};
 	}
 
 	Discussion parseDiscussion(QJsonObject const &json)

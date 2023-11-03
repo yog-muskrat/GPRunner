@@ -25,6 +25,11 @@ public:
 		Count
 	};
 
+	enum Role
+	{
+		Url = Qt::UserRole
+	};
+
 	MRModel(GPManager &manager, QObject *parent = nullptr)
 		: QAbstractTableModel(parent)
 		, m_manager{manager}

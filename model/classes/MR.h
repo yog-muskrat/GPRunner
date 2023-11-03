@@ -25,6 +25,8 @@ namespace gpr::api
 			QString reviewer;
 			QString sourceBranch;
 			QString targetBranch;
+			QString url;
+			QStringList approvedBy;
 		};
 
 		MR(Data data, QObject *parent = 0);
@@ -57,6 +59,12 @@ namespace gpr::api
 
 		QString targetBranch() const;
 		void setTargetBranch(QString targetBranch);
+
+		QString url() const;
+		void setUrl(QString url);
+
+		QStringList approvedBy() const;
+		void setApprovedBy(QStringList list);
 
 		std::vector<Discussion> const &discussions() const;
 		void updateDiscussions(std::vector<Discussion> discussions);

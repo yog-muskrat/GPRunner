@@ -1,4 +1,4 @@
-import QtQuick
+﻿import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 
@@ -25,23 +25,39 @@ Rectangle {
                 focus: true
                 clip:  true
 
-                model:    gpm.mrModel
+                model: gpm.mrModel
+                selectionModel: ItemSelectionModel { }
+
                 delegate: Item {
+                    required property bool current
+                    required property bool selected
+
                     implicitWidth: itemText.implicitWidth
                     implicitHeight: itemText.implicitHeight
 
                     Rectangle {
                         anchors.fill: parent
-                        color: (row % 2) == 0 ? "#EFEFEF" : "transparent"
-                    }
+                        border.width: current ? 1 : 0
+                        color: selected ? "#DEDEFE" : ((row % 2) == 0 ? "#EFEFEF" : "transparent")
 
-                    Text {
-                        id: itemText
+                        RoundButton {
+                            text: "🌐"
+                            flat: true
+                            visible: column == 0
+                            onClicked: Qt.openUrlExternally(model.url)
+                        }
 
-                        anchors.fill: parent
-                        padding: 5
-                        text: model.display
-                        font: model.font
+                        Text {
+                            id: itemText
+
+                            anchors.fill: parent
+                            topPadding: 5
+                            bottomPadding: 5
+                            rightPadding: 5
+                            leftPadding: column == 0 ? 30 : 5
+                            text: model.display
+                            font: model.font
+                        }
                     }
                 }
             }

@@ -124,6 +124,28 @@ namespace gpr::api
 		return m_discussions;
 	}
 
+	QString MR::url() const
+	{
+		return m_data.url;
+	}
+
+	void MR::setUrl(QString url)
+	{
+		m_data.url = std::move(url);
+		Q_EMIT modified();
+	}
+
+	QStringList MR::approvedBy() const
+	{
+		return m_data.approvedBy;
+	}
+
+	void MR::setApprovedBy(QStringList list)
+	{
+		m_data.approvedBy = std::move(list);
+		Q_EMIT modified();
+	}
+
 	void MR::updateDiscussions(std::vector<Discussion> discussions)
 	{
 		m_discussions = std::move(discussions);

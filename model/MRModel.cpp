@@ -71,19 +71,25 @@ QVariant MRModel::data(QModelIndex const &index, int role) const
 			case Column::Author: return mr->author();
 			case Column::Discussions:
 			{
+				QString result;
 				auto const count = mr->discussions().size();
 				if(count > 0)
 				{
-					auto result = QString("🗨[%1]").arg(count);
+					result += "🗨";
+					auto const resolvable = std::ranges::count_if(mr->discussions(), &gpr::Discussion::isResolvable);
 
-					if(auto const resolvable = std::ranges::count_if(mr->discussions(), &gpr::Discussion::isResolvable); resolvable > 0)
+					if(resolvable != count)
+					{
+						result += QString("[%1]").arg(count);
+					}
+
+					if( resolvable > 0)
 					{
 						auto const resolved = std::ranges::count_if(mr->discussions(), &gpr::Discussion::isResolved);
-						result += QString("[%1/%2]").arg(resolved).arg(count);
+						result += QString("[%1/%2]").arg(resolved).arg(resolvable);
 					}
-					return result;
 				}
-				return {};
+				return result;
 			}
 			case Column::Assignee: return mr->assignee();
 			case Column::Reviewer: return mr->reviewer();
@@ -115,6 +121,10 @@ QVariant MRModel::data(QModelIndex const &index, int role) const
 
 		return font;
 	}
+	else if(role == Role::Url)
+	{
+		return mr->url();
+	}
 
 	return QVariant();
 }
@@ -123,6 +133,7 @@ QHash<int, QByteArray> MRModel::roleNames() const
 {
 	auto names = QAbstractTableModel::roleNames();
 	names.insert(Qt::FontRole, "font");
+	names.insert(Role::Url, "url");
 
 	return names;
 }

@@ -18,7 +18,6 @@ HorizontalHeaderView {
 
             text: display
             padding: 5
-            font.pointSize: 12
         }
     }
 }

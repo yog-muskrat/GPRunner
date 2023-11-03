@@ -26,25 +26,20 @@ Rectangle {
                 anchors.fill: parent
                 color: index == delegateItem.ListView.view.currentIndex ? "#DEDEFE" : "transparent"
 
-                Item {
+                Text {
+                    id: itemText
                     anchors.fill: parent
-                    Layout.fillHeight: true
-                    Layout.fillWidth: true
-                    Text {
-                        id: itemText
-                        anchors.fill: parent
-                        padding: 2
-                        text: display
-                        font: model.font
-                    }
-    
-                    MouseArea { 
-                        anchors.fill: parent
-                        onClicked: {
-                            delegateItem.ListView.view.currentIndex = index
-                            delegateItem.ListView.view.parent.currentProject = projectId
-                            gpm.setCurrentProject(projectId)
-                        }
+                    padding: 2
+                    text: display
+                    font: model.font
+                }
+
+                MouseArea { 
+                    anchors.fill: parent
+                    onClicked: {
+                        delegateItem.ListView.view.currentIndex = index
+                        delegateItem.ListView.view.parent.currentProject = projectId
+                        gpm.setCurrentProject(projectId)
                     }
                 }
             }
