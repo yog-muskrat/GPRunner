@@ -8,13 +8,22 @@ SplitView {
     onCurrentProjectChanged: ref.model = gpm.getProjectBranches(currentProject)
 
     PipelineTable {
-        SplitView.minimumWidth: 750
+        id: pipelines
+        implicitWidth: 750
+        Layout.fillWidth:  true
+        Layout.fillHeight: true
+    }
+
+    PipelineStatistics {
+        id: statistics
+        visible: false
+        implicitWidth: 750
         Layout.fillWidth:  true
         Layout.fillHeight: true
     }
 
     ColumnLayout {
-        SplitView.minimumWidth: 250
+        implicitWidth: 250
 
         PipelineVariablesTable{
             Layout.fillWidth:  true
@@ -42,9 +51,17 @@ SplitView {
                 onClicked: gpm.loadPipelineVariables(ref.currentText)
             }
             Button {
-                text: "⏵ Run pipeline"
+                text: "⏵ Run"
                 enabled: currentProject > 0
                 onClicked: gpm.runPipeline(ref.currentText)
+            }
+            Button {
+                text: "📈 Analyze"
+                enabled: currentProject > 0
+                onClicked: {
+                    pipelines.visible = !pipelines.visible
+                    statistics.visible = !statistics.visible
+                }
             }
         }
     }

@@ -18,13 +18,8 @@ int main(int argc, char *argv[])
 
 	QQmlApplicationEngine engine;
 	engine.rootContext()->setContextProperty("gpm", &manager);
-	engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
-	engine.load(QUrl(QStringLiteral("qrc:/ProjectList.qml")));
-	engine.load(QUrl(QStringLiteral("qrc:/Pipelines.qml")));
-	engine.load(QUrl(QStringLiteral("qrc:/PipelineTable.qml")));
-	engine.load(QUrl(QStringLiteral("qrc:/MRTable.qml")));
-	engine.load(QUrl(QStringLiteral("qrc:/PipelineVariablesTable.qml")));
-	engine.load(QUrl(QStringLiteral("qrc:/CommonHeaderView.qml")));
+	engine.addImportPath("qrc:///modules");
+	engine.load(QUrl(QStringLiteral("qrc:///modules/main.qml")));
 
 	if (engine.rootObjects().isEmpty()) return -1;
 

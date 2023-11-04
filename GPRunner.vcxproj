@@ -108,7 +108,9 @@
     <ClCompile Include="model\VariableModel.cpp" />
     <None Include=".clang-format" />
     <None Include="gui\CommonHeaderView.qml" />
+    <None Include="gui\DatePicker.qml" />
     <None Include="gui\MRTable.qml" />
+    <None Include="gui\PipelineStatistics.qml" />
     <None Include="gui\PipelineTable.qml" />
     <None Include="gui\PipelineVariablesTable.qml" />
     <None Include="gui\ProjectList.qml" />

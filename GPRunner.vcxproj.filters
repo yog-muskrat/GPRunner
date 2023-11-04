@@ -93,6 +93,12 @@
     <None Include="gui\Pipelines.qml">
       <Filter>gui</Filter>
     </None>
+    <None Include="gui\PipelineStatistics.qml">
+      <Filter>gui</Filter>
+    </None>
+    <None Include="gui\DatePicker.qml">
+      <Filter>gui</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="gui\qml.qrc">
