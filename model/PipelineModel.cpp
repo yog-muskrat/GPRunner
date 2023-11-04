@@ -75,10 +75,19 @@ QVariant PipelineModel::data(QModelIndex const &index, int role) const
 			return pipeline->updatedAt().toLocalTime().toString(format);
 		}
 	}
+	else if (role == Qt::EditRole)
+	{
+		if (index.column() == Column::Id)      return pipeline->id();
+		if (index.column() == Column::Ref)     return pipeline->ref();
+		if (index.column() == Column::Status)  return pipeline->status();
+		if (index.column() == Column::Source)  return pipeline->source();
+		if (index.column() == Column::Created) return pipeline->createdAt();
+		if (index.column() == Column::Updated) return pipeline->updatedAt();
+	}
 
-	if (role == Role::PipelineIdRole) return pipeline->id();
-	if (role == Role::PipelineStatusRole) return pipeline->status();
-	if (role == Role::PipelineSourceRole) return pipeline->source();
+	if (role == Role::PipelineIdRole)       return pipeline->id();
+	if (role == Role::PipelineStatusRole)   return pipeline->status();
+	if (role == Role::PipelineSourceRole)   return pipeline->source();
 	if (role == Qt::ItemDataRole::FontRole) return QFont{};
 
 	return QVariant();

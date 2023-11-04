@@ -22,9 +22,7 @@ public:
 		ProjectIdRole = Qt::ItemDataRole::UserRole
 	};
 
-	ProjectModel(GPManager &manager, QObject *parent = nullptr)
-		: QAbstractTableModel(parent), m_manager{manager}
-	{}
+	ProjectModel(GPManager &manager);
 
 	void clear();
 

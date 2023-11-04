@@ -6,6 +6,11 @@
 #include "model/ProjectModel.h"
 #include "GPManager.h"
 
+ProjectModel::ProjectModel(GPManager &manager)
+	: QAbstractTableModel(&manager)
+	, m_manager{manager}
+{}
+
 void ProjectModel::clear()
 {
 	beginResetModel();
@@ -80,9 +85,8 @@ QVariant ProjectModel::data(QModelIndex const &index, int role) const
 			prj->openMRs(),
 			[this](QPointer<gpr::api::MR> const &mr)
 			{
-				return mr->author() == m_manager.getCurrentUser()
-					|| mr->assignee() == m_manager.getCurrentUser()
-					|| mr->reviewer() == m_manager.getCurrentUser();
+				return mr->author() == m_manager.getCurrentUser() || mr->assignee() == m_manager.getCurrentUser()
+			        || mr->reviewer() == m_manager.getCurrentUser();
 			});
 
 		font.setBold(bold);

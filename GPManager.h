@@ -3,6 +3,7 @@
 #include <QTimer>
 #include <QObject>
 #include <QPointer>
+#include <QSortFilterProxyModel>
 
 #include "client/Client.h"
 
@@ -45,10 +46,11 @@ public:
 	 */
 	Q_INVOKABLE void retryPipeline(int pipelineId);
 
-	ProjectModel *getProjectModel() const;
-	PipelineModel *getPipelineModel() const;
-	MRModel *getMRModel() const;
-	VariableModel *getVariableModel() const;
+	QAbstractItemModel *getProjectModel();
+	QAbstractItemModel *getPipelineModel();
+	QAbstractItemModel *getMRModel();
+	QAbstractItemModel *getVariableModel();
+
 	QString getCurrentUser() const { return m_currentUser; }
 
 	Q_INVOKABLE void addVariable();
@@ -83,10 +85,18 @@ private:
 
 	void update();
 
-	QPointer<ProjectModel> m_projectModel;
-	QPointer<PipelineModel> m_pipelineModel;
-	QPointer<MRModel> m_mrModel;
-	QPointer<VariableModel> m_variableModel;
+	ProjectModel m_projectModel;
+	QSortFilterProxyModel m_projectProxyModel;
+
+	PipelineModel m_pipelineModel;
+	QSortFilterProxyModel m_pipelineProxyModel;
+
+	MRModel m_mrModel;
+	QSortFilterProxyModel m_mrProxyModel;
+
+	VariableModel m_variableModel;
+	QSortFilterProxyModel m_variableProxyModel;
+
 	gpr::Client m_client;
 
 	QTimer m_updateTimer;

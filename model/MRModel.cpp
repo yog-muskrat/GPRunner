@@ -5,6 +5,11 @@
 #include "GPManager.h"
 #include "MRModel.h"
 
+MRModel::MRModel(GPManager &manager)
+	: QAbstractTableModel(&manager)
+	, m_manager{manager}
+{}
+
 void MRModel::clear()
 {
 	setProject(nullptr);
@@ -60,81 +65,13 @@ QVariant MRModel::data(QModelIndex const &index, int role) const
 {
 	if (!checkIndex(index)) return {};
 
-	auto const mr = m_project->openMRs().at(index.row());
+	auto const &mr = *m_project->openMRs().at(index.row());
+	auto const column = static_cast<Column>(index.column());
 
-	if (role == Qt::DisplayRole)
-	{
-		switch (index.column())
-		{
-			case Column::Id: return mr->id();
-			case Column::Title: return mr->title();
-			case Column::Author: return mr->author();
-			case Column::Discussions:
-			{
-				QString result;
-				auto const count = mr->discussions().size();
-				if(count > 0)
-				{
-					result += "🗨";
-					auto const resolvable = std::ranges::count_if(mr->discussions(), &gpr::Discussion::isResolvable);
-
-					if(resolvable != count)
-					{
-						result += QString("[%1]").arg(count);
-					}
-
-					if( resolvable > 0)
-					{
-						auto const resolved = std::ranges::count_if(mr->discussions(), &gpr::Discussion::isResolved);
-						result += QString("[%1/%2]").arg(resolved).arg(resolvable);
-					}
-				}
-				return result;
-			}
-			case Column::Assignee:
-			{
-				auto result = mr->assignee();
-				if(std::ranges::contains(mr->approvedBy(), result)) result.prepend("✅");
-				return result;
-			}
-			case Column::Reviewer:
-			{
-				auto result = mr->reviewer();
-				if(std::ranges::contains(mr->approvedBy(), result)) result.prepend("✅");
-				return result;
-			}
-			case Column::SourceBranch: return mr->sourceBranch();
-			case Column::TargetBranch: return mr->targetBranch();
-			case Column::Created:
-			{
-				auto const format = mr->createdAt().date() == QDate::currentDate() ? "hh:mm" : "dd.MM.yyyy hh:mm";
-				return mr->createdAt().toLocalTime().toString(format);
-			}
-			case Column::Updated:
-			{
-				auto const format = mr->updatedAt().date() == QDate::currentDate() ? "hh:mm" : "dd.MM.yyyy hh:mm";
-				return mr->updatedAt().toLocalTime().toString(format);
-			}
-		}
-	}
-	else if (role == Qt::ItemDataRole::FontRole)
-	{
-		QFont font;
-
-		switch (index.column())
-		{
-			case Column::Author:   font.setBold(mr->author()   == m_manager.getCurrentUser()); break;
-			case Column::Assignee: font.setBold(mr->assignee() == m_manager.getCurrentUser()); break;
-			case Column::Reviewer: font.setBold(mr->reviewer() == m_manager.getCurrentUser()); break;
-			default: break;
-		}
-
-		return font;
-	}
-	else if(role == Role::Url)
-	{
-		return mr->url();
-	}
+	if (role == Qt::DisplayRole) return displayRole(mr, column);
+	if (role == Qt::EditRole) return editRole(mr, column);
+	if (role == Qt::ItemDataRole::FontRole) return fontRole(mr, column);
+	if (role == Role::Url) return mr.url();
 
 	return QVariant();
 }
@@ -146,6 +83,94 @@ QHash<int, QByteArray> MRModel::roleNames() const
 	names.insert(Role::Url, "url");
 
 	return names;
+}
+
+QVariant MRModel::editRole(gpr::api::MR const &mr, Column column) const
+{
+	switch (column)
+	{
+		case Column::Id:
+		case Column::Title:
+		case Column::Author:
+		case Column::Discussions:
+		case Column::SourceBranch:
+		case Column::TargetBranch: return displayRole(mr, column);
+		case Column::Assignee:     return mr.assignee();
+		case Column::Reviewer:     return mr.reviewer();
+		case Column::Created:      return mr.createdAt();
+		case Column::Updated:      return mr.updatedAt();
+		default: break;
+	}
+	return {};
+}
+
+QVariant MRModel::displayRole(gpr::api::MR const &mr, Column column) const
+{
+	switch (column)
+	{
+		case Column::Id:           return mr.id();
+		case Column::Title:        return mr.title();
+		case Column::Author:       return mr.author();
+		case Column::Discussions:  return getDiscussionsString(mr);
+		case Column::Assignee:     return getApproverString(mr, mr.assignee());
+		case Column::Reviewer:     return getApproverString(mr, mr.reviewer());
+		case Column::SourceBranch: return mr.sourceBranch();
+		case Column::TargetBranch: return mr.targetBranch();
+		case Column::Created:      return getDateTimeString(mr.createdAt());
+		case Column::Updated:      return getDateTimeString(mr.updatedAt());
+		default: break;
+	}
+	return {};
+}
+
+QVariant MRModel::fontRole(gpr::api::MR const &mr, Column column) const
+{
+	QFont font;
+
+	switch (column)
+	{
+		case Column::Author:   font.setBold(mr.author() == m_manager.getCurrentUser());   break;
+		case Column::Assignee: font.setBold(mr.assignee() == m_manager.getCurrentUser()); break;
+		case Column::Reviewer: font.setBold(mr.reviewer() == m_manager.getCurrentUser()); break;
+		default: break;
+	}
+
+	return font;
+}
+
+QString MRModel::getDiscussionsString(gpr::api::MR const &mr) const
+{
+	QString result;
+	auto const count = mr.discussions().size();
+	if (count > 0)
+	{
+		result += "🗨";
+		auto const resolvable = std::ranges::count_if(mr.discussions(), &gpr::Discussion::isResolvable);
+
+		if (resolvable != count)
+		{
+			result += QString("[%1]").arg(count);
+		}
+
+		if (resolvable > 0)
+		{
+			auto const resolved = std::ranges::count_if(mr.discussions(), &gpr::Discussion::isResolved);
+			result += QString("[%1/%2]").arg(resolved).arg(resolvable);
+		}
+	}
+	return result;
+}
+
+QString MRModel::getApproverString(gpr::api::MR const &mr, QString username) const
+{
+	if (std::ranges::contains(mr.approvedBy(), username)) username.prepend("✅");
+	return username;
+}
+
+QString MRModel::getDateTimeString(QDateTime const &dt) const
+{
+	auto const format = dt.date() == QDate::currentDate() ? "hh:mm" : "dd.MM.yyyy hh:mm";
+	return dt.toLocalTime().toString(format);
 }
 
 void MRModel::connectProject(QPointer<gpr::api::Project> project)
@@ -194,7 +219,7 @@ void MRModel::onMRRemoved(QPointer<gpr::api::MR> mr)
 
 void MRModel::onMRUpdated()
 {
-	auto mr = qobject_cast<gpr::api::MR*>(sender());
+	auto mr = qobject_cast<gpr::api::MR *>(sender());
 	if (!mr) return;
 
 	auto const idx = getMRIndex(mr);

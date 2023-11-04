@@ -17,6 +17,8 @@ namespace
 
 GPManager::GPManager(QObject *parent)
 	: QObject(parent)
+	, m_projectModel(*this)
+	, m_mrModel(*this)
 {
 	initModels();
 	initUpdateTimer();
@@ -35,17 +37,17 @@ void GPManager::setCurrentProject(int projectId)
 {
 	if (projectId != m_currentProject)
 	{
-		m_pipelineModel->clear();
-		m_mrModel->clear();
-		m_variableModel->clear();
+		m_pipelineModel.clear();
+		m_mrModel.clear();
+		m_variableModel.clear();
 	}
 
 	m_currentProject = projectId;
 
-	auto prj = m_projectModel->findProject(projectId);
+	auto prj = m_projectModel.findProject(projectId);
 
-	m_pipelineModel->setProject(prj);
-	m_mrModel->setProject(prj);
+	m_pipelineModel.setProject(prj);
+	m_mrModel.setProject(prj);
 }
 
 void GPManager::loadProjects()
@@ -60,12 +62,12 @@ void GPManager::loadProjectPipelines(int projectId)
 
 void GPManager::runPipeline(QString const &ref)
 {
-	m_client.runPipeline(m_currentProject, ref, m_variableModel->variables());
+	m_client.runPipeline(m_currentProject, ref, m_variableModel.variables());
 }
 
 QStringList GPManager::getProjectBranches(int projectId)
 {
-	if (auto prj = m_projectModel->findProject(projectId)) return prj->branches();
+	if (auto prj = m_projectModel.findProject(projectId)) return prj->branches();
 	return QStringList{"master"};
 }
 
@@ -86,7 +88,7 @@ void GPManager::loadProjectMRs(int projectId)
 
 void GPManager::loadProjectMRInfo(int projectId)
 {
-	auto prj = m_projectModel->findProject(projectId);
+	auto prj = m_projectModel.findProject(projectId);
 	if (!prj) return;
 
 	for (auto const &mr : prj->openMRs())
@@ -111,42 +113,54 @@ void GPManager::retryPipeline(int pipelineId)
 	m_client.retryPipeline(m_currentProject, pipelineId);
 }
 
-PipelineModel *GPManager::getPipelineModel() const
+QAbstractItemModel *GPManager::getProjectModel()
 {
-	return m_pipelineModel.get();
+	return &m_projectProxyModel;
 }
 
-MRModel *GPManager::getMRModel() const
+QAbstractItemModel *GPManager::getPipelineModel()
 {
-	return m_mrModel.get();
+	return &m_pipelineProxyModel;
 }
 
-VariableModel *GPManager::getVariableModel() const
+QAbstractItemModel *GPManager::getMRModel()
 {
-	return m_variableModel.get();
+	return &m_mrProxyModel;
+}
+
+QAbstractItemModel *GPManager::getVariableModel()
+{
+	return &m_variableProxyModel;
 }
 
 void GPManager::addVariable()
 {
-	m_variableModel->addVariable({.key = "variable", .value = "value", .used = false});
+	m_variableModel.addVariable({.key = "variable", .value = "value", .used = false});
 }
 
 void GPManager::removeVariable(int index)
 {
-	m_variableModel->removeRow(index);
-}
-
-ProjectModel *GPManager::getProjectModel() const
-{
-	return m_projectModel.get();
+	m_variableModel.removeRow(index);
 }
 
 void GPManager::initModels()
 {
-	m_projectModel = new ProjectModel(*this, this);
-	m_pipelineModel = new PipelineModel(this);
-	m_mrModel = new MRModel(*this, this);
-	m_variableModel = new VariableModel(this);
+	m_projectProxyModel.setSourceModel(&m_projectModel);
+	m_projectProxyModel.setDynamicSortFilter(true);
+	m_projectProxyModel.setSortCaseSensitivity(Qt::CaseSensitivity::CaseInsensitive);
+	m_projectProxyModel.sort(ProjectModel::Column::Name);
+
+	m_pipelineProxyModel.setSourceModel(&m_pipelineModel);
+	m_pipelineProxyModel.setDynamicSortFilter(true);
+	m_pipelineProxyModel.setSortRole(Qt::ItemDataRole::EditRole);
+	m_pipelineProxyModel.sort(PipelineModel::Column::Created, Qt::SortOrder::DescendingOrder);
+
+	m_mrProxyModel.setSourceModel(&m_mrModel);
+	m_mrProxyModel.setDynamicSortFilter(true);
+	m_mrProxyModel.setSortRole(Qt::ItemDataRole::EditRole);
+	m_mrProxyModel.sort(MRModel::Column::Updated, Qt::SortOrder::DescendingOrder);
+
+	m_variableProxyModel.setSourceModel(&m_variableModel);
 }
 
 void GPManager::initUpdateTimer()
@@ -159,18 +173,18 @@ void GPManager::initUpdateTimer()
 
 void GPManager::parseProjects(QJsonDocument const &doc)
 {
-	m_projectModel->clear();
+	m_projectModel.clear();
 
 	for (auto prj : doc.array() | std::views::transform(&QJsonValueRef::toObject) | std::views::transform(gpr::api::parseProject))
 	{
-		m_projectModel->addProject(prj);
+		m_projectModel.addProject(prj);
 		loadProjectBranches(prj.id);
 	}
 }
 
 void GPManager::parsePipelines(int projectId, QJsonDocument const &doc)
 {
-	auto project = m_projectModel->findProject(projectId);
+	auto project = m_projectModel.findProject(projectId);
 	if (!project)
 	{
 		qDebug() << "Invalid project id: " << projectId;
@@ -185,7 +199,7 @@ void GPManager::parsePipelines(int projectId, QJsonDocument const &doc)
 
 void GPManager::parseMRs(int projectId, QJsonDocument const &doc)
 {
-	auto project = m_projectModel->findProject(projectId);
+	auto project = m_projectModel.findProject(projectId);
 	if (!project)
 	{
 		qDebug() << "Invalid project id: " << projectId;
@@ -202,7 +216,7 @@ void GPManager::parseMRs(int projectId, QJsonDocument const &doc)
 
 void GPManager::parseMRDiscussions(int projectId, int mrId, QJsonDocument const &doc)
 {
-	auto project = m_projectModel->findProject(projectId);
+	auto project = m_projectModel.findProject(projectId);
 	if (!project)
 	{
 		qDebug() << "Invalid project id: " << projectId;
@@ -227,7 +241,7 @@ void GPManager::parseMRDiscussions(int projectId, int mrId, QJsonDocument const 
 
 void GPManager::parseMRApprovals(int projectId, int mrId, QJsonDocument const &doc)
 {
-	auto project = m_projectModel->findProject(projectId);
+	auto project = m_projectModel.findProject(projectId);
 	if (!project)
 	{
 		qDebug() << "Invalid project id: " << projectId;
@@ -264,7 +278,7 @@ void GPManager::parseVariables(QJsonDocument const &doc)
 			     .value = var.toObject().value("value").toString(),
 			     .used = var.toObject().value("required").toBool()});
 		}
-		m_variableModel->setVariables(std::move(vars));
+		m_variableModel.setVariables(std::move(vars));
 	}
 	else
 	{
@@ -290,7 +304,7 @@ void GPManager::parseBranches(int projectId, QJsonDocument const &doc)
 		}
 	}
 
-	if (auto prj = m_projectModel->findProject(projectId))
+	if (auto prj = m_projectModel.findProject(projectId))
 	{
 		prj->setBranches(std::move(result));
 	}
@@ -310,9 +324,9 @@ void GPManager::update()
 	m_updateTimer.stop();
 
 	for (auto const id :
-	     std::views::iota(0, m_projectModel->rowCount())
+	     std::views::iota(0, m_projectModel.rowCount())
 	         | std::views::transform([this](int row)
-	                                 { return m_projectModel->index(row, 0).data(ProjectModel::Role::ProjectIdRole).toInt(); }))
+	                                 { return m_projectModel.index(row, 0).data(ProjectModel::Role::ProjectIdRole).toInt(); }))
 	{
 		loadProjectMRs(id);
 		loadProjectPipelines(id);
