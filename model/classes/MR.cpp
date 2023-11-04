@@ -146,6 +146,17 @@ namespace gpr::api
 		Q_EMIT modified();
 	}
 
+	bool MR::hasNotes() const
+	{
+		return m_data.hasNotes;
+	}
+
+	void MR::setHasNotes(bool hasNotes)
+	{
+		m_data.hasNotes = hasNotes;
+		Q_EMIT modified();
+	}
+
 	std::vector<QString> const &MR::approvedBy() const
 	{
 		return m_approvedBy;

@@ -47,7 +47,8 @@ namespace gpr::api
 			.sourceBranch = json.value("source_branch").toString(),
 			.targetBranch = json.value("target_branch").toString(),
 			.url = json.value("web_url").toString(),
-			.mergeStatus = json.value("detailed_merge_status").toString()};
+			.mergeStatus = json.value("detailed_merge_status").toString(),
+			.hasNotes = json.value("user_notes_count").toInt() > 0};
 	}
 
 	Discussion parseDiscussion(QJsonObject const &json)

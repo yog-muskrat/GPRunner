@@ -93,7 +93,11 @@ void GPManager::loadProjectMRInfo(int projectId)
 
 	for (auto const &mr : prj->openMRs())
 	{
-		m_client.requestMRDiscussions(projectId, mr->iid(), std::bind_front(&GPManager::parseMRDiscussions, this, projectId, mr->id()));
+		if(mr->hasNotes())
+		{
+			m_client.requestMRDiscussions(projectId, mr->iid(), std::bind_front(&GPManager::parseMRDiscussions, this, projectId, mr->id()));
+		}
+
 		m_client.requestMRApprovals(projectId, mr->iid(), std::bind_front(&GPManager::parseMRApprovals, this, projectId, mr->id()));
 	}
 }
