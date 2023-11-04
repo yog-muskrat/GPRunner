@@ -25,6 +25,7 @@ namespace gpr
 		void requestProjectBranches(int projectId, Callback callback);
 		void requestProjectMRs(int projectId, Callback callback);
 		void requestPipelineVariables(int projectId, QString const &ref, Callback callback);
+		void requestMRDetails(int projectId, int mrIid, Callback callback);
 		void requestMRDiscussions(int projectId, int mrIid, Callback callback);
 		void requestMRApprovals(int projectId, int mrIid, Callback callback);
 

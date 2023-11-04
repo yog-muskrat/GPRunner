@@ -70,6 +70,9 @@ namespace gpr::api
 		bool hasNotes() const;
 		void setHasNotes(bool hasNotes);
 
+		QString pipelineStatus() const;
+		void setPipelineStatus(QString status);
+
 		std::vector<QString> const &approvedBy() const;
 		void setApprovedBy(std::vector<QString> list);
 
@@ -86,5 +89,6 @@ namespace gpr::api
 
 		std::vector<Discussion> m_discussions;
 		std::vector<QString> m_approvedBy;
+		QString m_pipelineStatus;
 	};
 } // namespace gpr::api

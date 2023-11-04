@@ -15,6 +15,7 @@ public:
 		Id,
 		Title,
 		Status,
+		Pipeline,
 		Author,
 		Discussions,
 		Assignee,

@@ -15,7 +15,7 @@ namespace {
 
 	auto getStatusInfo(QString const &status)
 	{
-		static std::map<QString, StatusInfo> const MergeStatuses = {
+		static std::map<QString, StatusInfo> const mergeStatuses = {
 		{"blocked_status",           {"BLK",  "Blocked by another merge request."}},
 		{"broken_status",            {"BRK",  "Can’t merge into the target branch due to a potential conflict."}},
 		{"checking",                 {"GIT",  "Git is testing if a valid merge is possible."}},
@@ -31,8 +31,28 @@ namespace {
 		{"policies_denied",          {"PLC",  "The merge request contains denied policies."}},
 		};
 
-		if(!MergeStatuses.contains(status)) return StatusInfo{"???", "Unknown status"};
-		return MergeStatuses.at(status);
+		if(!mergeStatuses.contains(status)) return StatusInfo{"???", "Unknown status"};
+		return mergeStatuses.at(status);
+	}
+
+	QString getPipelineStatusIcon(QString const &status)
+	{
+		static std::map<QString, QString> const icons = {
+			{"created",              "⧖"},
+			{"waiting_for_resource", "⧖"},
+			{"preparing",            "⧖"},
+			{"pending",              "⧖"},
+			{"running",              "⏵"},
+			{"success",              "✅"},
+			{"failed",               "❌"},
+			{"canceled",             "⏹"},
+			{"skipped",              "⏩"},
+			{"manual",               "🤚"},
+			{"schedule",             "🕑"},
+		};
+
+		if(!icons.contains(status)) return {};
+		return icons.at(status);
 	}
 }
 
@@ -80,6 +100,7 @@ QVariant MRModel::headerData(int section, Qt::Orientation orientation, int role)
 		case Column::Id: return "ID";
 		case Column::Title: return "Title";
 		case Column::Status: return "Status";
+		case Column::Pipeline: return "PL";
 		case Column::Author: return "Author";
 		case Column::Discussions: return "Discussions";
 		case Column::Assignee: return "Assignee";
@@ -129,6 +150,7 @@ QVariant MRModel::editRole(gpr::api::MR const &mr, Column column) const
 		case Column::SourceBranch:
 		case Column::TargetBranch: return displayRole(mr, column);
 		case Column::Status:       return mr.mergeStatus();
+		case Column::Pipeline:     return mr.pipelineStatus();
 		case Column::Assignee:     return mr.assignee();
 		case Column::Reviewer:     return mr.reviewer();
 		case Column::Created:      return mr.createdAt();
@@ -145,6 +167,7 @@ QVariant MRModel::displayRole(gpr::api::MR const &mr, Column column) const
 		case Column::Id:           return mr.id();
 		case Column::Title:        return mr.title();
 		case Column::Status:       return getStatusInfo(mr.mergeStatus()).shortInfo;
+		case Column::Pipeline:     return getPipelineStatusIcon(mr.pipelineStatus());
 		case Column::Author:       return mr.author();
 		case Column::Discussions:  return getDiscussionsString(mr);
 		case Column::Assignee:     return getApproverString(mr, mr.assignee());
@@ -177,7 +200,8 @@ QVariant MRModel::toolTipRole(gpr::api::MR const &mr, Column column) const
 {
 	switch (column)
 	{
-		case Column::Status: return getStatusInfo(mr.mergeStatus()).fullInfo;
+		case Column::Status:   return getStatusInfo(mr.mergeStatus()).fullInfo;
+		case Column::Pipeline: return mr.pipelineStatus();
 		default: break;
 	}
 	return QString{""};

@@ -24,6 +24,7 @@ namespace gpr
 			QString const ProjectBranches      {"/projects/%1/repository/branches"};
 			QString const ProjectOpenMRs       {"/projects/%1/merge_requests?state=opened"};
 			QString const ProjectFile          {"/projects/%1/repository/files/%3?ref=%2"};
+			QString const ProjectMRDetails     {"/projects/%1/merge_requests/%2/"};
 			QString const ProjectMRDiscussions {"/projects/%1/merge_requests/%2/discussions"};
 			QString const ProjectMRApprovals   {"/projects/%1/merge_requests/%2/approvals"};
 			QString const ProjectPipelineRun   {"/projects/%1/pipeline"};
@@ -79,6 +80,11 @@ namespace gpr
 	void Client::requestPipelineVariables(int projectId, QString const &ref, Callback callback)
 	{
 		makeGetRequest(prepareRequest(endpoint::ProjectFile, projectId, ref, VariablesPath), std::move(callback));
+	}
+
+	void Client::requestMRDetails(int projectId, int mrIid, Callback callback)
+	{
+		makeGetRequest(prepareRequest(endpoint::ProjectMRDetails, projectId, mrIid), std::move(callback));
 	}
 
 	void Client::requestMRDiscussions(int projectId, int mrIid, Callback callback)

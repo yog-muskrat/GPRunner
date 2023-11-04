@@ -60,6 +60,8 @@ Rectangle {
                             leftPadding: column == 0 ? 30 : 5
                             text: model.display
                             font: model.font
+                            ToolTip.delay: 500
+                            ToolTip.timeout: 3000
                             ToolTip.text: model.toolTip
                             ToolTip.visible: model.toolTip ? itemMa.containsMouse : false;
 

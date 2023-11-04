@@ -70,6 +70,7 @@ private:
 	void parseProjects(QJsonDocument const &doc);
 	void parsePipelines(int projectId, QJsonDocument const &doc);
 	void parseMRs(int projectId, QJsonDocument const &doc);
+	void parseMRDetails(int projectId, int mrId, QJsonDocument const &doc);
 	void parseMRDiscussions(int projectId, int mrId, QJsonDocument const &doc);
 	void parseMRApprovals(int projectId, int mrId, QJsonDocument const &doc);
 	void parseVariables(QJsonDocument const &doc);

@@ -157,6 +157,17 @@ namespace gpr::api
 		Q_EMIT modified();
 	}
 
+	QString MR::pipelineStatus() const
+	{
+		return m_pipelineStatus;
+	}
+
+	void MR::setPipelineStatus(QString status)
+	{
+		m_pipelineStatus = std::move(status);
+		Q_EMIT modified();
+	}
+
 	std::vector<QString> const &MR::approvedBy() const
 	{
 		return m_approvedBy;
