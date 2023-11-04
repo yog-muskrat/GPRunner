@@ -5,6 +5,37 @@
 #include "GPManager.h"
 #include "MRModel.h"
 
+namespace {
+	struct StatusInfo
+	{
+		QString shortInfo;
+		QString fullInfo;
+		// TODO: Icon
+	};
+
+	auto getStatusInfo(QString const &status)
+	{
+		static std::map<QString, StatusInfo> const MergeStatuses = {
+		{"blocked_status",           {"BLK",  "Blocked by another merge request."}},
+		{"broken_status",            {"BRK",  "Can’t merge into the target branch due to a potential conflict."}},
+		{"checking",                 {"GIT",  "Git is testing if a valid merge is possible."}},
+		{"unchecked",                {"GIT",  "Git has not yet tested if a valid merge is possible."}},
+		{"ci_must_pass",             {"CI",   "A CI/CD pipeline must succeed before merge."}},
+		{"ci_still_running",         {"CI",   "A CI/CD pipeline is still running."}},
+		{"discussions_not_resolved", {"DSC",  "All discussions must be resolved before merge."}},
+		{"draft_status",             {"DRFT", "Can’t merge because the merge request is a draft."}},
+		{"external_status_checks",   {"CHK",  "All status checks must pass before merge."}},
+		{"mergeable",                {"OK",   "The branch can merge cleanly into the target branch."}},
+		{"not_approved",             {"APP",  "Approval is required before merge."}},
+		{"not_open",                 {"CLS",  "The merge request must be open before merge."}},
+		{"policies_denied",          {"PLC",  "The merge request contains denied policies."}},
+		};
+
+		if(!MergeStatuses.contains(status)) return StatusInfo{"???", "Unknown status"};
+		return MergeStatuses.at(status);
+	}
+}
+
 MRModel::MRModel(GPManager &manager)
 	: QAbstractTableModel(&manager)
 	, m_manager{manager}
@@ -48,6 +79,7 @@ QVariant MRModel::headerData(int section, Qt::Orientation orientation, int role)
 	{
 		case Column::Id: return "ID";
 		case Column::Title: return "Title";
+		case Column::Status: return "Status";
 		case Column::Author: return "Author";
 		case Column::Discussions: return "Discussions";
 		case Column::Assignee: return "Assignee";
@@ -69,9 +101,10 @@ QVariant MRModel::data(QModelIndex const &index, int role) const
 	auto const column = static_cast<Column>(index.column());
 
 	if (role == Qt::DisplayRole) return displayRole(mr, column);
-	if (role == Qt::EditRole) return editRole(mr, column);
-	if (role == Qt::ItemDataRole::FontRole) return fontRole(mr, column);
-	if (role == Role::Url) return mr.url();
+	if (role == Qt::EditRole)    return editRole(mr, column);
+	if (role == Qt::ToolTipRole) return toolTipRole(mr, column);
+	if (role == Qt::FontRole)    return fontRole(mr, column);
+	if (role == Role::Url)       return mr.url();
 
 	return QVariant();
 }
@@ -95,6 +128,7 @@ QVariant MRModel::editRole(gpr::api::MR const &mr, Column column) const
 		case Column::Discussions:
 		case Column::SourceBranch:
 		case Column::TargetBranch: return displayRole(mr, column);
+		case Column::Status:       return mr.mergeStatus();
 		case Column::Assignee:     return mr.assignee();
 		case Column::Reviewer:     return mr.reviewer();
 		case Column::Created:      return mr.createdAt();
@@ -110,6 +144,7 @@ QVariant MRModel::displayRole(gpr::api::MR const &mr, Column column) const
 	{
 		case Column::Id:           return mr.id();
 		case Column::Title:        return mr.title();
+		case Column::Status:       return getStatusInfo(mr.mergeStatus()).shortInfo;
 		case Column::Author:       return mr.author();
 		case Column::Discussions:  return getDiscussionsString(mr);
 		case Column::Assignee:     return getApproverString(mr, mr.assignee());
@@ -136,6 +171,16 @@ QVariant MRModel::fontRole(gpr::api::MR const &mr, Column column) const
 	}
 
 	return font;
+}
+
+QVariant MRModel::toolTipRole(gpr::api::MR const &mr, Column column) const
+{
+	switch (column)
+	{
+		case Column::Status: return getStatusInfo(mr.mergeStatus()).fullInfo;
+		default: break;
+	}
+	return QString{""};
 }
 
 QString MRModel::getDiscussionsString(gpr::api::MR const &mr) const

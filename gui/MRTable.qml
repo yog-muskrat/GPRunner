@@ -60,6 +60,14 @@ Rectangle {
                             leftPadding: column == 0 ? 30 : 5
                             text: model.display
                             font: model.font
+                            ToolTip.text: model.toolTip
+                            ToolTip.visible: model.toolTip ? itemMa.containsMouse : false;
+
+                            MouseArea {
+                                id: itemMa
+                                anchors.fill: parent
+                                hoverEnabled: true
+                            }
                         }
                     }
                 }

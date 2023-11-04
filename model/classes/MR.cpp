@@ -135,6 +135,17 @@ namespace gpr::api
 		Q_EMIT modified();
 	}
 
+	QString MR::mergeStatus() const
+	{
+		return m_data.mergeStatus;
+	}
+
+	void MR::setMergeStatus(QString mergeStatus)
+	{
+		m_data.mergeStatus = std::move(mergeStatus);
+		Q_EMIT modified();
+	}
+
 	std::vector<QString> const &MR::approvedBy() const
 	{
 		return m_approvedBy;

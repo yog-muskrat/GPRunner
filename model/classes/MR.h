@@ -26,6 +26,7 @@ namespace gpr::api
 			QString sourceBranch;
 			QString targetBranch;
 			QString url;
+			QString mergeStatus;
 		};
 
 		MR(Data data, QObject *parent = 0);
@@ -61,6 +62,9 @@ namespace gpr::api
 
 		QString url() const;
 		void setUrl(QString url);
+
+		QString mergeStatus() const;
+		void setMergeStatus(QString mergeStatus);
 
 		std::vector<QString> const &approvedBy() const;
 		void setApprovedBy(std::vector<QString> list);

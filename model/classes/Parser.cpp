@@ -46,7 +46,8 @@ namespace gpr::api
 			.reviewer = json.value("reviewers").toArray().first().toObject().value("username").toString(),
 			.sourceBranch = json.value("source_branch").toString(),
 			.targetBranch = json.value("target_branch").toString(),
-			.url = json.value("web_url").toString()};
+			.url = json.value("web_url").toString(),
+			.mergeStatus = json.value("detailed_merge_status").toString()};
 	}
 
 	Discussion parseDiscussion(QJsonObject const &json)
