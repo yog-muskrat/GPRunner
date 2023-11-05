@@ -1,3 +1,4 @@
+#include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
 
@@ -14,7 +15,7 @@ namespace gpr::api
 		{
 			return QDateTime::fromString(json.toString(), Qt::DateFormat::ISODate);
 		}
-	}
+	} // namespace
 
 	Project::Data gpr::api::parseProject(QJsonObject const &json)
 	{
@@ -79,9 +80,47 @@ namespace gpr::api
 
 	std::vector<QString> parseApprovals(QJsonObject const &json)
 	{
-		return json["approved_by"].toArray()
-			| std::views::transform(&QJsonValueRef::toObject)
-			| std::views::transform([](auto const &obj) { return obj["user"]["username"].toString();})
-			| std::ranges::to<std::vector>();
+		return json["approved_by"].toArray() | std::views::transform(&QJsonValueRef::toObject)
+		     | std::views::transform([](auto const &obj) { return obj["user"]["username"].toString(); })
+		     | std::ranges::to<std::vector>();
+	}
+
+	std::vector<Variable> parseVariables(QJsonDocument const &doc)
+	{
+		if (!doc.isArray())
+		{
+			qDebug() << "Invalid variables configuration format";
+			return {};
+		}
+
+		std::vector<gpr::Variable> vars;
+		for (auto const var : doc.array() | std::views::transform(&QJsonValueRef::toObject))
+		{
+			vars.push_back(
+				{.key = var.value("key").toString(),
+			     .value = var.value("value").toString(),
+			     .used = var.value("required").toBool()});
+		}
+
+		return vars;
+	}
+
+	QStringList parseBranches(QJsonDocument const &doc)
+	{
+		QStringList result;
+		for (auto const &branch : doc.array() | std::views::transform(&QJsonValueRef::toObject))
+		{
+			auto name = branch.value("name").toString();
+
+			if (branch.value("default").toBool())
+			{
+				result.prepend(std::move(name));
+			}
+			else
+			{
+				result << std::move(name);
+			}
+		}
+		return result;
 	}
 } // namespace gpr::api

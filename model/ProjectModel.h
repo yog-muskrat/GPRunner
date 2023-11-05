@@ -28,6 +28,8 @@ public:
 
 	void addProject(gpr::api::Project::Data projectData);
 
+	std::vector<QPointer<gpr::api::Project>> const &projects() const;
+
 	QPointer<gpr::api::Project> findProject(int projectId) const;
 
 	int rowCount(QModelIndex const & = {}) const override;

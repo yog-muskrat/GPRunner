@@ -5,6 +5,7 @@
 #include "model/classes/MR.h"
 
 class QJsonObject;
+class QJsonDocument;
 
 namespace gpr::api
 {
@@ -14,4 +15,6 @@ namespace gpr::api
 	QString parseMRDetails(QJsonObject const &json);
 	Discussion parseDiscussion(QJsonObject const &json);
 	std::vector<QString> parseApprovals(QJsonObject const &json);
+	std::vector<Variable> parseVariables(QJsonDocument const &doc);
+	QStringList parseBranches(QJsonDocument const &doc);
 } // namespace gpr::api

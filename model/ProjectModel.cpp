@@ -37,6 +37,11 @@ void ProjectModel::addProject(gpr::api::Project::Data projectData)
 	}
 }
 
+std::vector<QPointer<gpr::api::Project>> const &ProjectModel::projects() const
+{
+	return m_projects;
+}
+
 QPointer<gpr::api::Project> ProjectModel::findProject(int projectId) const
 {
 	if (auto const pos = std::ranges::find(m_projects, projectId, &gpr::api::Project::id); pos != m_projects.cend())

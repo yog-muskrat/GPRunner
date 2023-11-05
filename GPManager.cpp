@@ -288,21 +288,7 @@ void GPManager::parseVariables(QJsonDocument const &doc)
 	{
 		auto varsDoc = QJsonDocument::fromJson(QByteArray::fromBase64(content.toString().toUtf8()));
 
-		if (!varsDoc.isArray())
-		{
-			qDebug() << "Invalid variables configuration format";
-			return;
-		}
-
-		std::vector<gpr::Variable> vars;
-		for (auto const var : varsDoc.array())
-		{
-			vars.push_back(
-				{.key = var.toObject().value("key").toString(),
-			     .value = var.toObject().value("value").toString(),
-			     .used = var.toObject().value("required").toBool()});
-		}
-		m_variableModel.setVariables(std::move(vars));
+		m_variableModel.setVariables(gpr::api::parseVariables(varsDoc));
 	}
 	else
 	{
@@ -312,25 +298,9 @@ void GPManager::parseVariables(QJsonDocument const &doc)
 
 void GPManager::parseBranches(int projectId, QJsonDocument const &doc)
 {
-	QStringList result;
-	for (auto const &branchValue : doc.array())
-	{
-		auto const branch = branchValue.toObject();
-		auto name = branch.value("name").toString();
-
-		if (branch.value("default").toBool())
-		{
-			result.prepend(std::move(name));
-		}
-		else
-		{
-			result << std::move(name);
-		}
-	}
-
 	if (auto prj = m_projectModel.findProject(projectId))
 	{
-		prj->setBranches(std::move(result));
+		prj->setBranches(gpr::api::parseBranches(doc));
 	}
 }
 
@@ -347,10 +317,7 @@ void GPManager::update()
 {
 	m_updateTimer.stop();
 
-	for (auto const id :
-	     std::views::iota(0, m_projectModel.rowCount())
-	         | std::views::transform([this](int row)
-	                                 { return m_projectModel.index(row, 0).data(ProjectModel::Role::ProjectIdRole).toInt(); }))
+	for (auto const id : m_projectModel.projects() | std::views::transform(&gpr::api::Project::id))
 	{
 		loadProjectMRs(id);
 		loadProjectPipelines(id);
