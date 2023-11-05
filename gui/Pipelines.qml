@@ -7,60 +7,63 @@ SplitView {
 
     onCurrentProjectChanged: ref.model = gpm.getProjectBranches(currentProject)
 
-    PipelineTable {
-        id: pipelines
+    Item {
+        SplitView.minimumWidth: 500
+        SplitView.fillWidth: true
         implicitWidth: 750
-        Layout.fillWidth:  true
-        Layout.fillHeight: true
-    }
 
-    PipelineStatistics {
-        id: statistics
-        visible: false
-        implicitWidth: 750
-        Layout.fillWidth:  true
-        Layout.fillHeight: true
-    }
-
-    ColumnLayout {
-        implicitWidth: 250
-
-        PipelineVariablesTable{
-            Layout.fillWidth:  true
-            Layout.fillHeight: true
-            enabled: currentProject > 0
+        PipelineTable {
+            id: pipelines
+            anchors.fill: parent
         }
 
-        RowLayout {
-            Text { text: "Ref"}
+        PipelineStatistics {
+            id: statistics
+            anchors.fill: parent
+            visible: false
+        }
+    }
+
+    Item {
+        implicitWidth: 250
+
+        ColumnLayout {
+            anchors.fill: parent
+
+            PipelineVariablesTable{
+                Layout.fillWidth:  true
+                Layout.fillHeight: true
+                enabled: currentProject > 0
+            }
 
             ComboBox {
                 id: ref
-
-                Layout.fillWidth: true
-                Layout.horizontalStretchFactor: 1
 
                 enabled:  currentProject > 0
                 editable: true
 
                 model: ["master"]
+                implicitContentWidthPolicy: ComboBox.WidestText
             }
-            Button {
-                text: "Get vars"
-                enabled: currentProject > 0
-                onClicked: gpm.loadPipelineVariables(ref.currentText)
-            }
-            Button {
-                text: "⏵ Run"
-                enabled: currentProject > 0
-                onClicked: gpm.runPipeline(ref.currentText)
-            }
-            Button {
-                text: "📈 Analyze"
-                enabled: currentProject > 0
-                onClicked: {
-                    pipelines.visible = !pipelines.visible
-                    statistics.visible = !statistics.visible
+
+            RowLayout {
+                Button {
+                    text: "Get vars"
+                    enabled: currentProject > 0
+                    onClicked: gpm.loadPipelineVariables(ref.currentText)
+                }
+                Button {
+                    text: "⏵ Run"
+                    enabled: currentProject > 0
+                    onClicked: gpm.runPipeline(ref.currentText)
+                }
+                Button {
+                    text: "📈 Analyze"
+                    enabled: currentProject > 0
+                    onClicked: {
+                        pipelines.visible = !pipelines.visible
+                        statistics.visible = !statistics.visible
+                    }
                 }
             }
         }

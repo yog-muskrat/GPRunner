@@ -2,22 +2,20 @@
 import QtQuick.Layouts
 import QtQuick.Controls
 
-Rectangle {
-    border {width: 1; color: "#424242"}
-
+Item {
     ColumnLayout {
-        anchors.fill:    parent
-        anchors.margins: 1
-      
+        anchors.fill: parent
         spacing: 0
 
-        CommonHeaderView {
+        HorizontalHeaderView {
+            id: header
             syncView: mrs
         }
 
         ScrollView {
             Layout.fillHeight: true
             Layout.fillWidth:  true
+            Layout.verticalStretchFactor: 1
 
             TableView {
                 id: mrs
@@ -28,25 +26,37 @@ Rectangle {
                 model: gpm.mrModel
                 selectionModel: ItemSelectionModel { }
 
+                columnWidthProvider: function(column) {
+                   let ew = explicitColumnWidth(column);
+                   let iw = implicitColumnWidth(column);
+                   let hw = header.implicitColumnWidth(column);
+
+                   console.log("ew=", ew, "  iw=", iw, "  hw=", hw, "  max=", max(hw,ew, iw));
+
+                   if (ew >= 0)
+                       return w;
+
+                   return max(hw, iw, ew)
+                }
+
                 delegate: Item {
-                    implicitWidth: itemText.implicitWidth
+                    implicitWidth: itemText.implicitWidth + urlButton.implicitWidth
                     implicitHeight: itemText.implicitHeight
 
                     Rectangle {
                         anchors.fill: parent
-                        color: row == mrs.currentRow ? "#DEDEFE" : ((row % 2) == 0 ? "#EFEFEF" : "transparent")
+                        color: row == mrs.currentRow ? palette.highlight : ((row % 2) == 0 ? palette.alternateBase : palette.base)
 
-                        MouseArea {
-                            cursorShape: Qt.PointingHandCursor
-                            width:  itemText.implicitHeight
-                            height: itemText.implicitHeight
+                        Text {
+                            id: urlButton
                             visible: column == 0
-                            onClicked: Qt.openUrlExternally(model.url)
+                            padding: 5
+                            text: "🌐"
 
-                            Text {
-                                anchors.centerIn: parent
-                                text: "🌐"
-                                font: model.font
+                            MouseArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: Qt.openUrlExternally(model.url)
                             }
                         }
 
@@ -54,12 +64,11 @@ Rectangle {
                             id: itemText
 
                             anchors.fill: parent
-                            topPadding: 5
-                            bottomPadding: 5
-                            rightPadding: 5
-                            leftPadding: column == 0 ? 30 : 5
+                            anchors.leftMargin: urlButton.visible ? urlButton.width - 5 : 0
+                            padding: 5
                             text: model.display
-                            font: model.font
+                            font.bold: model.font.bold
+                            color: mrs.currentRow ? palette.highlightedText : palette.text
                             ToolTip.delay: 500
                             ToolTip.timeout: 3000
                             ToolTip.text: model.toolTip
@@ -67,6 +76,7 @@ Rectangle {
 
                             MouseArea {
                                 id: itemMa
+                                visible: model.toolTip
                                 anchors.fill: parent
                                 hoverEnabled: true
                             }

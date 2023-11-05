@@ -22,10 +22,10 @@ namespace {
 		{"unchecked",                {"GIT",  "Git has not yet tested if a valid merge is possible."}},
 		{"ci_must_pass",             {"CI",   "A CI/CD pipeline must succeed before merge."}},
 		{"ci_still_running",         {"CI",   "A CI/CD pipeline is still running."}},
-		{"discussions_not_resolved", {"DSC",  "All discussions must be resolved before merge."}},
-		{"draft_status",             {"DRFT", "Can’t merge because the merge request is a draft."}},
+		{"discussions_not_resolved", {"🗨",  "All discussions must be resolved before merge."}},
+		{"draft_status",             {"✎", "Can’t merge because the merge request is a draft."}},
 		{"external_status_checks",   {"CHK",  "All status checks must pass before merge."}},
-		{"mergeable",                {"OK",   "The branch can merge cleanly into the target branch."}},
+		{"mergeable",                {"✅",   "The branch can merge cleanly into the target branch."}},
 		{"not_approved",             {"APP",  "Approval is required before merge."}},
 		{"not_open",                 {"CLS",  "The merge request must be open before merge."}},
 		{"policies_denied",          {"PLC",  "The merge request contains denied policies."}},
@@ -90,7 +90,7 @@ int MRModel::columnCount(QModelIndex const &) const
 
 QVariant MRModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-	if (orientation != Qt::Orientation::Horizontal || section < 0 || section >= Column::Count)
+	if (orientation != Qt::Orientation::Horizontal || section < 0 || section >= Column::Count || role != Qt::DisplayRole)
 	{
 		return QAbstractTableModel::headerData(section, orientation, role);
 	}
@@ -102,11 +102,11 @@ QVariant MRModel::headerData(int section, Qt::Orientation orientation, int role)
 		case Column::Status: return "Status";
 		case Column::Pipeline: return "PL";
 		case Column::Author: return "Author";
-		case Column::Discussions: return "Discussions";
+		case Column::Discussions: return "🗨";
 		case Column::Assignee: return "Assignee";
 		case Column::Reviewer: return "Reviewer";
-		case Column::SourceBranch: return "Source branch";
-		case Column::TargetBranch: return "Target branch";
+		case Column::SourceBranch: return "Source";
+		case Column::TargetBranch: return "Target";
 		case Column::Created: return "Created";
 		case Column::Updated: return "Updated";
 		default: break;
@@ -213,7 +213,6 @@ QString MRModel::getDiscussionsString(gpr::api::MR const &mr) const
 	auto const count = mr.discussions().size();
 	if (count > 0)
 	{
-		result += "🗨";
 		auto const resolvable = std::ranges::count_if(mr.discussions(), &gpr::Discussion::isResolvable);
 
 		if (resolvable != count)

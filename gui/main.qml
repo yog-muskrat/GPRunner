@@ -11,6 +11,8 @@ Window {
     width: 1280
     height: 600
     title: qsTr("GPRunner")
+    Universal.theme: Universal.System
+    color: palette.window
 
     onClosing: (close) => {
         if(!forceQuit) {
@@ -42,32 +44,44 @@ Window {
 
     SplitView {
         anchors.fill: parent
-        anchors.margins: 5
 
         ColumnLayout {
             SplitView.minimumWidth: 200
+            spacing: 0
 
-            ProjectList { id: projects }
+            ProjectList {
+                id: projects
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+            }
 
             Button {
                 Layout.fillWidth: true
                 text: qsTr("Connect")
+                visible: !gpm.currentUser
                 onClicked: gpm.connect()
             }
 
-            Text { text: "Logged as " + gpm.currentUser }
+            Text {
+                text: gpm.currentUser ? "Logged as " + gpm.currentUser : "Not connected"
+                color: palette.text
+                padding: 5
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            }
         }
 
         ColumnLayout {
-            Pipelines {
-                Layout.fillWidth:  true
-                Layout.fillHeight: true
-                currentProject: projects.currentProject
-            }
+            spacing: 0
 
             MRTable {
-                Layout.fillWidth:  true
+                Layout.fillWidth: true
                 Layout.fillHeight: true
+            }
+
+            Pipelines {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                currentProject: projects.currentProject
             }
         }
     }

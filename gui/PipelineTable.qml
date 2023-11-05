@@ -2,18 +2,12 @@
 import QtQuick.Layouts
 import QtQuick.Controls
 
-Rectangle {
-    border {width: 1; color: "#424242"}
-
+Item {
     ColumnLayout {
-        anchors.fill:    parent
-        anchors.margins: 1
-      
+        anchors.fill: parent
         spacing: 0
 
-        CommonHeaderView {
-            syncView: pipelines
-        }
+        HorizontalHeaderView { syncView: pipelines }
 
         ScrollView {
             Layout.fillHeight: true
@@ -34,7 +28,7 @@ Rectangle {
 
                     Rectangle {
                         anchors.fill: parent
-                        color: row == pipelines.currentRow ? "#DEDEFE" : ((row % 2) == 0 ? "#EFEFEF" : "transparent")
+                        color: row == pipelines.currentRow ? palette.highlight : ((row % 2) == 0 ? palette.alternateBase : palette.base)
                     }
 
                     Text {
@@ -61,7 +55,8 @@ Rectangle {
 
                         Text {
                             anchors.centerIn: parent
-                            text:      getButtonText(pipelineStatus)
+                            text: getButtonText(pipelineStatus)
+                            color: pipelines.currentRow ? palette.highlightedText : palette.text
                             font: model.font
                         }
                     }
@@ -72,7 +67,7 @@ Rectangle {
                         if(status == "failed")   return "#FE4242"
                         if(status == "running")  return "#4242FE"
                         // TODO: created, waiting_for_resource, preparing, pending, skipped, manual, scheduled
-                        return "#424242"
+                        return pipelines.currentRow ? palette.highlightedText : palette.text
                     }
 
                     function getButtonVisible(column, status) {
@@ -80,7 +75,7 @@ Rectangle {
                     }
 
                     function getButtonText(status) {
-                        if (status == "running" || status == "pending") return "⛔"
+                        if (status == "running" || status == "pending") return "⏹"
                         if (status == "failed" || status == "canceled") return  "↺"
                         return ""
                     }

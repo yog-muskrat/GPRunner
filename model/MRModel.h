@@ -13,17 +13,17 @@ public:
 	enum Column
 	{
 		Id,
-		Title,
 		Status,
 		Pipeline,
-		Author,
 		Discussions,
+		Title,
+		Author,
 		Assignee,
 		Reviewer,
 		SourceBranch,
 		TargetBranch,
-		Created,
 		Updated,
+		Created,
 		Count
 	};
 

@@ -3,22 +3,16 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import QtQml.Models
 
-Rectangle {
-    border {width: 1; color: "#424242"}
-
+Item {
     ColumnLayout {
-        anchors.fill:    parent
-        anchors.margins: 1
-
+        anchors.fill: parent
         spacing: 0
 
-        CommonHeaderView {
-            syncView: variables
-        }
+        HorizontalHeaderView { syncView: variables }
 
         ScrollView {
-            Layout.fillHeight: true
             Layout.fillWidth:  true
+            Layout.fillHeight: true
 
             TableView {
                 id: variables
@@ -35,7 +29,7 @@ Rectangle {
                     implicitWidth:  textItem.implicitWidth
                     implicitHeight: textItem.implicitHeight
 
-                    color: row == variables.currentRow ? "#DEDEFE" : ((row % 2) == 0 ? "#EFEFEF" : "transparent")
+                    color: row == variables.currentRow ? palette.highlight : ((row % 2) == 0 ? palette.alternateBase : palette.base)
                     border.width: current ? 1 : 0
 
                     Text {
@@ -44,6 +38,7 @@ Rectangle {
                         anchors.fill: parent
                         padding: 5
                         text: model.display
+                        color: variables.currentRow ? palette.highlightedText : palette.text
 
                         wrapMode: Text.WordWrap
                     }
@@ -77,20 +72,16 @@ Rectangle {
         }
 
         RowLayout {
-            spacing: 0
+            spacing: 5
 
             Button {
-                //Layout.fillWidth: true
-                //Layout.horizontalStretchFactor: 1
-                text: "Добавить"
+                text: "+"
                 onClicked: gpm.addVariable()
             }
 
             Button {
-                //Layout.fillWidth: true
-                //Layout.horizontalStretchFactor: 1
                 enabled: variables.currentRow > 0
-                text: "Удалить"
+                text: "-"
                 onClicked: gpm.removeVariable(variables.currentRow)
             }
         }

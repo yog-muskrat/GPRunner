@@ -1,48 +1,38 @@
 import QtQuick
 import QtQuick.Layouts
 
-Rectangle {
+ListView {
     property int currentProject
+    id: projects
 
-    Layout.fillHeight: true
-    Layout.fillWidth: true
+    focus: true
+    clip: true
 
-    border {width: 1; color: "#424242"}
+    model: gpm.projectModel
 
-    ListView {
-        id: projects
+    delegate: Item {
+        width: ListView.view.width
+        implicitHeight: itemText.implicitHeight
 
-        anchors.fill: parent
-        anchors.margins: 1
+        Rectangle {
+            anchors.fill: parent
+            color: index == projects.currentIndex ? palette.highlight : ((index % 2) == 0 ? palette.alternateBase : palette.base)
 
-        focus: true
-        clip: true
-
-        model: gpm.projectModel
-
-        delegate: Item {
-            width: ListView.view.width
-            implicitHeight: itemText.implicitHeight
-
-            Rectangle {
+            Text {
+                id: itemText
                 anchors.fill: parent
-                color: index == projects.currentIndex ? "#DEDEFE" : ((index % 2) == 0 ? "#EFEFEF" : "transparent")
+                padding: 5
+                text: model.display
+                font.bold: model.font.bold
+                color: index == projects.currentIndex ? palette.highlightedText : palette.text
+            }
 
-                Text {
-                    id: itemText
-                    anchors.fill: parent
-                    padding: 5
-                    text: model.display
-                    font: model.font
-                }
-
-                MouseArea { 
-                    anchors.fill: parent
-                    onClicked: {
-                        projects.currentIndex = index
-                        projects.parent.currentProject = projectId
-                        gpm.setCurrentProject(projectId)
-                    }
+            MouseArea { 
+                anchors.fill: parent
+                onClicked: {
+                    projects.currentIndex = index
+                    projects.currentProject = projectId
+                    gpm.setCurrentProject(projectId)
                 }
             }
         }
