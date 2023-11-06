@@ -10,7 +10,7 @@ function calcColumnWidth(header, column) {
   let ew = this.explicitColumnWidth(column);
   if (ew > 0) return ew;
 
-  let min = 25
+  let min = 15
   let iw = this.implicitColumnWidth(column);
   let hw = header.implicitColumnWidth(column);
   return Math.max(min, stretched, ew, iw, hw);

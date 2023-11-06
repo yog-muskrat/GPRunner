@@ -18,18 +18,19 @@ namespace gpr
 
 		namespace endpoint
 		{
-			QString const User                 {"/user"};
-			QString const Projects             {"/projects"};
-			QString const ProjectPipelines     {"/projects/%1/pipelines"};
-			QString const ProjectBranches      {"/projects/%1/repository/branches"};
-			QString const ProjectOpenMRs       {"/projects/%1/merge_requests?state=opened"};
-			QString const ProjectFile          {"/projects/%1/repository/files/%3?ref=%2"};
-			QString const ProjectMRDetails     {"/projects/%1/merge_requests/%2/"};
-			QString const ProjectMRDiscussions {"/projects/%1/merge_requests/%2/discussions"};
-			QString const ProjectMRApprovals   {"/projects/%1/merge_requests/%2/approvals"};
-			QString const ProjectPipelineRun   {"/projects/%1/pipeline"};
+			QString const User{"/user"};
+			QString const Projects{"/projects"};
+			QString const ProjectPipelines{"/projects/%1/pipelines"};
+			QString const ProjectBranches{"/projects/%1/repository/branches"};
+			QString const ProjectOpenMRs{"/projects/%1/merge_requests?state=opened"};
+			QString const ProjectFile{"/projects/%1/repository/files/%3?ref=%2"};
+			QString const ProjectMRDetails{"/projects/%1/merge_requests/%2/"};
+			QString const ProjectMRDiscussions{"/projects/%1/merge_requests/%2/discussions"};
+			QString const ProjectMRApprovals{"/projects/%1/merge_requests/%2/approvals"};
+			QString const ProjectPipelineRun{"/projects/%1/pipeline"};
 			QString const ProjectPipelineCancel{"/projects/%1/pipelines/%2/cancel"};
-			QString const ProjectPipelineRetry {"/projects/%1/pipelines/%2/retry"};
+			QString const ProjectPipelineRetry{"/projects/%1/pipelines/%2/retry"};
+			QString const ProjectPipelineTestReport{"/projects/%1/pipelines/%2/test_report"};
 		} // namespace endpoint
 
 		template<typename T>
@@ -67,6 +68,11 @@ namespace gpr
 		makeGetRequest(prepareRequest(endpoint::ProjectPipelines, projectId), std::move(callback));
 	}
 
+	void Client::requestProjectPipelineTestReport(int projectId, int pipelineId, Callback callback)
+	{
+		makeGetRequest(prepareRequest(endpoint::ProjectPipelineTestReport, projectId, pipelineId), std::move(callback));
+	}
+
 	void Client::requestProjectBranches(int projectId, Callback callback)
 	{
 		makeGetRequest(prepareRequest(endpoint::ProjectBranches, projectId), std::move(callback));
@@ -98,6 +104,32 @@ namespace gpr
 		makeGetRequest(prepareRequest(endpoint::ProjectMRApprovals, projectId, mrIid), std::move(callback));
 	}
 
+	void Client::requestFileDownload(QString const &url, RawCallback callback)
+	{
+		QNetworkRequest request;
+		request.setUrl(QUrl{url});
+
+		auto reply = m_networkManager.get(std::move(request));
+
+		QObject::connect(
+			reply,
+			&QNetworkReply::finished,
+			[reply, callback = std::move(callback)]
+			{
+				reply->deleteLater();
+				if (reply->error())
+				{
+					qDebug() << "API request error:" << reply->errorString();
+					return;
+				}
+
+				if (callback)
+				{
+					std::invoke(callback, reply->readAll());
+				}
+			});
+	}
+
 	void Client::runPipeline(int projectId, QString const &ref, std::vector<Variable> const &variables)
 	{
 		auto req = prepareRequest(endpoint::ProjectPipelineRun, projectId);
@@ -107,23 +139,17 @@ namespace gpr
 		param.insert("ref", ref);
 		param.insert("variables", prepareVariables(variables));
 
-		auto reply = m_networkManager.post(req, QJsonDocument(param).toJson(QJsonDocument::Compact));
-
-		connectReplyCallback(reply);
+		makePostRequest(std::move(req), QJsonDocument(param).toJson(QJsonDocument::Compact));
 	}
 
 	void Client::cancelPipeline(int projectId, int pipelineId)
 	{
-		auto req = prepareRequest(endpoint::ProjectPipelineCancel, projectId, pipelineId);
-		auto reply = m_networkManager.post(req, QByteArray{});
-		connectReplyCallback(reply);
+		makePostRequest(prepareRequest(endpoint::ProjectPipelineCancel, projectId, pipelineId));
 	}
 
 	void Client::retryPipeline(int projectId, int pipelineId)
 	{
-		auto req = prepareRequest(endpoint::ProjectPipelineRetry, projectId, pipelineId);
-		auto reply = m_networkManager.post(req, QByteArray{});
-		connectReplyCallback(reply);
+		makePostRequest(prepareRequest(endpoint::ProjectPipelineRetry, projectId, pipelineId));
 	}
 
 	void Client::makeGetRequest(QNetworkRequest request, Callback callback)
@@ -134,7 +160,7 @@ namespace gpr
 
 	void Client::makePostRequest(QNetworkRequest request, QByteArray data, Callback callback)
 	{
-		auto reply = m_networkManager.post(std::move(request),std::move(data));
+		auto reply = m_networkManager.post(std::move(request), std::move(data));
 		connectReplyCallback(reply, std::move(callback));
 	}
 

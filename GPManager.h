@@ -33,6 +33,7 @@ public:
 	Q_INVOKABLE void runPipeline(QString const &ref);
 	Q_INVOKABLE QStringList getProjectBranches(int projectId);
 	Q_INVOKABLE void loadPipelineVariables(QString const &ref);
+	Q_INVOKABLE void loadPipelineStatistics(int projectId, QDateTime const &from, QDateTime const &to);
 
 	/**
 	 * @brief Остановить пайплайн (в проекте m_currentProject)

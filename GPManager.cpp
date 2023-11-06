@@ -76,6 +76,11 @@ void GPManager::loadPipelineVariables(QString const &ref)
 	m_client.requestPipelineVariables(m_currentProject, ref, std::bind_front(&GPManager::parseVariables, this));
 }
 
+void GPManager::loadPipelineStatistics(int projectId, QDateTime const &from, QDateTime const &to)
+{
+	std::ignore = projectId, from, to;
+}
+
 void GPManager::loadProjectBranches(int projectId)
 {
 	m_client.requestProjectBranches(projectId, std::bind_front(&GPManager::parseBranches, this, projectId));

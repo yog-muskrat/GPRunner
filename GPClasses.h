@@ -44,4 +44,13 @@ namespace gpr
 		bool isResolvable() const { return std::ranges::any_of(notes, &Note::resolvable); }
 		bool isResolved() const { return std::ranges::all_of(notes, &Note::resolved); }
 	};
+
+	struct PipelineTestReport
+	{
+		QDateTime updated;
+		QString suite;
+		QString testCase;
+		QString className;
+		QString status;
+	};
 } // namespace gpr
