@@ -1,3 +1,4 @@
+import QtCore
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
@@ -19,6 +20,28 @@ Window {
             close.accepted = false
             hide()
         }
+    }
+
+    Component.onCompleted: {
+        mainSplit.restoreState(settings.value("ui/mainsplitview"))
+        pipelines.restoreState(settings.value("ui/pipelines"))
+    }
+
+    Component.onDestruction: {
+        settings.setValue("ui/mainsplitview", mainSplit.saveState())
+        settings.setValue("ui/pipelines", pipelines.saveState())
+    }
+
+    Settings {
+        property alias x: mainWindow.x
+        property alias y: mainWindow.y
+        property alias width: mainWindow.width
+        property alias height: mainWindow.height
+
+        id: settings
+
+        category: "ui"
+        location: "settings.ini"
     }
 
     SystemTrayIcon {
@@ -43,6 +66,7 @@ Window {
     }
 
     SplitView {
+        id: mainSplit
         anchors.fill: parent
 
         ColumnLayout {
@@ -79,6 +103,7 @@ Window {
             }
 
             Pipelines {
+                id: pipelines
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 currentProject: projects.currentProject

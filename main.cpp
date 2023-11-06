@@ -14,6 +14,8 @@ int main(int argc, char *argv[])
 
 	QGuiApplication app(argc, argv);
 	app.setWindowIcon(QIcon(":/icons/gitlab-green.png"));
+	app.setOrganizationName("mudbay");
+	app.setOrganizationDomain("gpr");
 
 	QQuickStyle::setStyle("Universal");
 
