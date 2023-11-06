@@ -8,6 +8,7 @@
         <file>Pipelines.qml</file>
         <file>PipelineStatistics.qml</file>
         <file>DatePicker.qml</file>
+        <file>Utility.js</file>
     </qresource>
     <qresource prefix="/icons">
         <file alias="gitlab.png">icons/gitlab.png</file>

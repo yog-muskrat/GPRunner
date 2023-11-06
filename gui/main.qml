@@ -86,9 +86,8 @@ Window {
                 onClicked: gpm.connect()
             }
 
-            Text {
+            Label {
                 text: gpm.currentUser ? "Logged as " + gpm.currentUser : "Not connected"
-                color: palette.text
                 padding: 5
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             }

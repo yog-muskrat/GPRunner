@@ -2,6 +2,8 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 
+import "Utility.js" as Utility
+
 Item {
   clip: true
 
@@ -10,6 +12,7 @@ Item {
     spacing: 0
 
     HorizontalHeaderView {
+      id: header
       syncView: variables
       Layout.fillWidth: true
     }
@@ -27,8 +30,9 @@ Item {
         clip: true
 
         model: gpm.variableModel
-        selectionModel: ItemSelectionModel {
-        }
+        selectionModel: ItemSelectionModel {}
+
+        columnWidthProvider: Utility.calcColumnWidth.bind(this, header)
 
         delegate: Rectangle {
           required property bool current
@@ -63,7 +67,7 @@ Item {
               TableView.onCommit: model.edit = text
               Component.onCompleted: selectAll()
               wrapMode: TextInput.WordWrap
-              font: textItem.font
+              font.pointSize: 9
               padding: 5
             }
           }

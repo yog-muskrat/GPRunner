@@ -96,6 +96,9 @@
     <None Include="gui\DatePicker.qml">
       <Filter>gui</Filter>
     </None>
+    <None Include="gui\Utility.js">
+      <Filter>gui</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="gui\qml.qrc">

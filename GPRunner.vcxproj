@@ -114,6 +114,7 @@
     <None Include="gui\PipelineVariablesTable.qml" />
     <None Include="gui\ProjectList.qml" />
     <None Include="gui\Pipelines.qml" />
+    <None Include="gui\Utility.js" />
     <QtRcc Include="gui\qml.qrc" />
     <None Include="cpp.hint" />
     <None Include="gui\main.qml" />

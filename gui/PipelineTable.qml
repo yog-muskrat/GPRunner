@@ -2,6 +2,8 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 
+import "Utility.js" as Utility
+
 Item {
   clip: true
 
@@ -10,6 +12,7 @@ Item {
     anchors.fill: parent
 
     HorizontalHeaderView {
+      id: header
       syncView: pipelines
       Layout.fillWidth: true
     }
@@ -27,8 +30,9 @@ Item {
         clip: true
 
         model: gpm.pipelineModel
-        selectionModel: ItemSelectionModel {
-        }
+        selectionModel: ItemSelectionModel {}
+
+        columnWidthProvider: Utility.calcColumnWidth.bind(this, header)
 
         delegate: Rectangle {
           implicitWidth: itemText.implicitWidth + button.implicitWidth

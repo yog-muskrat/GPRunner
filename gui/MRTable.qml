@@ -2,6 +2,8 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 
+import "Utility.js" as Utility
+
 Item {
   clip: true
 
@@ -30,12 +32,7 @@ Item {
         selectionModel: ItemSelectionModel {
         }
 
-        columnWidthProvider: function (column) {
-          let ew = explicitColumnWidth(column);
-          let iw = implicitColumnWidth(column);
-          let hw = header.implicitColumnWidth(column);
-          return max(hw, iw, ew);
-        }
+        columnWidthProvider: Utility.calcColumnWidth.bind(this, header)
 
         delegate: Rectangle {
           implicitWidth: itemText.implicitWidth + urlButton.implicitWidth
