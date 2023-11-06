@@ -4,7 +4,6 @@
         <file>PipelineTable.qml</file>
         <file>ProjectList.qml</file>
         <file>PipelineVariablesTable.qml</file>
-        <file>CommonHeaderView.qml</file>
         <file>MRTable.qml</file>
         <file>Pipelines.qml</file>
         <file>PipelineStatistics.qml</file>

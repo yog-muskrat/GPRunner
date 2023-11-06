@@ -32,7 +32,7 @@ int PipelineModel::columnCount(QModelIndex const &) const
 
 QVariant PipelineModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-	if (orientation != Qt::Orientation::Horizontal || section < 0 || section >= Column::Count)
+	if (orientation != Qt::Orientation::Horizontal || section < 0 || section >= Column::Count || role != Qt::DisplayRole)
 	{
 		return QAbstractTableModel::headerData(section, orientation, role);
 	}

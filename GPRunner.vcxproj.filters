@@ -84,9 +84,6 @@
       <Filter>gui</Filter>
     </None>
     <None Include=".clang-format" />
-    <None Include="gui\CommonHeaderView.qml">
-      <Filter>gui</Filter>
-    </None>
     <None Include="gui\MRTable.qml">
       <Filter>gui</Filter>
     </None>
