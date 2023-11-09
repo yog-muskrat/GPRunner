@@ -86,10 +86,36 @@ Window {
                 onClicked: gpm.connect()
             }
 
+            Item {
+                visible: gpm.currentUser
+                Layout.fillWidth: true
+                height: 64
+
+                Image {
+                    id: avatar
+
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.bottom: parent.bottom
+
+                    source: gpm.currentUserAvatar
+                    fillMode: Image.PreserveAspectFit
+                }
+
             Label {
-                text: gpm.currentUser ? "Logged as " + gpm.currentUser : "Not connected"
+                    anchors.left: avatar.right
+                    anchors.verticalCenter: avatar.verticalCenter
+
+                    text: "Logged as\n" + gpm.currentUser
+                    padding: 5
+                }
+            }
+
+            Label {
+                text: "Not connected"
                 padding: 5
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                visible: !gpm.currentUser
             }
         }
 

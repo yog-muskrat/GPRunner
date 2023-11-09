@@ -24,6 +24,7 @@ class GPManager : public QObject
 	Q_PROPERTY(QObject *mrModel READ getMRModel NOTIFY mrModelChanged)
 	Q_PROPERTY(QObject *variableModel READ getVariableModel NOTIFY variableModelChanged)
 	Q_PROPERTY(QString currentUser READ getCurrentUser NOTIFY currentUserChanged)
+	Q_PROPERTY(QString currentUserAvatar READ getCurrentUserAvatar NOTIFY currentUserAvatarChanged)
 
 public:
 	GPManager(QObject *parent = nullptr);
@@ -53,6 +54,7 @@ public:
 	QAbstractItemModel *getVariableModel();
 
 	QString getCurrentUser() const { return m_currentUser; }
+	QString getCurrentUserAvatar() const { return m_currentUserAvatar; }
 
 	Q_INVOKABLE void addVariable();
 	Q_INVOKABLE void removeVariable(int index);
@@ -63,6 +65,7 @@ signals:
 	void projectModelChanged();
 	void variableModelChanged();
 	void currentUserChanged(QString);
+	void currentUserAvatarChanged(QString);
 
 private:
 	void initModels();
@@ -104,6 +107,7 @@ private:
 	QTimer m_updateTimer;
 	
 	QString m_currentUser;
+	QString m_currentUserAvatar;
 
 	int m_currentProject{-1};
 };
