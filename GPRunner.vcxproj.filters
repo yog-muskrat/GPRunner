@@ -44,6 +44,9 @@
     <ClCompile Include="client\Client.cpp">
       <Filter>client</Filter>
     </ClCompile>
+    <ClCompile Include="model\DiscussionModel.cpp">
+      <Filter>model</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="model\VariableModel.h">
@@ -67,6 +70,9 @@
     </QtMoc>
     <QtMoc Include="model\classes\Pipeline.h">
       <Filter>model\classes</Filter>
+    </QtMoc>
+    <QtMoc Include="model\DiscussionModel.h">
+      <Filter>model</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
@@ -97,6 +103,12 @@
       <Filter>gui</Filter>
     </None>
     <None Include="gui\Utility.js">
+      <Filter>gui</Filter>
+    </None>
+    <None Include="gui\MergeRequests.qml">
+      <Filter>gui</Filter>
+    </None>
+    <None Include="gui\MergeRequestDiscussions.qml">
       <Filter>gui</Filter>
     </None>
   </ItemGroup>

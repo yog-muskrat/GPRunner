@@ -68,6 +68,7 @@ namespace gpr::api
 			discussion.notes.push_back(Note{
 				.id = note["id"].toInt(),
 				.author = note["author"]["username"].toString(),
+				.authorAvatar = note["author"]["avatar_url"].toString(),
 				.body = note["body"].toString(),
 				.created = toDateTime(note["created_at"]),
 				.updated = toDateTime(note["updated_at"]),

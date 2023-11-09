@@ -11,6 +11,7 @@
 #include "model/PipelineModel.h"
 #include "model/VariableModel.h"
 #include "model/MRModel.h"
+#include "model/DiscussionModel.h"
 
 class QJsonDocument;
 class QJsonArray;
@@ -23,6 +24,7 @@ class GPManager : public QObject
 	Q_PROPERTY(QObject *pipelineModel READ getPipelineModel NOTIFY pipelineModelChanged)
 	Q_PROPERTY(QObject *mrModel READ getMRModel NOTIFY mrModelChanged)
 	Q_PROPERTY(QObject *variableModel READ getVariableModel NOTIFY variableModelChanged)
+	Q_PROPERTY(QObject *discussionModel READ getDiscussionModel NOTIFY discussionModelChanged)
 	Q_PROPERTY(QString currentUser READ getCurrentUser NOTIFY currentUserChanged)
 	Q_PROPERTY(QString currentUserAvatar READ getCurrentUserAvatar NOTIFY currentUserAvatarChanged)
 
@@ -31,6 +33,7 @@ public:
 
 	Q_INVOKABLE void connect();
 	Q_INVOKABLE void setCurrentProject(int projectId);
+	Q_INVOKABLE void setCurrentMR(int mrId);
 	Q_INVOKABLE void runPipeline(QString const &ref);
 	Q_INVOKABLE QStringList getProjectBranches(int projectId);
 	Q_INVOKABLE void loadPipelineVariables(QString const &ref);
@@ -52,6 +55,7 @@ public:
 	QAbstractItemModel *getPipelineModel();
 	QAbstractItemModel *getMRModel();
 	QAbstractItemModel *getVariableModel();
+	QAbstractItemModel *getDiscussionModel();
 
 	QString getCurrentUser() const { return m_currentUser; }
 	QString getCurrentUserAvatar() const { return m_currentUserAvatar; }
@@ -59,11 +63,12 @@ public:
 	Q_INVOKABLE void addVariable();
 	Q_INVOKABLE void removeVariable(int index);
 
-signals:
+Q_SIGNALS:
 	void pipelineModelChanged();
 	void mrModelChanged();
 	void projectModelChanged();
 	void variableModelChanged();
+	void discussionModelChanged();
 	void currentUserChanged(QString);
 	void currentUserAvatarChanged(QString);
 
@@ -102,6 +107,9 @@ private:
 	VariableModel m_variableModel;
 	QSortFilterProxyModel m_variableProxyModel;
 
+	DiscussionModel m_discussionModel;
+	QSortFilterProxyModel m_discussionProxyModel;
+
 	gpr::Client m_client;
 
 	QTimer m_updateTimer;
@@ -110,4 +118,5 @@ private:
 	QString m_currentUserAvatar;
 
 	int m_currentProject{-1};
+	int m_currentMR {-1};
 };

@@ -99,7 +99,7 @@ QVariant MRModel::headerData(int section, Qt::Orientation orientation, int role)
 	{
 		case Column::Id: return "ID";
 		case Column::Title: return "Title";
-		case Column::Status: return "Status";
+		case Column::Status: return "?";
 		case Column::Pipeline: return "PL";
 		case Column::Author: return "Author";
 		case Column::Discussions: return "🗨";
@@ -126,6 +126,7 @@ QVariant MRModel::data(QModelIndex const &index, int role) const
 	if (role == Qt::ToolTipRole) return toolTipRole(mr, column);
 	if (role == Qt::FontRole)    return fontRole(mr, column);
 	if (role == Role::Url)       return mr.url();
+	if (role == Role::MrId)        return mr.id();
 
 	return QVariant();
 }
@@ -135,6 +136,7 @@ QHash<int, QByteArray> MRModel::roleNames() const
 	auto names = QAbstractTableModel::roleNames();
 	names.insert(Qt::FontRole, "font");
 	names.insert(Role::Url, "url");
+	names.insert(Role::MrId, "id");
 
 	return names;
 }

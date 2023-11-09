@@ -48,11 +48,8 @@ Item {
             text: getButtonText(pipelineStatus)
             color: pipelines.currentRow ? palette.highlightedText : palette.text
 
-            MouseArea {
-              anchors.fill: parent
-              cursorShape: Qt.PointingHandCursor
-              onClicked: pipelineAction(pipelineStatus)
-            }
+            HoverHandler { cursorShape: Qt.PointingHandCursor }
+            TapHandler { onTapped: pipelineAction(pipelineStatus) }
           }
 
           Text {

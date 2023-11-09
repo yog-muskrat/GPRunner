@@ -19,6 +19,7 @@ GPManager::GPManager(QObject *parent)
 	: QObject(parent)
 	, m_projectModel(*this)
 	, m_mrModel(*this)
+	, m_discussionModel(*this)
 {
 	initModels();
 	initUpdateTimer();
@@ -37,9 +38,12 @@ void GPManager::setCurrentProject(int projectId)
 {
 	if (projectId != m_currentProject)
 	{
+		m_currentMR = 0;
+		
 		m_pipelineModel.clear();
 		m_mrModel.clear();
 		m_variableModel.clear();
+		m_discussionModel.clear();
 	}
 
 	m_currentProject = projectId;
@@ -48,6 +52,18 @@ void GPManager::setCurrentProject(int projectId)
 
 	m_pipelineModel.setProject(prj);
 	m_mrModel.setProject(prj);
+}
+
+void GPManager::setCurrentMR(int mrId)
+{
+	auto project = m_projectModel.findProject(m_currentProject);
+	assert(project);
+
+	auto mr = project->findMR(mrId);
+	assert(mr);
+
+	m_currentMR = mrId;
+	m_discussionModel.setMR(mr);
 }
 
 void GPManager::loadProjects()
@@ -143,6 +159,11 @@ QAbstractItemModel *GPManager::getVariableModel()
 	return &m_variableProxyModel;
 }
 
+QAbstractItemModel *GPManager::getDiscussionModel()
+{
+	return &m_discussionProxyModel;
+}
+
 void GPManager::addVariable()
 {
 	m_variableModel.addVariable({.key = "variable", .value = "value", .used = false});
@@ -171,6 +192,8 @@ void GPManager::initModels()
 	m_mrProxyModel.sort(MRModel::Column::Updated, Qt::SortOrder::DescendingOrder);
 
 	m_variableProxyModel.setSourceModel(&m_variableModel);
+
+	m_discussionProxyModel.setSourceModel(&m_discussionModel);
 }
 
 void GPManager::initUpdateTimer()

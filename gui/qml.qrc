@@ -9,9 +9,12 @@
         <file>PipelineStatistics.qml</file>
         <file>DatePicker.qml</file>
         <file>Utility.js</file>
+        <file>MergeRequestDiscussions.qml</file>
+        <file>MergeRequests.qml</file>
     </qresource>
     <qresource prefix="/icons">
         <file alias="gitlab.png">icons/gitlab.png</file>
         <file alias="gitlab-green.png">icons/gitlab-green.png</file>
+        <file alias="gitlab-green-notification.png">icons/gitlab-green-notification.png</file>
     </qresource>
 </RCC>

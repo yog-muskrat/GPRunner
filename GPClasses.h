@@ -27,6 +27,7 @@ namespace gpr
 	{
 		int id {};
 		QString author;
+		QString authorAvatar;
 		QString body;
 		QDateTime created;
 		QDateTime updated;

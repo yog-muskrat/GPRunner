@@ -1,80 +1,75 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
-
 import "Utility.js" as Utility
 
 Item {
-  clip: true
+    property int currentMR: 0
 
-  ColumnLayout {
-    anchors.fill: parent
-    spacing: 0
+    clip: true
 
-    HorizontalHeaderView {
-      id: header
-      syncView: mrs
-      Layout.fillWidth: true
-    }
-
-    ScrollView {
-      Layout.fillHeight: true
-      Layout.fillWidth: true
-
-      TableView {
-        id: mrs
+    ColumnLayout {
         anchors.fill: parent
+        spacing: 0
 
-        focus: true
-        clip: true
-
-        model: gpm.mrModel
-        selectionModel: ItemSelectionModel {
+        HorizontalHeaderView {
+            id: header
+            syncView: mrs
+            Layout.fillWidth: true
         }
 
-        columnWidthProvider: Utility.calcColumnWidth.bind(this, header)
+        ScrollView {
+            Layout.fillHeight: true
+            Layout.fillWidth: true
 
-        delegate: Rectangle {
-          implicitWidth: itemText.implicitWidth + urlButton.implicitWidth
-          implicitHeight: itemText.implicitHeight
-          color: row == mrs.currentRow ? palette.highlight : ((row % 2) == 0 ? palette.alternateBase : palette.base)
+            TableView {
+                id: mrs
+                anchors.fill: parent
 
-          Text {
-            id: urlButton
-            visible: column == 0
-            padding: 5
-            text: "🌐"
+                focus: true
+                clip: true
 
-            MouseArea {
-              anchors.fill: parent
-              cursorShape: Qt.PointingHandCursor
-              onClicked: Qt.openUrlExternally(model.url)
+                model: gpm.mrModel
+                selectionModel: ItemSelectionModel {
+                }
+
+                columnWidthProvider: Utility.calcColumnWidth.bind(this, header)
+
+                delegate: Rectangle {
+                    implicitWidth: itemText.implicitWidth + urlButton.implicitWidth
+                    implicitHeight: itemText.implicitHeight
+                    color: row == mrs.currentRow ? palette.highlight : ((row % 2) == 0 ? palette.alternateBase : palette.base)
+
+                    Text {
+                        id: urlButton
+
+                        visible: column == 0
+                        padding: 5
+                        text: "🌐"
+
+                        HoverHandler { cursorShape: Qt.PointingHandCursor }
+                        TapHandler { onTapped: Qt.openUrlExternally(model.url) }
+                    }
+
+                    Text {
+                        id: itemText
+
+                        anchors.fill: parent
+                        anchors.leftMargin: urlButton.visible ? urlButton.width - 5 : 0
+                        padding: 5
+                        text: model.display
+                        font.bold: model.font.bold
+                        color: mrs.currentRow ? palette.highlightedText : palette.text
+                        ToolTip.delay: 500
+                        ToolTip.timeout: 3000
+                        ToolTip.text: model.toolTip
+                        ToolTip.visible: model.toolTip ? hoverHandler.hovered : false
+
+                        HoverHandler { id: hoverHandler }
+                        TapHandler { onTapped: currentMR = model.id }
+                    }
+                }
             }
-          }
-
-          Text {
-            id: itemText
-
-            anchors.fill: parent
-            anchors.leftMargin: urlButton.visible ? urlButton.width - 5 : 0
-            padding: 5
-            text: model.display
-            font.bold: model.font.bold
-            color: mrs.currentRow ? palette.highlightedText : palette.text
-            ToolTip.delay: 500
-            ToolTip.timeout: 3000
-            ToolTip.text: model.toolTip
-            ToolTip.visible: model.toolTip ? tooltipMA.containsMouse : false
-
-            MouseArea {
-              id: tooltipMA
-              visible: model.toolTip
-              anchors.fill: parent
-              hoverEnabled: true
-            }
-          }
         }
-      }
     }
-  }
 }

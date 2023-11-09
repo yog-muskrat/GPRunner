@@ -29,7 +29,8 @@ public:
 
 	enum Role
 	{
-		Url = Qt::UserRole
+		Url = Qt::UserRole,
+		MrId
 	};
 
 	MRModel(GPManager &manager);

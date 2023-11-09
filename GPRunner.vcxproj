@@ -102,12 +102,15 @@
     <ClCompile Include="model\classes\Parser.cpp" />
     <ClCompile Include="model\classes\Pipeline.cpp" />
     <ClCompile Include="model\classes\Project.cpp" />
+    <ClCompile Include="model\DiscussionModel.cpp" />
     <ClCompile Include="model\MRModel.cpp" />
     <ClCompile Include="model\PipelineModel.cpp" />
     <ClCompile Include="model\ProjectModel.cpp" />
     <ClCompile Include="model\VariableModel.cpp" />
     <None Include=".clang-format" />
     <None Include="gui\DatePicker.qml" />
+    <None Include="gui\MergeRequestDiscussions.qml" />
+    <None Include="gui\MergeRequests.qml" />
     <None Include="gui\MRTable.qml" />
     <None Include="gui\PipelineStatistics.qml" />
     <None Include="gui\PipelineTable.qml" />
@@ -126,6 +129,7 @@
     <ClInclude Include="client\Client.h" />
     <ClInclude Include="GPClasses.h" />
     <ClInclude Include="model\classes\Parser.h" />
+    <QtMoc Include="model\DiscussionModel.h" />
     <QtMoc Include="model\MRModel.h" />
     <QtMoc Include="model\VariableModel.h" />
     <QtMoc Include="model\PipelineModel.h" />

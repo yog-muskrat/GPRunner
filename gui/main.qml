@@ -25,11 +25,13 @@ Window {
     Component.onCompleted: {
         mainSplit.restoreState(settings.value("ui/mainsplitview"))
         pipelines.restoreState(settings.value("ui/pipelines"))
+        mergeRequests.restoreState(settings.value("ui/mrs"))
     }
 
     Component.onDestruction: {
         settings.setValue("ui/mainsplitview", mainSplit.saveState())
         settings.setValue("ui/pipelines", pipelines.saveState())
+        settings.setValue("ui/mrs", mergeRequests.saveState())
     }
 
     Settings {
@@ -122,7 +124,8 @@ Window {
         ColumnLayout {
             spacing: 0
 
-            MRTable {
+            MergeRequests {
+                id: mergeRequests
                 Layout.fillWidth: true
                 Layout.fillHeight: true
             }
