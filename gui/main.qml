@@ -47,8 +47,10 @@ Window {
     }
 
     SystemTrayIcon {
+        id: tray
+
         visible: true
-        icon.source: "qrc:/icons/gitlab-green.png"
+        icon.source: gpm.hasNewNotes ? "qrc:/icons/gitlab-green-notification.png" : "qrc:/icons/gitlab-green.png"
 
         onActivated: {
             mainWindow.show()
@@ -65,6 +67,11 @@ Window {
                 }
             }
         }
+    }
+
+    Connections {
+        target: gpm
+        function onNotification(title, message) { tray.showMessage(title, message) }
     }
 
     SplitView {
@@ -104,7 +111,7 @@ Window {
                     fillMode: Image.PreserveAspectFit
                 }
 
-            Label {
+                Label {
                     anchors.left: avatar.right
                     anchors.verticalCenter: avatar.verticalCenter
 
