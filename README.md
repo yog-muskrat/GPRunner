@@ -1,4 +1,4 @@
-# GPRunner - GUI клиент для GilLab API
+# GPRunner - GUI клиент для GitLab API
 GPRunner (GitLab Pipeline Runner) - клиент для работы с GitLab API.  
 Позволяет просматривать список доступных проектов в инстансе GitLab-а, просматривать MR-ы и состояние пайплайнов.  
 
