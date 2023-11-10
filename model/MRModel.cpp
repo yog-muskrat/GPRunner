@@ -121,12 +121,13 @@ QVariant MRModel::data(QModelIndex const &index, int role) const
 	auto const &mr = *m_project->openMRs().at(index.row());
 	auto const column = static_cast<Column>(index.column());
 
-	if (role == Qt::DisplayRole) return displayRole(mr, column);
-	if (role == Qt::EditRole)    return editRole(mr, column);
-	if (role == Qt::ToolTipRole) return toolTipRole(mr, column);
-	if (role == Qt::FontRole)    return fontRole(mr, column);
-	if (role == Role::Url)       return mr.url();
-	if (role == Role::MrId)        return mr.id();
+	if (role == Qt::DisplayRole)      return displayRole(mr, column);
+	if (role == Qt::EditRole)         return editRole(mr, column);
+	if (role == Qt::ToolTipRole)      return toolTipRole(mr, column);
+	if (role == Qt::FontRole)         return fontRole(mr, column);
+	if (role == Role::Url)            return mr.url();
+	if (role == Role::MrId)           return mr.id();
+	if (role == Role::HasUnreadNotes) return column == Column::Discussions && mr.isUserInvolved(m_manager.getCurrentUser()) && mr.hasNewNotes();
 
 	return QVariant();
 }
@@ -137,6 +138,7 @@ QHash<int, QByteArray> MRModel::roleNames() const
 	names.insert(Qt::FontRole, "font");
 	names.insert(Role::Url, "url");
 	names.insert(Role::MrId, "id");
+	names.insert(Role::HasUnreadNotes, "hasUnreadNotes");
 
 	return names;
 }

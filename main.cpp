@@ -3,7 +3,7 @@
 #include <QQmlContext>
 #include <QQuickStyle>
 #include <QIcon>
-#include <QStyleFactory>
+//#include <QStyleFactory>
 #include <QQmlApplicationEngine>
 
 #include "GPManager.h"

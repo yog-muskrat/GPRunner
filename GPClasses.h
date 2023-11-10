@@ -34,6 +34,10 @@ namespace gpr
 
 		bool resolvable{};
 		bool resolved{};
+
+		mutable bool wasShown{false};
+
+		bool operator==(Note const &other) const { return id == other.id; }
 	};
 
 	struct Discussion
@@ -44,6 +48,8 @@ namespace gpr
 		bool isEmpty() const { return notes.empty(); }
 		bool isResolvable() const { return std::ranges::any_of(notes, &Note::resolvable); }
 		bool isResolved() const { return std::ranges::all_of(notes, &Note::resolved); }
+
+		bool operator==(Discussion const &other) const { return id == other.id; }
 	};
 
 	struct PipelineTestReport

@@ -47,11 +47,16 @@ namespace gpr::api
 		void mrAdded(QPointer<MR>);
 		void mrRemoved(QPointer<MR>);
 		void mrUpdated(QPointer<MR>);
+		void mrDiscussionAdded(QPointer<MR>, Discussion const &);
+		void mrDiscussionUpdated(QPointer<MR>, Discussion const &);
+		void mrDiscussionRemoved(QPointer<MR>, Discussion const &);
 		void pipelineAdded(QPointer<Pipeline>);
 		void pipelineRemoved(QPointer<Pipeline>);
 		void pipelineUpdated(QPointer<Pipeline>);
 
 	private:
+		void connectMR(QPointer<MR> mr);
+
 		Data m_data;
 
 		std::vector<QPointer<MR>> m_openMRs;

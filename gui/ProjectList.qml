@@ -27,11 +27,24 @@ ListView {
                 color: index == projects.currentIndex ? palette.highlightedText : palette.text
             }
 
-            MouseArea { 
-                anchors.fill: parent
-                onClicked: {
+            Rectangle {
+                id: unreadIndicator
+
+                anchors.right: parent.right
+                anchors.rightMargin: 5
+                anchors.verticalCenter: itemText.verticalCenter
+                visible: model.hasUnreadNotes
+
+                width: itemText.implicitHeight / 3
+                height: width
+                radius: width / 2
+                color: "#B21818"
+            }
+
+            TapHandler { 
+                onTapped: {
                     projects.currentIndex = index
-                    projects.currentProject = projectId
+                    projects.currentProject = model.projectId
                     gpm.setCurrentProject(projectId)
                 }
             }

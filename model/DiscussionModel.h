@@ -51,6 +51,20 @@ private:
 	QVariant discussionData(gpr::Discussion const &discussion, int role) const;
 	QVariant noteData(gpr::Discussion const &discussion, gpr::Note const &note, int role) const;
 
+	void connectMR(QPointer<gpr::api::MR> mr);
+	void disconnectMR(QPointer<gpr::api::MR> mr);
+
+	void onDiscussionAdded(gpr::Discussion const &discussion);
+	void onDiscussionUpdated(gpr::Discussion const &discussion);
+	void onDiscussionRemoved(gpr::Discussion const &discussion);
+
+	void onDiscussionNoteAdded(gpr::Discussion const &discussion, gpr::Note const &note);
+	void onDiscussionNoteUpdated(gpr::Discussion const &discussion, gpr::Note const &note);
+	void onDiscussionNoteRemoved(gpr::Discussion const &discussion, gpr::Note const &note);
+
+	int getRow(gpr::Discussion const &discussion) const;
+	int getRow(gpr::Discussion const &discussion, gpr::Note const &note) const;
+
 	GPManager &m_manager;
 
 	QPointer<gpr::api::MR> m_mr;

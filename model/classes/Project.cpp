@@ -73,6 +73,8 @@ namespace gpr::api
 			{
 				auto newMr = new MR(std::move(mrData), this);
 				m_openMRs.push_back(newMr);
+				connectMR(newMr);
+
 				Q_EMIT mrAdded(newMr);
 			}
 		}
@@ -139,5 +141,12 @@ namespace gpr::api
 			return *pos;
 		}
 		return nullptr;
+	}
+
+	void Project::connectMR(QPointer<MR> mr)
+	{
+		connect(mr, &MR::discussionAdded, [this, mr](Discussion const &discussion) { Q_EMIT mrDiscussionAdded(mr, discussion); });
+		connect(mr, &MR::discussionUpdated, [this, mr](Discussion const &discussion) { Q_EMIT mrDiscussionUpdated(mr, discussion); });
+		connect(mr, &MR::discussionRemoved, [this, mr](Discussion const &discussion) { Q_EMIT mrDiscussionRemoved(mr, discussion); });
 	}
 } // namespace gpr::api

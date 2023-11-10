@@ -1,4 +1,5 @@
-#include <cassert>
+﻿#include <cassert>
+#include <ranges>
 
 #include "model/classes/MR.h"
 
@@ -162,6 +163,17 @@ namespace gpr::api
 		return m_pipelineStatus;
 	}
 
+	bool MR::hasNewNotes() const
+	{
+		auto notes = m_discussions | std::views::transform(&Discussion::notes) | std::views::join;
+		return !std::ranges::all_of(notes, &Note::wasShown);
+	}
+
+	bool MR::discussionsLoaded() const
+	{
+		return m_discussionsLoaded;
+	}
+
 	void MR::setPipelineStatus(QString status)
 	{
 		m_pipelineStatus = std::move(status);
@@ -181,7 +193,98 @@ namespace gpr::api
 
 	void MR::updateDiscussions(std::vector<Discussion> discussions)
 	{
-		m_discussions = std::move(discussions);
+		auto const removed = m_discussions
+			| std::views::filter([&discussions](auto const &discussion) { return !std::ranges::contains(discussions, discussion.id, &Discussion::id); })
+			| std::views::transform(&Discussion::id)
+			| std::ranges::to<std::vector>();
+
+		for (auto &discussion : discussions)
+		{
+			if (auto existingDiscussion = findDiscussion(discussion.id))
+			{
+				updateDiscussionNotes(*existingDiscussion, std::move(discussion.notes));
+				Q_EMIT discussionUpdated(*existingDiscussion);
+			}
+			else
+			{
+				std::ranges::fill(discussion.notes | std::views::transform(&Note::wasShown), !m_discussionsLoaded);
+				auto const &newDiscussion = m_discussions.emplace_back(std::move(discussion));
+				Q_EMIT discussionAdded(newDiscussion);
+			}
+		}
+
+		for (auto const &discussionId : removed)
+		{
+			auto existingDiscussion = findDiscussion(discussionId);
+			assert(existingDiscussion);
+			Q_EMIT discussionRemoved(*existingDiscussion);
+			std::erase(m_discussions, *existingDiscussion);
+		}
+
 		Q_EMIT modified();
+
+		m_discussionsLoaded = true;
+	}
+
+	bool MR::isUserInvolved(QString const &username) const
+	{
+		// TODO: Проверять упоминания пользователя в дискуссиях.
+		return m_data.author == username || m_data.assignee == username || m_data.reviewer == username;
+	}
+
+	void MR::updateDiscussionNotes(Discussion &discussion, std::vector<Note> notes)
+	{
+		auto const removed = discussion.notes
+			| std::views::filter([&notes](auto const &note) { return !std::ranges::contains(notes, note.id, &Note::id); })
+			| std::views::transform(&Note::id)
+			| std::ranges::to<std::vector>();
+
+		for (auto &note : notes)
+		{
+			if(!m_discussionsLoaded) note.wasShown = true;
+
+			if (auto existingNote = findDiscussionNote(discussion, note.id))
+			{
+				auto const wasShown = existingNote->wasShown;
+				*existingNote = std::move(note);
+				existingNote->wasShown = wasShown;
+				Q_EMIT discussionNoteUpdated(discussion, *existingNote);
+			}
+			else
+			{
+				auto const &newNote = discussion.notes.emplace_back(std::move(note));
+				Q_EMIT discussionNoteAdded(discussion, newNote);
+			}
+		}
+
+		for (auto const &noteId : removed)
+		{
+			auto existingNote = findDiscussionNote(discussion, noteId);
+			assert(existingNote);
+			Q_EMIT discussionNoteRemoved(discussion, *existingNote);
+			std::erase(discussion.notes, *existingNote);
+		}
+
+		Q_EMIT modified();
+
+		m_discussionsLoaded = true;
+	}
+
+	Discussion *MR::findDiscussion(QString const &id)
+	{
+		if(auto const pos = std::ranges::find(m_discussions, id, &Discussion::id); pos != m_discussions.end())
+		{
+			return &(*pos);
+		}
+		return nullptr;
+	}
+
+	Note *MR::findDiscussionNote(Discussion &discussion, int noteId) const
+	{
+		if(auto const pos = std::ranges::find(discussion.notes, noteId, &Note::id); pos != discussion.notes.end())
+		{
+			return &(*pos);
+		}
+		return nullptr;
 	}
 } // namespace gpr::api

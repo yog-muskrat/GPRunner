@@ -1,5 +1,6 @@
-#include "GPManager.h"
+﻿#include "GPManager.h"
 
+#include <QAbstractItemModelTester>
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QJsonObject>
@@ -129,6 +130,18 @@ void GPManager::loadCurrentUser()
 	m_client.requestCurrentUser(std::bind_front(&GPManager::parseCurrentUser, this));
 }
 
+void GPManager::onDiscussionsUpdate(
+	QPointer<gpr::api::Project> project,
+	QPointer<gpr::api::MR> mr,
+	gpr::Discussion const &discussion)
+{
+	if(mr->isUserInvolved(m_currentUser))
+	{
+		Q_EMIT notification("Новые сообщения", QString("Новые сообщение в %1/%2").arg(project->name()).arg(mr->title()));
+		Q_EMIT newNotesReceived();
+	}
+}
+
 void GPManager::cancelPipeline(int pipelineId)
 {
 	m_client.cancelPipeline(m_currentProject, pipelineId);
@@ -164,6 +177,19 @@ QAbstractItemModel *GPManager::getDiscussionModel()
 	return &m_discussionProxyModel;
 }
 
+bool GPManager::hasNewNotes() const
+{
+	auto notes = m_projectModel.projects()
+		| std::views::transform(&gpr::api::Project::openMRs)
+		| std::views::join
+		| std::views::transform(&gpr::api::MR::discussions)
+		| std::views::join
+		| std::views::transform(&gpr::Discussion::notes)
+		| std::views::join;
+
+	return !std::ranges::all_of(notes, &gpr::Note::wasShown);
+}
+
 void GPManager::addVariable()
 {
 	m_variableModel.addVariable({.key = "variable", .value = "value", .used = false});
@@ -194,6 +220,14 @@ void GPManager::initModels()
 	m_variableProxyModel.setSourceModel(&m_variableModel);
 
 	m_discussionProxyModel.setSourceModel(&m_discussionModel);
+
+#ifdef _DEBUG
+	new QAbstractItemModelTester(&m_projectModel, this);
+	new QAbstractItemModelTester(&m_pipelineModel, this);
+	new QAbstractItemModelTester(&m_mrModel, this);
+	new QAbstractItemModelTester(&m_variableModel, this);
+	new QAbstractItemModelTester(&m_discussionModel, this);
+#endif
 }
 
 void GPManager::initUpdateTimer()

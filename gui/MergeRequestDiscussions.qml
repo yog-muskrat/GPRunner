@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import QtQuick.Controls
 
 ScrollView {
+    id: scrollView
     property int currentMR: 0
     onCurrentMRChanged: gpm.setCurrentMR(currentMR)
 
@@ -83,11 +84,11 @@ ScrollView {
 
                     anchors.right: parent.right
                     anchors.verticalCenter: indicator.verticalCenter
+                    anchors.rightMargin: treeDelegate.padding * 2
 
                     visible: model.resolvable
 
-                    text: model.resolved ? "✅" : "Unresolved"
-                    padding: treeDelegate.padding
+                    text: model.resolved ? "☑" : "☐"
                 }
             }
 

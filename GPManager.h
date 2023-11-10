@@ -27,6 +27,7 @@ class GPManager : public QObject
 	Q_PROPERTY(QObject *discussionModel READ getDiscussionModel NOTIFY discussionModelChanged)
 	Q_PROPERTY(QString currentUser READ getCurrentUser NOTIFY currentUserChanged)
 	Q_PROPERTY(QString currentUserAvatar READ getCurrentUserAvatar NOTIFY currentUserAvatarChanged)
+	Q_PROPERTY(bool hasNewNotes READ hasNewNotes NOTIFY newNotesReceived)
 
 public:
 	GPManager(QObject *parent = nullptr);
@@ -59,6 +60,7 @@ public:
 
 	QString getCurrentUser() const { return m_currentUser; }
 	QString getCurrentUserAvatar() const { return m_currentUserAvatar; }
+	bool hasNewNotes() const;
 
 	Q_INVOKABLE void addVariable();
 	Q_INVOKABLE void removeVariable(int index);
@@ -71,6 +73,8 @@ Q_SIGNALS:
 	void discussionModelChanged();
 	void currentUserChanged(QString);
 	void currentUserAvatarChanged(QString);
+	void newNotesReceived() const;
+	void notification(QString title, QString message) const;
 
 private:
 	void initModels();
@@ -92,6 +96,8 @@ private:
 	void loadProjectMRs(int projectId);
 	void loadProjectMRInfo(int projectId);
 	void loadCurrentUser();
+
+	void onDiscussionsUpdate(QPointer<gpr::api::Project> project, QPointer<gpr::api::MR> mr, gpr::Discussion const &discussion);
 
 	void update();
 

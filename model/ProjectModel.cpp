@@ -29,6 +29,7 @@ void ProjectModel::addProject(gpr::api::Project::Data projectData)
 	{
 		beginResetModel();
 		auto project = new gpr::api::Project(std::move(projectData), this);
+		connectProject(project);
 
 		connect(project, &gpr::api::Project::modified, [this, project] { onProjectUpdated(project); });
 
@@ -87,11 +88,10 @@ QVariant ProjectModel::data(QModelIndex const &index, int role) const
 		QFont font;
 
 		bool const bold = std::ranges::any_of(
-			prj->openMRs(),
+			prj->openMRs(), 
 			[this](QPointer<gpr::api::MR> const &mr)
 			{
-				return mr->author() == m_manager.getCurrentUser() || mr->assignee() == m_manager.getCurrentUser()
-			        || mr->reviewer() == m_manager.getCurrentUser();
+				return mr->isUserInvolved(m_manager.getCurrentUser());
 			});
 
 		font.setBold(bold);
@@ -102,6 +102,15 @@ QVariant ProjectModel::data(QModelIndex const &index, int role) const
 	{
 		return prj->id();
 	}
+	else if (role == Role::HasUnreadNotesRole)
+	{
+		return std::ranges::any_of(
+			prj->openMRs(), 
+			[this](QPointer<gpr::api::MR> const &mr)
+			{
+				return mr->isUserInvolved(m_manager.getCurrentUser()) && mr->hasNewNotes();
+			});
+	}
 
 	return QVariant();
 }
@@ -109,8 +118,9 @@ QVariant ProjectModel::data(QModelIndex const &index, int role) const
 QHash<int, QByteArray> ProjectModel::roleNames() const
 {
 	auto names = QAbstractTableModel::roleNames();
-	names.insert(Role::ProjectIdRole, "projectId");
 	names.insert(Qt::FontRole, "font");
+	names.insert(Role::ProjectIdRole, "projectId");
+	names.insert(Role::HasUnreadNotesRole, "hasUnreadNotes");
 	return names;
 }
 
@@ -125,4 +135,20 @@ void ProjectModel::onProjectUpdated(QPointer<gpr::api::Project> project)
 	{
 		assert(false && "Invalid project");
 	}
+}
+
+void ProjectModel::connectProject(QPointer<gpr::api::Project> project)
+{
+	connect(
+		project,
+		&gpr::api::Project::mrDiscussionAdded,
+		[this, project](auto mr, auto const &discussion) { Q_EMIT projectMrDiscussionAdded(project, mr, discussion); });
+	connect(
+		project,
+		&gpr::api::Project::mrDiscussionUpdated,
+		[this, project](auto mr, auto const &discussion) { Q_EMIT projectMrDiscussionUpdated(project, mr, discussion); });
+	connect(
+		project,
+		&gpr::api::Project::mrDiscussionRemoved,
+		[this, project](auto mr, auto const &discussion) { Q_EMIT projectMrDiscussionRemoved(project, mr, discussion); });
 }

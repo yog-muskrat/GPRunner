@@ -56,6 +56,7 @@ Item {
 
                         anchors.fill: parent
                         anchors.leftMargin: urlButton.visible ? urlButton.width - 5 : 0
+                        anchors.rightMargin: unreadIndicator.visible ? unreadIndicator.width : 0
                         padding: 5
                         text: model.display
                         font.bold: model.font.bold
@@ -67,6 +68,20 @@ Item {
 
                         HoverHandler { id: hoverHandler }
                         TapHandler { onTapped: currentMR = model.id }
+                    }
+
+                    Rectangle {
+                        id: unreadIndicator
+
+                        anchors.right: parent.right
+                        anchors.rightMargin: 5
+                        anchors.verticalCenter: itemText.verticalCenter
+                        visible: model.hasUnreadNotes
+
+                        width: itemText.implicitHeight / 3
+                        height: width
+                        radius: width / 2
+                        color: "#B21818"
                     }
                 }
             }

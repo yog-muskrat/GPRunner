@@ -19,7 +19,8 @@ public:
 
 	enum Role
 	{
-		ProjectIdRole = Qt::ItemDataRole::UserRole
+		ProjectIdRole = Qt::ItemDataRole::UserRole,
+		HasUnreadNotesRole
 	};
 
 	ProjectModel(GPManager &manager);
@@ -39,8 +40,14 @@ public:
 
 	QHash<int, QByteArray> roleNames() const override;
 
+Q_SIGNALS:
+	void projectMrDiscussionAdded(QPointer<gpr::api::Project>, QPointer<gpr::api::MR>, gpr::Discussion const &);
+	void projectMrDiscussionUpdated(QPointer<gpr::api::Project>, QPointer<gpr::api::MR>, gpr::Discussion const &);
+	void projectMrDiscussionRemoved(QPointer<gpr::api::Project>, QPointer<gpr::api::MR>, gpr::Discussion const &);
+
 private:
 	void onProjectUpdated(QPointer<gpr::api::Project> project);
+	void connectProject(QPointer<gpr::api::Project> project);
 
 	std::vector<QPointer<gpr::api::Project>> m_projects;
 	GPManager &m_manager;
