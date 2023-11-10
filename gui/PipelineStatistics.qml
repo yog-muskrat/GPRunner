@@ -1,5 +1,5 @@
 import QtQuick
-import QtCharts
+//import QtCharts
 import QtQuick.Layouts
 import QtQuick.Controls
 
