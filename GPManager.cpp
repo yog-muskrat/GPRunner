@@ -1,6 +1,9 @@
 ﻿#include "GPManager.h"
 
+#ifdef _DEBUG
 #include <QAbstractItemModelTester>
+#endif
+
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QJsonObject>
