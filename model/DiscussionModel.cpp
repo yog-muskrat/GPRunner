@@ -31,12 +31,12 @@ int DiscussionModel::rowCount(QModelIndex const &parent) const
 {
 	if (!m_mr) return 0;
 
-	if (!parent.isValid()) return m_mr->discussions().size();
+	if (!parent.isValid()) return std::ranges::ssize(m_mr->discussions());
 
 	if (parent.internalPointer()) return 0;
 
 	auto const discussion = m_mr->discussions().at(parent.row());
-	return discussion.notes.size();
+	return std::ranges::ssize(discussion.notes);
 }
 
 QVariant DiscussionModel::data(QModelIndex const &index, int role) const
@@ -118,12 +118,12 @@ QVariant DiscussionModel::discussionData(gpr::Discussion const &discussion, int 
 	return QVariant{};
 }
 
-QVariant DiscussionModel::noteData(gpr::Discussion const &discussion, gpr::Note const &note, int role) const
+QVariant DiscussionModel::noteData(gpr::Discussion const &, gpr::Note const &note, int role) const
 {
 	if (role == Qt::ItemDataRole::DisplayRole)
 	{
 		// NOTE: Считаем, что если у модели была запрошена displayRole, то текст заметки был отрисован и увиден пользователем.
-		// TODO: Подумать, как сделать умнее, чтобы не использвать mutable поле.
+		// TODO: Подумать, как сделать умнее, чтобы не использовать mutable поле.
 		note.wasShown = true;
 		return note.body;
 	}
@@ -190,7 +190,7 @@ void DiscussionModel::onDiscussionNoteAdded(gpr::Discussion const &discussion, g
 	auto const parentRow = getRow(discussion);
 	assert(parentRow >= 0);
 
-	auto const row = getRow(discussion);
+	auto const row = getRow(discussion, note);
 	assert(row >= 0);
 
 	auto const parentIndex = index(parentRow, 0);
@@ -204,7 +204,7 @@ void DiscussionModel::onDiscussionNoteUpdated(gpr::Discussion const &discussion,
 	auto const parentRow = getRow(discussion);
 	assert(parentRow >= 0);
 
-	auto const row = getRow(discussion);
+	auto const row = getRow(discussion, note);
 	assert(row >= 0);
 
 	auto const parentIndex = index(parentRow, 0);
@@ -217,7 +217,7 @@ void DiscussionModel::onDiscussionNoteRemoved(gpr::Discussion const &discussion,
 	auto const parentRow = getRow(discussion);
 	assert(parentRow >= 0);
 
-	auto const row = getRow(discussion);
+	auto const row = getRow(discussion, note);
 	assert(row >= 0);
 
 	auto const parentIndex = index(parentRow, 0);

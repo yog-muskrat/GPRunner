@@ -24,7 +24,7 @@ void VariableModel::addVariable(gpr::Variable variable)
 
 int VariableModel::rowCount(QModelIndex const &) const
 {
-	return m_variables.size();
+	return std::ranges::ssize(m_variables);
 }
 
 int VariableModel::columnCount(QModelIndex const &) const
@@ -91,7 +91,7 @@ bool VariableModel::removeRows(int firstRow, int count, QModelIndex const &paren
 	return true;
 }
 
-Qt::ItemFlags VariableModel::flags(QModelIndex const &idx) const
+Qt::ItemFlags VariableModel::flags(QModelIndex const &) const
 {
 	return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
 }

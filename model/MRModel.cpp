@@ -80,7 +80,7 @@ void MRModel::setProject(QPointer<gpr::api::Project> project)
 int MRModel::rowCount(QModelIndex const &) const
 {
 	if (!m_project) return 0;
-	return m_project->openMRs().size();
+	return std::ranges::ssize(m_project->openMRs());
 }
 
 int MRModel::columnCount(QModelIndex const &) const
@@ -214,7 +214,7 @@ QVariant MRModel::toolTipRole(gpr::api::MR const &mr, Column column) const
 QString MRModel::getDiscussionsString(gpr::api::MR const &mr) const
 {
 	QString result;
-	auto const count = mr.discussions().size();
+	auto const count = std::ranges::ssize(mr.discussions());
 	if (count > 0)
 	{
 		auto const resolvable = std::ranges::count_if(mr.discussions(), &gpr::Discussion::isResolvable);

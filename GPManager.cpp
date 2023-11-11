@@ -136,7 +136,7 @@ void GPManager::loadCurrentUser()
 void GPManager::onDiscussionsUpdate(
 	QPointer<gpr::api::Project> project,
 	QPointer<gpr::api::MR> mr,
-	gpr::Discussion const &discussion)
+	gpr::Discussion const &)
 {
 	if(mr->isUserInvolved(m_currentUser))
 	{

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <QPointer>
-#include <QAbstractItemModel>
+#include <QtCore/QPointer>
+#include <QtCore/QAbstractItemModel>
 
 class GPManager;
 

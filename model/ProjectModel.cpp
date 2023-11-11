@@ -22,7 +22,6 @@ void ProjectModel::addProject(gpr::api::Project::Data projectData)
 {
 	if (auto const pos = std::ranges::find(m_projects, projectData.id, &gpr::api::Project::id); pos != m_projects.cend())
 	{
-		auto const row = std::ranges::distance(m_projects.cbegin(), pos);
 		(*pos)->update(std::move(projectData));
 	}
 	else
@@ -55,7 +54,7 @@ QPointer<gpr::api::Project> ProjectModel::findProject(int projectId) const
 
 int ProjectModel::rowCount(QModelIndex const &) const
 {
-	return m_projects.size();
+	return std::ranges::ssize(m_projects);
 }
 
 int ProjectModel::columnCount(QModelIndex const &) const

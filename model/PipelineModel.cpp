@@ -22,7 +22,7 @@ int PipelineModel::rowCount(QModelIndex const &) const
 {
 	if (!m_project) return 0;
 
-	return m_project->pipelines().size();
+	return std::ranges::ssize(m_project->pipelines());
 }
 
 int PipelineModel::columnCount(QModelIndex const &) const
