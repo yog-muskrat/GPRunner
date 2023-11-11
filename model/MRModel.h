@@ -31,7 +31,11 @@ public:
 	{
 		Url = Qt::UserRole,
 		MrId,
-		HasUnreadNotes
+		MrIid,
+		HasUnreadNotes,
+		IsApproved,
+		CanApprove,
+		CanUnapprove
 	};
 
 	MRModel(GPManager &manager);
@@ -52,7 +56,6 @@ private:
 	QVariant toolTipRole(gpr::api::MR const &mr, Column column) const;
 
 	QString getDiscussionsString(gpr::api::MR const &mr) const;
-	QString getApproverString(gpr::api::MR const &mr, QString username) const;
 	QString getDateTimeString(QDateTime const &dt) const;
 
 	void connectProject(QPointer<gpr::api::Project> project);

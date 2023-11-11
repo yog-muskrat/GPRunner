@@ -26,7 +26,10 @@ namespace gpr
 			QString const ProjectFile{"/projects/%1/repository/files/%3?ref=%2"};
 			QString const ProjectMRDetails{"/projects/%1/merge_requests/%2/"};
 			QString const ProjectMRDiscussions{"/projects/%1/merge_requests/%2/discussions"};
+			QString const ProjectMRDiscussionResolved{"/projects/%1/merge_requests/%2/discussions/%3?resolved=%4"};
 			QString const ProjectMRApprovals{"/projects/%1/merge_requests/%2/approvals"};
+			QString const ProjectMRApprove{"/projects/%1/merge_requests/%2/approve"};
+			QString const ProjectMRUnapprove{"/projects/%1/merge_requests/%2/unapprove"};
 			QString const ProjectPipelineRun{"/projects/%1/pipeline"};
 			QString const ProjectPipelineCancel{"/projects/%1/pipelines/%2/cancel"};
 			QString const ProjectPipelineRetry{"/projects/%1/pipelines/%2/retry"};
@@ -150,6 +153,26 @@ namespace gpr
 	void Client::retryPipeline(int projectId, int pipelineId)
 	{
 		makePostRequest(prepareRequest(endpoint::ProjectPipelineRetry, projectId, pipelineId));
+	}
+
+	void Client::resolveDiscussion(int projectId, int mrIid, QString const & discussionId)
+	{
+		makePostRequest(prepareRequest(endpoint::ProjectMRDiscussionResolved, projectId, mrIid, discussionId, "true"));
+	}
+
+	void Client::unresolveDiscussion(int projectId, int mrIid, QString const & discussionId)
+	{
+		makePostRequest(prepareRequest(endpoint::ProjectMRDiscussionResolved, projectId, mrIid, discussionId, "false"));
+	}
+
+	void Client::approveMR(int projectId, int mrIid)
+	{
+		makePostRequest(prepareRequest(endpoint::ProjectMRApprove, projectId, mrIid));
+	}
+
+	void Client::unapproveMR(int projectId, int mrIid)
+	{
+		makePostRequest(prepareRequest(endpoint::ProjectMRUnapprove, projectId, mrIid));
 	}
 
 	void Client::makeGetRequest(QNetworkRequest request, Callback callback)

@@ -36,6 +36,10 @@ namespace gpr
 		void runPipeline(int projectId, QString const &ref, std::vector<Variable> const &variables);
 		void cancelPipeline(int projectId, int pipelineId);
 		void retryPipeline(int projectId, int pipelineId);
+		void resolveDiscussion(int projectId, int mrIid, QString const &discussionId);
+		void unresolveDiscussion(int projectId, int mrIid, QString const &discussionId);
+		void approveMR(int projectId, int mrIid);
+		void unapproveMR(int projectId, int mrIid);
 
 	private:
 		void makeGetRequest(QNetworkRequest request, Callback callback = {});

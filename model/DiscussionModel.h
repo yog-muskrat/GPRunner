@@ -30,9 +30,12 @@ public:
 	{
 		Author = Qt::ItemDataRole::UserRole,
 		Avatar,
+		DiscussionId,
 		CreatedDate,
 		Resolvable,
-		Resolved
+		Resolved,
+		CanResolve,
+		CanUnresolve
 	};
 
 	DiscussionModel(GPManager &manager);

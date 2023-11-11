@@ -125,9 +125,35 @@ QVariant MRModel::data(QModelIndex const &index, int role) const
 	if (role == Qt::EditRole)         return editRole(mr, column);
 	if (role == Qt::ToolTipRole)      return toolTipRole(mr, column);
 	if (role == Qt::FontRole)         return fontRole(mr, column);
-	if (role == Role::Url)            return mr.url();
+	if (role == Role::Url)
+	{
+		if(column == Column::Id) return mr.url();
+		return QString{};
+	}
 	if (role == Role::MrId)           return mr.id();
+	if (role == Role::MrIid)          return mr.iid();
 	if (role == Role::HasUnreadNotes) return column == Column::Discussions && mr.isUserInvolved(m_manager.getCurrentUser()) && mr.hasNewNotes();
+	if (role == Role::IsApproved)
+	{
+		if (column == Column::Author)   return mr.isApprovedBy(mr.author());
+		if (column == Column::Reviewer) return mr.isApprovedBy(mr.reviewer());
+		if (column == Column::Assignee) return mr.isApprovedBy(mr.assignee());
+		return false;
+	}
+	if (role == Role::CanApprove)
+	{
+		if (column == Column::Author)   return mr.author()   == m_manager.getCurrentUser() && !mr.isApprovedBy(m_manager.getCurrentUser());
+		if (column == Column::Reviewer) return mr.reviewer() == m_manager.getCurrentUser() && !mr.isApprovedBy(m_manager.getCurrentUser());
+		if (column == Column::Assignee) return mr.assignee() == m_manager.getCurrentUser() && !mr.isApprovedBy(m_manager.getCurrentUser());
+		return false;
+	}
+	if (role == Role::CanUnapprove)
+	{
+		if (column == Column::Author)   return mr.author()   == m_manager.getCurrentUser() && mr.isApprovedBy(m_manager.getCurrentUser());
+		if (column == Column::Reviewer) return mr.reviewer() == m_manager.getCurrentUser() && mr.isApprovedBy(m_manager.getCurrentUser());
+		if (column == Column::Assignee) return mr.assignee() == m_manager.getCurrentUser() && mr.isApprovedBy(m_manager.getCurrentUser());
+		return false;
+	}
 
 	return QVariant();
 }
@@ -135,10 +161,14 @@ QVariant MRModel::data(QModelIndex const &index, int role) const
 QHash<int, QByteArray> MRModel::roleNames() const
 {
 	auto names = QAbstractTableModel::roleNames();
-	names.insert(Qt::FontRole, "font");
-	names.insert(Role::Url, "url");
-	names.insert(Role::MrId, "id");
-	names.insert(Role::HasUnreadNotes, "hasUnreadNotes");
+	names.emplace(Qt::FontRole, "font");
+	names.emplace(Role::Url, "url");
+	names.emplace(Role::MrId, "id");
+	names.emplace(Role::MrIid, "iid");
+	names.emplace(Role::HasUnreadNotes, "hasUnreadNotes");
+	names.emplace(Role::IsApproved, "isApproved");
+	names.emplace(Role::CanApprove, "canApprove");
+	names.emplace(Role::CanUnapprove, "canUnapprove");
 
 	return names;
 }
@@ -174,8 +204,8 @@ QVariant MRModel::displayRole(gpr::api::MR const &mr, Column column) const
 		case Column::Pipeline:     return getPipelineStatusIcon(mr.pipelineStatus());
 		case Column::Author:       return mr.author();
 		case Column::Discussions:  return getDiscussionsString(mr);
-		case Column::Assignee:     return getApproverString(mr, mr.assignee());
-		case Column::Reviewer:     return getApproverString(mr, mr.reviewer());
+		case Column::Assignee:     return mr.assignee();
+		case Column::Reviewer:     return mr.reviewer();
 		case Column::SourceBranch: return mr.sourceBranch();
 		case Column::TargetBranch: return mr.targetBranch();
 		case Column::Created:      return getDateTimeString(mr.createdAt());
@@ -231,12 +261,6 @@ QString MRModel::getDiscussionsString(gpr::api::MR const &mr) const
 		}
 	}
 	return result;
-}
-
-QString MRModel::getApproverString(gpr::api::MR const &mr, QString username) const
-{
-	if (std::ranges::contains(mr.approvedBy(), username)) username.prepend("✅");
-	return username;
 }
 
 QString MRModel::getDateTimeString(QDateTime const &dt) const

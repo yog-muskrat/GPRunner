@@ -34,10 +34,10 @@ public:
 
 	Q_INVOKABLE void connect();
 	Q_INVOKABLE void setCurrentProject(int projectId);
-	Q_INVOKABLE void setCurrentMR(int mrId);
-	Q_INVOKABLE void runPipeline(QString const &ref);
+	Q_INVOKABLE void setCurrentMR(int projectId, int mrId);
+	Q_INVOKABLE void runPipeline(int projectId, QString const &ref);
 	Q_INVOKABLE QStringList getProjectBranches(int projectId);
-	Q_INVOKABLE void loadPipelineVariables(QString const &ref);
+	Q_INVOKABLE void loadPipelineVariables(int projectId, QString const &ref);
 	Q_INVOKABLE void loadPipelineStatistics(int projectId, QDateTime const &from, QDateTime const &to);
 
 	/**
@@ -51,6 +51,12 @@ public:
 	 * @param pipelineId идентификатор пайплайна
 	 */
 	Q_INVOKABLE void retryPipeline(int pipelineId);
+
+	Q_INVOKABLE void approveMR(int projectId, int mrIid);
+	Q_INVOKABLE void unapproveMR(int projectId, int mrIid);
+
+	Q_INVOKABLE void resolveMRDiscussion(int projectId, int mrIid, QString const &discussionId);
+	Q_INVOKABLE void unresolveMRDiscussion(int projectId, int mrIid, QString const &discussionId);
 
 	QAbstractItemModel *getProjectModel();
 	QAbstractItemModel *getPipelineModel();

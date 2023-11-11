@@ -58,9 +58,9 @@ void GPManager::setCurrentProject(int projectId)
 	m_mrModel.setProject(prj);
 }
 
-void GPManager::setCurrentMR(int mrId)
+void GPManager::setCurrentMR(int projectId, int mrId)
 {
-	auto project = m_projectModel.findProject(m_currentProject);
+	auto project = m_projectModel.findProject(projectId);
 	assert(project);
 
 	auto mr = project->findMR(mrId);
@@ -80,9 +80,9 @@ void GPManager::loadProjectPipelines(int projectId)
 	m_client.requestProjectPipelines(projectId, std::bind_front(&GPManager::parsePipelines, this, projectId));
 }
 
-void GPManager::runPipeline(QString const &ref)
+void GPManager::runPipeline(int projectId, QString const &ref)
 {
-	m_client.runPipeline(m_currentProject, ref, m_variableModel.variables());
+	m_client.runPipeline(projectId, ref, m_variableModel.variables());
 }
 
 QStringList GPManager::getProjectBranches(int projectId)
@@ -91,9 +91,9 @@ QStringList GPManager::getProjectBranches(int projectId)
 	return QStringList{"master"};
 }
 
-void GPManager::loadPipelineVariables(QString const &ref)
+void GPManager::loadPipelineVariables(int projectId, QString const &ref)
 {
-	m_client.requestPipelineVariables(m_currentProject, ref, std::bind_front(&GPManager::parseVariables, this));
+	m_client.requestPipelineVariables(projectId, ref, std::bind_front(&GPManager::parseVariables, this));
 }
 
 void GPManager::loadPipelineStatistics(int projectId, QDateTime const &from, QDateTime const &to)
@@ -153,6 +153,26 @@ void GPManager::cancelPipeline(int pipelineId)
 void GPManager::retryPipeline(int pipelineId)
 {
 	m_client.retryPipeline(m_currentProject, pipelineId);
+}
+
+void GPManager::approveMR(int projectId, int mrIid)
+{
+	m_client.approveMR(projectId, mrIid);
+}
+
+void GPManager::unapproveMR(int projectId, int mrIid)
+{
+	m_client.unapproveMR(projectId, mrIid);
+}
+
+void GPManager::resolveMRDiscussion(int projectId, int mrIid, QString const &discussionId)
+{
+	m_client.resolveDiscussion(projectId, mrIid, discussionId);
+}
+
+void GPManager::unresolveMRDiscussion(int projectId, int mrIid, QString const &discussionId)
+{
+	m_client.unresolveDiscussion(projectId, mrIid, discussionId);
 }
 
 QAbstractItemModel *GPManager::getProjectModel()

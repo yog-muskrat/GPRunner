@@ -133,14 +133,19 @@ Window {
 
             MergeRequests {
                 id: mergeRequests
+
                 Layout.fillWidth: true
                 Layout.fillHeight: true
+
+                currentProject: projects.currentProject
             }
 
             Pipelines {
                 id: pipelines
+
                 Layout.fillWidth: true
                 Layout.fillHeight: true
+
                 currentProject: projects.currentProject
             }
         }

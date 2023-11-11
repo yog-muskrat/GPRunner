@@ -77,6 +77,7 @@ namespace gpr::api
 
 		std::vector<QString> const &approvedBy() const;
 		void setApprovedBy(std::vector<QString> list);
+		bool isApprovedBy(QString const &username) const;
 
 		std::vector<Discussion> const &discussions() const;
 		bool discussionsLoaded() const;

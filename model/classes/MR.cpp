@@ -185,6 +185,11 @@ namespace gpr::api
 		return m_approvedBy;
 	}
 
+	bool MR::isApprovedBy(QString const &username) const
+	{
+		return std::ranges::contains(m_approvedBy, username);
+	}
+
 	void MR::setApprovedBy(std::vector<QString> list)
 	{
 		m_approvedBy = std::move(list);

@@ -3,9 +3,13 @@ import QtQuick.Layouts
 import QtQuick.Controls
 
 ScrollView {
+    required property int currentProject
+    required property int currentMrId
+    required property int currentMrIid
+
     id: scrollView
-    property int currentMR: 0
-    onCurrentMRChanged: gpm.setCurrentMR(currentMR)
+
+    onCurrentMrIdChanged: gpm.setCurrentMR(currentProject, currentMrId)
 
     TreeView {
         id: mrs
@@ -43,52 +47,73 @@ ScrollView {
                 id: discussion
                 visible: isDiscussion
 
-                implicitWidth: indicator.implicitWidth + discussionTitle.implicitWidth + status.implicitWidth
-                implicitHeight: Math.max(indicator.implicitHeight, discussionTitle.implicitHeight)
+                implicitWidth: discussionHeader.implicitWidth + discussionStatus.implicitWidth
+                implicitHeight: Math.max(discussionHeader.implicitHeight, discussionStatus.implicitHeight)
                 width: treeDelegate.width
-
-                TapHandler {
-                    onTapped: treeView.toggleExpanded(row)
-                }
-
-                HoverHandler {
-                    id: discussionHeaderHover
-                    cursorShape: Qt.PointingHandCursor
-                }
 
                 Rectangle {
                     anchors.fill: parent
                     color: discussionHeaderHover.hovered ? palette.base : palette.alternateBase
                 }
 
-                Label {
-                    id: indicator
+                Item { 
+                    id: discussionHeader
 
-                    text: ">"
-                    rotation: treeDelegate.expanded ? 90 : 0
-                    padding: treeDelegate.padding
+                    implicitWidth: indicator.implicitWidth + discussionTitle.implicitWidth
+                    implicitHeight: Math.max(indicator.implicitHeight, discussionTitle.implicitHeight)
+
+                    TapHandler {
+                        onTapped: treeView.toggleExpanded(row)
+                    }
+
+                    HoverHandler {
+                        id: discussionHeaderHover
+                        cursorShape: Qt.PointingHandCursor
+                    }
+
+                    Label {
+                        id: indicator
+
+                        text: ">"
+                        rotation: treeDelegate.expanded ? 90 : 0
+                        padding: treeDelegate.padding
+                    }
+
+                    Label {
+                        id: discussionTitle
+
+                        anchors.left: indicator.right
+                        anchors.verticalCenter: indicator.verticalCenter
+
+                        text: model.display
+                        padding: treeDelegate.padding
+                    }
                 }
 
                 Label {
-                    id: discussionTitle
-
-                    anchors.left: indicator.right
-                    anchors.verticalCenter: indicator.verticalCenter
-
-                    text: model.display
-                    padding: treeDelegate.padding
-                }
-
-                Label {
-                    id: status
+                    id: discussionStatus
 
                     anchors.right: parent.right
-                    anchors.verticalCenter: indicator.verticalCenter
+                    anchors.verticalCenter: parent.verticalCenter
                     anchors.rightMargin: treeDelegate.padding * 2
 
                     visible: model.resolvable
 
-                    text: model.resolved ? "☑" : "☐"
+                    text: model.canResolve ? "[Resolve] ☐" : model.canUnresolve ? "[Unresolve] ☑" : model.resolved ? "☑" : "☐"
+                    color: model.canResolve ? "yellow" : model.canUnresolve ? "green" : palette.text
+
+                    HoverHandler {
+                        enabled: model.canResolve || model.canUnresolve
+                        cursorShape: Qt.PointingHandCursor
+                    }
+
+                    TapHandler {
+                        enabled: model.canResolve || model.canUnresolve
+                        onTapped: {
+                            if(model.canResolve) gpm.resolveMRDiscussion(currentProject, currentMrIid, model.discussionId)
+                            else if(model.canUnresolve) gpm.unresolveDiscussion(currentProject, currentMrIid, model.discussionId)
+                        }
+                    }
                 }
             }
 

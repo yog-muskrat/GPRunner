@@ -91,6 +91,9 @@ QHash<int, QByteArray> DiscussionModel::roleNames() const
 	names.insert(Role::CreatedDate, "created");
 	names.insert(Role::Resolvable, "resolvable");
 	names.insert(Role::Resolved, "resolved");
+	names.insert(Role::CanResolve, "canResolve");
+	names.insert(Role::CanUnresolve, "canUnresolve");
+	names.insert(Role::DiscussionId, "discussionId");
 	return names;
 }
 
@@ -114,6 +117,16 @@ QVariant DiscussionModel::discussionData(gpr::Discussion const &discussion, int 
 	if (role == Role::CreatedDate && !discussion.isEmpty()) return discussion.notes.front().created;
 	if (role == Role::Resolvable)                           return discussion.isResolvable();
 	if (role == Role::Resolved)                             return discussion.isResolved();
+	if (role == Role::DiscussionId)                         return discussion.id;
+	if (role == Role::CanResolve)
+	{
+		return !discussion.isEmpty() && discussion.notes.front().author == m_manager.getCurrentUser() && discussion.isResolvable()
+		    && !discussion.isResolved();
+	}
+	if (role == Role::CanUnresolve)
+	{
+		return !discussion.isEmpty() && discussion.notes.front().author == m_manager.getCurrentUser() && discussion.isResolved();
+	}
 
 	return QVariant{};
 }
@@ -127,11 +140,11 @@ QVariant DiscussionModel::noteData(gpr::Discussion const &, gpr::Note const &not
 		note.wasShown = true;
 		return note.body;
 	}
-	if (role == Role::Author)                  return note.author;
-	if (role == Role::Avatar)                  return note.authorAvatar;
-	if (role == Role::CreatedDate)             return note.created;
-	if (role == Role::Resolvable)              return note.resolvable;
-	if (role == Role::Resolved)                return note.resolved;
+	if (role == Role::Author)      return note.author;
+	if (role == Role::Avatar)      return note.authorAvatar;
+	if (role == Role::CreatedDate) return note.created;
+	if (role == Role::Resolvable)  return note.resolvable;
+	if (role == Role::Resolved)    return note.resolved;
 
 	return QVariant{};
 }
