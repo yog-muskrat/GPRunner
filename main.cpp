@@ -5,6 +5,7 @@
 #include <QQmlApplicationEngine>
 
 #include "GPManager.h"
+#include "ImageProvider.h"
 
 int main(int argc, char *argv[])
 {
@@ -15,9 +16,12 @@ int main(int argc, char *argv[])
 
 	QQuickStyle::setStyle("Universal");
 
-	GPManager manager;
+	auto imageProvider = new ImageProvider();
+
+	GPManager manager(*imageProvider);
 
 	QQmlApplicationEngine engine;
+	engine.addImageProvider("gpr", imageProvider);
 	engine.rootContext()->setContextProperty("gpm", &manager);
 	engine.addImportPath("qrc:///modules");
 	engine.load(QUrl(QStringLiteral("qrc:///modules/main.qml")));

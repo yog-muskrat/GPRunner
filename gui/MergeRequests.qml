@@ -6,7 +6,6 @@ SplitView {
     id: mergeRequests
     required property int currentProject
 
-    anchors.fill: parent
     orientation: Qt.Vertical
 
     MRTable {

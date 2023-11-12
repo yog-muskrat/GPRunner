@@ -15,6 +15,7 @@
 
 class QJsonDocument;
 class QJsonArray;
+class ImageProvider;
 
 class GPManager : public QObject
 {
@@ -30,7 +31,7 @@ class GPManager : public QObject
 	Q_PROPERTY(bool hasNewNotes READ hasNewNotes NOTIFY newNotesReceived)
 
 public:
-	GPManager(QObject *parent = nullptr);
+	GPManager(ImageProvider &imageProvider, QObject *parent = nullptr);
 
 	Q_INVOKABLE void connect();
 	Q_INVOKABLE void setCurrentProject(int projectId);
@@ -96,6 +97,8 @@ private:
 	void parseBranches(int projectId, QJsonDocument const &doc);
 	void parseCurrentUser(QJsonDocument const &doc);
 
+	void parseProviderImage(QString const&id, QByteArray data);
+
 	void loadProjects();
 	void loadProjectBranches(int projectId);
 	void loadProjectPipelines(int projectId);
@@ -130,6 +133,8 @@ private:
 	
 	QString m_currentUser;
 	QString m_currentUserAvatar;
+
+	ImageProvider &m_imageProvider;
 
 	int m_currentProject{-1};
 	int m_currentMR {-1};

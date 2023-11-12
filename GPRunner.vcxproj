@@ -132,6 +132,7 @@
   <ItemGroup>
     <ClInclude Include="client\Client.h" />
     <ClInclude Include="GPClasses.h" />
+    <ClInclude Include="ImageProvider.h" />
     <ClInclude Include="model\classes\Parser.h" />
     <QtMoc Include="model\DiscussionModel.h" />
     <QtMoc Include="model\MRModel.h" />

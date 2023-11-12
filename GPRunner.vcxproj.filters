@@ -125,5 +125,6 @@
     <ClInclude Include="client\Client.h">
       <Filter>client</Filter>
     </ClInclude>
+    <ClInclude Include="ImageProvider.h" />
   </ItemGroup>
 </Project>

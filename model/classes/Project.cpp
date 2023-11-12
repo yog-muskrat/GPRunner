@@ -40,6 +40,28 @@ namespace gpr::api
 		Q_EMIT modified();
 	}
 
+	QString Project::url() const
+	{
+		return m_data.url;
+	}
+
+	void Project::setUrl(QString url)
+	{
+		m_data.url= std::move(url);
+		Q_EMIT modified();
+	}
+
+	QString Project::avatarUrl() const
+	{
+		return m_data.avatarUrl;
+	}
+
+	void Project::setAvatarUrl(QString avatarUrl)
+	{
+		m_data.avatarUrl= std::move(avatarUrl);
+		Q_EMIT modified();
+	}
+
 	QStringList const &Project::branches() const
 	{
 		return m_branches;

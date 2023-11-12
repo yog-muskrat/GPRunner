@@ -110,7 +110,10 @@ namespace gpr
 	void Client::requestFileDownload(QString const &url, RawCallback callback)
 	{
 		QNetworkRequest request;
-		request.setUrl(QUrl{url});
+		request.setRawHeader("PRIVATE-TOKEN", m_settings.privateToken.toUtf8());
+		request.setUrl(QUrl::fromUserInput(url));
+
+		qDebug() << "Request to download " << url;
 
 		auto reply = m_networkManager.get(std::move(request));
 
@@ -123,6 +126,8 @@ namespace gpr
 				if (reply->error())
 				{
 					qDebug() << "API request error:" << reply->errorString();
+					qDebug() << "URL is " << reply->url();
+					qDebug() << "Error is " << reply->error();
 					return;
 				}
 

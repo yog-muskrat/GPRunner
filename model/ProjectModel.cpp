@@ -86,6 +86,14 @@ QVariant ProjectModel::data(QModelIndex const &index, int role) const
 	{
 		return prj->id();
 	}
+	else if (role == Role::ProjectUrlRole)
+	{
+		return prj->url();
+	}
+	else if (role == Role::ProjectAvatarUrlRole)
+	{
+		return prj->avatarUrl();
+	}
 	else if (role == Role::HasUnreadNotesRole)
 	{
 		return std::ranges::any_of(
@@ -109,6 +117,8 @@ QHash<int, QByteArray> ProjectModel::roleNames() const
 {
 	auto names = QAbstractTableModel::roleNames();
 	names.insert(Role::ProjectIdRole, "projectId");
+	names.insert(Role::ProjectUrlRole, "projectUrl");
+	names.insert(Role::ProjectAvatarUrlRole, "projectAvatarUrl");
 	names.insert(Role::HasUnreadNotesRole, "hasUnreadNotes");
 	names.insert(Role::HasCurrentUserMRsRole, "hasCurrentUserMRs");
 	return names;

@@ -16,9 +16,26 @@ ListView {
         implicitHeight: itemText.implicitHeight
         color: index == projects.currentIndex ? palette.highlight : "transparent"
 
+        Item {
+            id: projectAvatar
+
+            anchors.left: parent.left
+            anchors.verticalCenter: itemText.verticalCenter
+            
+            width: itemText.implicitHeight
+            height: width
+
+            Image {
+                anchors.fill: parent
+                source: "image://gpr/project_" + model.projectId
+                fillMode: Image.PreserveAspectFit
+            }
+        }
+
         Label {
             id: itemText
-            anchors.fill: parent
+
+            anchors.left: projectAvatar.right
             padding: 5
             text: model.display
             font.bold: model.hasCurrentUserMRs
@@ -50,6 +67,7 @@ ListView {
                 projects.currentProject = model.projectId;
                 gpm.setCurrentProject(projectId);
             }
+            onDoubleTapped: Qt.openUrlExternally(model.projectUrl)
         }
     }
 }

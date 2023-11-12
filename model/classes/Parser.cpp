@@ -19,7 +19,12 @@ namespace gpr::api
 
 	Project::Data gpr::api::parseProject(QJsonObject const &json)
 	{
-		return {.id = json.value("id").toInt(), .name = json.value("name").toString()};
+		return {
+			.id = json.value("id").toInt(),
+			.name = json.value("name").toString(),
+			.url = json.value("web_url").toString(),
+			.avatarUrl = json.value("avatar_url").toString()
+		};
 	}
 
 	Pipeline::Data parsePipeline(QJsonObject const &json)

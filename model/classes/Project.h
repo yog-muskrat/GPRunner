@@ -17,6 +17,8 @@ namespace gpr::api
 			int id{-1};
 
 			QString name;
+			QString url;
+			QString avatarUrl;
 			// TODO: QPixmap avatar;
 		};
 
@@ -28,6 +30,12 @@ namespace gpr::api
 
 		QString name() const;
 		void setName(QString name);
+
+		QString url() const;
+		void setUrl(QString url);
+
+		QString avatarUrl() const;
+		void setAvatarUrl(QString url);
 
 		QStringList const &branches() const;
 		void setBranches(QStringList branches);

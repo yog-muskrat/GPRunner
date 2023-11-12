@@ -13,17 +13,19 @@
 #include <format>
 
 #include "model/classes/Parser.h"
+#include "ImageProvider.h"
 
 namespace
 {
 	std::chrono::milliseconds const UpdateInterval{3000};
 }
 
-GPManager::GPManager(QObject *parent)
+GPManager::GPManager(ImageProvider &imageProvider, QObject *parent)
 	: QObject(parent)
-	, m_projectModel(*this)
-	, m_mrModel(*this)
-	, m_discussionModel(*this)
+	, m_imageProvider{imageProvider}
+	, m_projectModel{*this}
+	, m_mrModel{*this}
+	, m_discussionModel{*this}
 {
 	initModels();
 	initUpdateTimer();
@@ -299,6 +301,13 @@ void GPManager::parseProjects(QJsonDocument const &doc)
 	{
 		m_projectModel.addProject(prj);
 		loadProjectBranches(prj.id);
+
+		if (!prj.avatarUrl.isEmpty())
+		{
+			m_client.requestFileDownload(
+				prj.avatarUrl,
+				std::bind_front(&GPManager::parseProviderImage, this, QString("project_%1").arg(prj.id)));
+		}
 	}
 }
 
@@ -428,6 +437,14 @@ void GPManager::parseCurrentUser(QJsonDocument const &doc)
 
 	Q_EMIT currentUserChanged(m_currentUser);
 	Q_EMIT currentUserAvatarChanged(m_currentUserAvatar);
+}
+
+void GPManager::parseProviderImage(QString const &id, QByteArray data)
+{
+	if(QPixmap pm(std::move(data)); !pm.isNull())
+	{
+		m_imageProvider.addPixmap(id, std::move(pm));
+	}
 }
 
 void GPManager::update()
