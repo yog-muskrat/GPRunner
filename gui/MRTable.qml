@@ -43,7 +43,7 @@ Item {
                     implicitWidth: urlButton.implicitWidth + approveButton.implicitWidth + itemText.implicitWidth + unreadIndicator.implicitWidth
                     implicitHeight: itemText.implicitHeight
 
-                    color: row == mrs.currentRow ? palette.highlight : ((row % 2) == 0 ? palette.alternateBase : palette.base)
+                    color: row == mrs.currentRow ? palette.highlight : palette.base
 
                     Item {
                         id: urlButton

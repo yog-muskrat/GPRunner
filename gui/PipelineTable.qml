@@ -39,32 +39,39 @@ Item {
                 delegate: Rectangle {
                     implicitWidth: button.implicitWidth + itemText.implicitWidth
                     implicitHeight: itemText.implicitHeight
-                    color: row == pipelines.currentRow ? palette.highlight : ((row % 2) == 0 ? palette.alternateBase : palette.base)
+                    color: row == pipelines.currentRow ? palette.highlight : palette.base
 
-                    Text {
+                    Item {
                         id: button
 
-                        visible: getButtonVisible(column, pipelineStatus)
-                        padding: 5
+                        anchors.verticalCenter: itemText.verticalCenter
 
-                        text: getButtonText(pipelineStatus)
-                        color: pipelines.currentRow ? palette.highlightedText : palette.text
+                        visible: getButtonVisible(column, pipelineStatus)
+                        
+                        implicitWidth: visible ? buttonLabel.implicitWidth : 0
+                        implicitHeight: visible ? buttonLabel.implicitHeight : 0
 
                         HoverHandler {
-                            cursorShape: Qt.PointingHandCursor
+                                cursorShape: Qt.PointingHandCursor
                         }
                         TapHandler {
-                            onTapped: pipelineAction(pipelineStatus)
+                                onTapped: pipelineAction(pipelineStatus)
+                        }
+
+                        Label {
+                            id: buttonLabel
+
+                            leftPadding: 5
+
+                            text: getButtonText(pipelineStatus)
+                            color: pipelines.currentRow ? palette.highlightedText : palette.text
                         }
                     }
 
-                    Text {
+                    Label {
                         id: itemText
 
-                        anchors.top: parent.top
-                        anchors.right: parent.right
-                        anchors.bottom: parent.bottom
-                        anchors.left: button.visible ? button.right : parent.left
+                        anchors.left: button.right
 
                         padding: 5
 
@@ -86,7 +93,7 @@ Item {
                     }
 
                     function getButtonVisible(column, status) {
-                        return column == 0 && status != "success" && status != "skipped";
+                        return column == 2 && status != "success" && status != "skipped";
                     }
 
                     function getButtonText(status) {
