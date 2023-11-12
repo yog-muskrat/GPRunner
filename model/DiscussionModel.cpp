@@ -106,10 +106,15 @@ QVariant DiscussionModel::discussionData(gpr::Discussion const &discussion, int 
 
 		auto const row = std::ranges::distance(m_mr->discussions().begin(), pos);
 
-		return QString("%1 [%2/%3] от %4")
+		auto const unreadNotes = m_mr->isUserInvolved(m_manager.getCurrentUser())
+		                           ? std::ranges::count_if(discussion.notes, std::not_fn(&gpr::Note::wasShown))
+		                           : 0;
+
+		return QString("%1 [%2/%3]%4 от %5")
 		    .arg(discussion.isResolvable() ? "Дискуссия" : "Комментарий")
 		    .arg(row + 1)
 		    .arg(m_mr->discussions().size())
+			.arg(unreadNotes > 0 ? " ●" : "")
 		    .arg(discussion.notes.front().author);
 	}
 	if (role == Role::Author && !discussion.isEmpty())      return discussion.notes.front().author;
@@ -140,12 +145,13 @@ QVariant DiscussionModel::noteData(gpr::Discussion const &, gpr::Note const &not
 		note.wasShown = true;
 		return note.body;
 	}
-	if (role == Role::Author)      return note.author;
-	if (role == Role::Avatar)      return note.authorAvatar;
-	if (role == Role::CreatedDate) return note.created;
-	if (role == Role::Resolvable)  return note.resolvable;
-	if (role == Role::Resolved)    return note.resolved;
-
+	if (role == Role::Author)       return note.author;
+	if (role == Role::Avatar)       return note.authorAvatar;
+	if (role == Role::CreatedDate)  return note.created;
+	if (role == Role::Resolvable)   return note.resolvable;
+	if (role == Role::Resolved)     return note.resolved;
+	if (role == Role::CanResolve)   return false;
+	if (role == Role::CanUnresolve) return false;
 	return QVariant{};
 }
 

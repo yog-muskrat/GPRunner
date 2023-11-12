@@ -133,14 +133,39 @@ void GPManager::loadCurrentUser()
 	m_client.requestCurrentUser(std::bind_front(&GPManager::parseCurrentUser, this));
 }
 
-void GPManager::onDiscussionsUpdate(
+void GPManager::onDiscussionAdded(
 	QPointer<gpr::api::Project> project,
 	QPointer<gpr::api::MR> mr,
 	gpr::Discussion const &)
 {
 	if(mr->isUserInvolved(m_currentUser))
 	{
+		Q_EMIT notification("Новая дискуссия", QString("Новая дискуссия в %1/%2").arg(project->name()).arg(mr->title()));
+		Q_EMIT newNotesReceived();
+	}
+}
+
+void GPManager::onDiscussionNoteAdded(
+	QPointer<gpr::api::Project> project,
+	QPointer<gpr::api::MR> mr,
+	gpr::Discussion const &,
+	gpr::Note const &)
+{
+	if(mr->isUserInvolved(m_currentUser))
+	{
 		Q_EMIT notification("Новые сообщения", QString("Новые сообщение в %1/%2").arg(project->name()).arg(mr->title()));
+		Q_EMIT newNotesReceived();
+	}
+}
+
+void GPManager::onDiscussionNoteUpdated(
+	QPointer<gpr::api::Project>,
+	QPointer<gpr::api::MR> mr,
+	gpr::Discussion const &,
+	gpr::Note const &)
+{
+	if(mr->isUserInvolved(m_currentUser))
+	{
 		Q_EMIT newNotesReceived();
 	}
 }
@@ -205,6 +230,7 @@ bool GPManager::hasNewNotes() const
 	auto notes = m_projectModel.projects()
 		| std::views::transform(&gpr::api::Project::openMRs)
 		| std::views::join
+		| std::views::filter([this](auto const &mr) { return mr->isUserInvolved(getCurrentUser()); })
 		| std::views::transform(&gpr::api::MR::discussions)
 		| std::views::join
 		| std::views::transform(&gpr::Discussion::notes)
@@ -243,6 +269,10 @@ void GPManager::initModels()
 	m_variableProxyModel.setSourceModel(&m_variableModel);
 
 	m_discussionProxyModel.setSourceModel(&m_discussionModel);
+
+	QObject::connect(&m_projectModel, &ProjectModel::projectMrDiscussionAdded, this, &GPManager::onDiscussionAdded);
+	QObject::connect(&m_projectModel, &ProjectModel::projectMrDiscussionNoteAdded, this, &GPManager::onDiscussionNoteAdded);
+	QObject::connect(&m_projectModel, &ProjectModel::projectMrDiscussionNoteUpdated, this, &GPManager::onDiscussionNoteUpdated);
 
 #ifdef _DEBUG
 	new QAbstractItemModelTester(&m_projectModel, this);

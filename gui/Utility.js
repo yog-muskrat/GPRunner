@@ -1,10 +1,10 @@
-function calcColumnWidth(header, column) {
+﻿function calcColumnWidth(header, column) {
   let stretched = 0
 
   if(column == this.columns - 1) {
     let total = 0;
     for(let i = 0; i < column; i++) total += this.columnWidth(i);
-    stretched = this.width - total;
+    if(this.width > total) stretched = this.width - total;
   }
 
   let ew = this.explicitColumnWidth(column);

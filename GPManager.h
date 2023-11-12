@@ -103,7 +103,9 @@ private:
 	void loadProjectMRInfo(int projectId);
 	void loadCurrentUser();
 
-	void onDiscussionsUpdate(QPointer<gpr::api::Project> project, QPointer<gpr::api::MR> mr, gpr::Discussion const &discussion);
+	void onDiscussionAdded(QPointer<gpr::api::Project> project, QPointer<gpr::api::MR> mr, gpr::Discussion const &discussion);
+	void onDiscussionNoteAdded(QPointer<gpr::api::Project> project, QPointer<gpr::api::MR> mr, gpr::Discussion const &discussion, gpr::Note const &note);
+	void onDiscussionNoteUpdated(QPointer<gpr::api::Project> project, QPointer<gpr::api::MR> mr, gpr::Discussion const &discussion, gpr::Note const &note);
 
 	void update();
 

@@ -44,6 +44,7 @@ namespace gpr
 	private:
 		void makeGetRequest(QNetworkRequest request, Callback callback = {});
 		void makePostRequest(QNetworkRequest request, QByteArray data = {}, Callback callback = {});
+		void makePutRequest(QNetworkRequest request, QByteArray data = {}, Callback callback = {});
 
 		template<typename ...Ts>
 		QNetworkRequest prepareRequest(QString urlSubpath, Ts && ...args) const;

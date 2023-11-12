@@ -111,7 +111,7 @@ ScrollView {
                         enabled: model.canResolve || model.canUnresolve
                         onTapped: {
                             if(model.canResolve) gpm.resolveMRDiscussion(currentProject, currentMrIid, model.discussionId)
-                            else if(model.canUnresolve) gpm.unresolveDiscussion(currentProject, currentMrIid, model.discussionId)
+                            else if(model.canUnresolve) gpm.unresolveMRDiscussion(currentProject, currentMrIid, model.discussionId)
                         }
                     }
                 }

@@ -23,13 +23,11 @@ Window {
     }
 
     Component.onCompleted: {
-        mainSplit.restoreState(settings.value("ui/mainsplitview"))
         pipelines.restoreState(settings.value("ui/pipelines"))
         mergeRequests.restoreState(settings.value("ui/mrs"))
     }
 
     Component.onDestruction: {
-        settings.setValue("ui/mainsplitview", mainSplit.saveState())
         settings.setValue("ui/pipelines", pipelines.saveState())
         settings.setValue("ui/mrs", mergeRequests.saveState())
     }
@@ -74,79 +72,98 @@ Window {
         function onNotification(title, message) { tray.showMessage(title, message) }
     }
 
-    SplitView {
-        id: mainSplit
+    Pane {
         anchors.fill: parent
+        padding: 0
 
-        ColumnLayout {
-            SplitView.minimumWidth: 200
-            spacing: 0
+        RowLayout {
+            anchors.fill: parent
+            spacing: 4
 
-            ProjectList {
-                id: projects
+            Rectangle {
+                color: palette.window
+                Layout.maximumWidth: 200
+                Layout.minimumWidth: 200
                 Layout.fillHeight: true
-                Layout.fillWidth: true
-            }
 
-            Button {
-                Layout.fillWidth: true
-                text: qsTr("Connect")
-                visible: !gpm.currentUser
-                onClicked: gpm.connect()
-            }
+                ColumnLayout {
+                    anchors.fill: parent
+                    spacing: 0
 
-            Item {
-                visible: gpm.currentUser
-                Layout.fillWidth: true
-                height: 64
+                    ProjectList {
+                        id: projects
+                        Layout.fillHeight: true
+                        Layout.fillWidth: true
+                    }
 
-                Image {
-                    id: avatar
+                    Button {
+                        Layout.fillWidth: true
+                        text: qsTr("Connect")
+                        visible: !gpm.currentUser
+                        onClicked: gpm.connect()
+                    }
 
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.bottom: parent.bottom
+                    Item {
+                        visible: gpm.currentUser
+                        Layout.fillWidth: true
+                        height: 64
 
-                    source: gpm.currentUserAvatar
-                    fillMode: Image.PreserveAspectFit
+                        Image {
+                            id: avatar
+
+                            anchors.top: parent.top
+                            anchors.left: parent.left
+                            anchors.bottom: parent.bottom
+
+                            source: gpm.currentUserAvatar
+                            fillMode: Image.PreserveAspectFit
+                        }
+
+                        Label {
+                            anchors.left: avatar.right
+                            anchors.verticalCenter: avatar.verticalCenter
+
+                            text: "Logged as\n" + gpm.currentUser
+                            padding: 5
+                        }
+                    }
+
+                    Label {
+                        text: "Not connected"
+                        padding: 5
+                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                        visible: !gpm.currentUser
+                    }
                 }
+            }
 
-                Label {
-                    anchors.left: avatar.right
-                    anchors.verticalCenter: avatar.verticalCenter
+            Rectangle {
+                color: palette.window
+                Layout.fillWidth: true
+                Layout.fillHeight: true
 
-                    text: "Logged as\n" + gpm.currentUser
-                    padding: 5
+                ColumnLayout {
+                    anchors.fill: parent
+                    spacing: 0
+
+                    MergeRequests {
+                        id: mergeRequests
+
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+
+                        currentProject: projects.currentProject
+                    }
+
+                    Pipelines {
+                        id: pipelines
+
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+
+                        currentProject: projects.currentProject
+                    }
                 }
-            }
-
-            Label {
-                text: "Not connected"
-                padding: 5
-                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                visible: !gpm.currentUser
-            }
-        }
-
-        ColumnLayout {
-            spacing: 0
-
-            MergeRequests {
-                id: mergeRequests
-
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-
-                currentProject: projects.currentProject
-            }
-
-            Pipelines {
-                id: pipelines
-
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-
-                currentProject: projects.currentProject
             }
         }
     }

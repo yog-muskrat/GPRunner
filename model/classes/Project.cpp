@@ -148,5 +148,18 @@ namespace gpr::api
 		connect(mr, &MR::discussionAdded, [this, mr](Discussion const &discussion) { Q_EMIT mrDiscussionAdded(mr, discussion); });
 		connect(mr, &MR::discussionUpdated, [this, mr](Discussion const &discussion) { Q_EMIT mrDiscussionUpdated(mr, discussion); });
 		connect(mr, &MR::discussionRemoved, [this, mr](Discussion const &discussion) { Q_EMIT mrDiscussionRemoved(mr, discussion); });
+
+		connect(
+			mr,
+			&MR::discussionNoteAdded,
+			[this, mr](Discussion const &discussion, Note const &note) { Q_EMIT mrDiscussionNoteAdded(mr, discussion, note); });
+		connect(
+			mr,
+			&MR::discussionNoteUpdated,
+			[this, mr](Discussion const &discussion, Note const &note) { Q_EMIT mrDiscussionNoteUpdated(mr, discussion, note); });
+		connect(
+			mr,
+			&MR::discussionNoteRemoved,
+			[this, mr](Discussion const &discussion, Note const &note) { Q_EMIT mrDiscussionNoteRemoved(mr, discussion, note); });
 	}
 } // namespace gpr::api

@@ -157,12 +157,12 @@ namespace gpr
 
 	void Client::resolveDiscussion(int projectId, int mrIid, QString const & discussionId)
 	{
-		makePostRequest(prepareRequest(endpoint::ProjectMRDiscussionResolved, projectId, mrIid, discussionId, "true"));
+		makePutRequest(prepareRequest(endpoint::ProjectMRDiscussionResolved, projectId, mrIid, discussionId, "true"));
 	}
 
 	void Client::unresolveDiscussion(int projectId, int mrIid, QString const & discussionId)
 	{
-		makePostRequest(prepareRequest(endpoint::ProjectMRDiscussionResolved, projectId, mrIid, discussionId, "false"));
+		makePutRequest(prepareRequest(endpoint::ProjectMRDiscussionResolved, projectId, mrIid, discussionId, "false"));
 	}
 
 	void Client::approveMR(int projectId, int mrIid)
@@ -184,6 +184,12 @@ namespace gpr
 	void Client::makePostRequest(QNetworkRequest request, QByteArray data, Callback callback)
 	{
 		auto reply = m_networkManager.post(std::move(request), std::move(data));
+		connectReplyCallback(reply, std::move(callback));
+	}
+
+	void Client::makePutRequest(QNetworkRequest request, QByteArray data, Callback callback)
+	{
+		auto reply = m_networkManager.put(std::move(request), std::move(data));
 		connectReplyCallback(reply, std::move(callback));
 	}
 

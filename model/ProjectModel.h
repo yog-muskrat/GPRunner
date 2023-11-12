@@ -45,6 +45,10 @@ Q_SIGNALS:
 	void projectMrDiscussionUpdated(QPointer<gpr::api::Project>, QPointer<gpr::api::MR>, gpr::Discussion const &);
 	void projectMrDiscussionRemoved(QPointer<gpr::api::Project>, QPointer<gpr::api::MR>, gpr::Discussion const &);
 
+	void projectMrDiscussionNoteAdded(QPointer<gpr::api::Project>, QPointer<gpr::api::MR>, gpr::Discussion const &, gpr::Note const &);
+	void projectMrDiscussionNoteUpdated(QPointer<gpr::api::Project>, QPointer<gpr::api::MR>, gpr::Discussion const &, gpr::Note const &);
+	void projectMrDiscussionNoteRemoved(QPointer<gpr::api::Project>, QPointer<gpr::api::MR>, gpr::Discussion const &, gpr::Note const &);
+
 private:
 	void onProjectUpdated(QPointer<gpr::api::Project> project);
 	void connectProject(QPointer<gpr::api::Project> project);

@@ -50,6 +50,9 @@ namespace gpr::api
 		void mrDiscussionAdded(QPointer<MR>, Discussion const &);
 		void mrDiscussionUpdated(QPointer<MR>, Discussion const &);
 		void mrDiscussionRemoved(QPointer<MR>, Discussion const &);
+		void mrDiscussionNoteAdded(QPointer<MR>, Discussion const &, Note const &);
+		void mrDiscussionNoteUpdated(QPointer<MR>, Discussion const &, Note const &);
+		void mrDiscussionNoteRemoved(QPointer<MR>, Discussion const &, Note const &);
 		void pipelineAdded(QPointer<Pipeline>);
 		void pipelineRemoved(QPointer<Pipeline>);
 		void pipelineUpdated(QPointer<Pipeline>);

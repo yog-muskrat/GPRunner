@@ -214,7 +214,10 @@ namespace gpr::api
 			{
 				std::ranges::fill(discussion.notes | std::views::transform(&Note::wasShown), !m_discussionsLoaded);
 				auto const &newDiscussion = m_discussions.emplace_back(std::move(discussion));
-				Q_EMIT discussionAdded(newDiscussion);
+				if(m_discussionsLoaded)
+				{
+					Q_EMIT discussionAdded(newDiscussion);
+				}
 			}
 		}
 

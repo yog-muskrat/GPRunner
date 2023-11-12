@@ -150,4 +150,20 @@ void ProjectModel::connectProject(QPointer<gpr::api::Project> project)
 		project,
 		&gpr::api::Project::mrDiscussionRemoved,
 		[this, project](auto mr, auto const &discussion) { Q_EMIT projectMrDiscussionRemoved(project, mr, discussion); });
+
+	connect(
+		project,
+		&gpr::api::Project::mrDiscussionNoteAdded,
+		[this, project](auto mr, auto const &discussion, auto const &note)
+		{ Q_EMIT projectMrDiscussionNoteAdded(project, mr, discussion, note); });
+	connect(
+		project,
+		&gpr::api::Project::mrDiscussionNoteUpdated,
+		[this, project](auto mr, auto const &discussion, auto const &note)
+		{ Q_EMIT projectMrDiscussionNoteUpdated(project, mr, discussion, note); });
+	connect(
+		project,
+		&gpr::api::Project::mrDiscussionNoteRemoved,
+		[this, project](auto mr, auto const &discussion, auto const &note)
+		{ Q_EMIT projectMrDiscussionNoteRemoved(project, mr, discussion, note); });
 }

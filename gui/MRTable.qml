@@ -62,6 +62,8 @@ Item {
 
                         Label {
                             id: urlButtonLabel
+
+                            leftPadding: 5
                             text: "🌐"
 
                             ToolTip.delay: 500
@@ -88,14 +90,16 @@ Item {
 
                         TapHandler {
                             enabled: model.canApprove || model.canUnapprove
-                            onTapped: model.canApprove ? gpr.approveMR(currentProject, currentMrId) : gpr.unapproveMR(currentProject, currentMrId)
+                            onTapped: model.canApprove ? gpm.approveMR(currentProject, model.iid) : gpm.unapproveMR(currentProject, model.iid)
                         }
 
                         Label {
                             id: approveButtonLabel
 
+                            leftPadding: 5
                             text: isApproved ? "☑" : canApprove ? "☐" : ""
                             color: canApprove ? "yellow" : canUnapprove ? "green" : palette.text
+
                             ToolTip.delay: 500
                             ToolTip.timeout: 3000
                             ToolTip.text: canApprove ? "Approve" : canUnapprove ? "Unapprove" : ""
@@ -128,19 +132,24 @@ Item {
                     }
 
 
-                    Rectangle {
+                    Item {
                         id: unreadIndicator
 
-                        visible: model.hasUnreadNotes
-
                         anchors.right: parent.right
-                        anchors.rightMargin: 5
                         anchors.verticalCenter: itemText.verticalCenter
 
-                        width: visible ? itemText.implicitHeight / 3 : 0
-                        height: width
-                        radius: width / 2
-                        color: "#B21818"
+                        visible: model.hasUnreadNotes
+                        implicitWidth: visible ? unreadIndicatorLabel.implicitWidth : 0
+                        implicitHeight: visible ? unreadIndicatorLabel.implicitHeight : 0
+
+                        Label {
+                            id: unreadIndicatorLabel
+
+                            rightPadding: 5
+                            text: "●"
+                            color: "#B21818"
+                        }
+
                     }
                 }
             }
