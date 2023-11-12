@@ -22,14 +22,15 @@ ListView {
             anchors.left: parent.left
             anchors.verticalCenter: itemText.verticalCenter
             
-            width: itemText.implicitHeight
+            //width: itemText.implicitHeight
+            width: 0
             height: width
 
-            Image {
-                anchors.fill: parent
-                source: "image://gpr/project_" + model.projectId
-                fillMode: Image.PreserveAspectFit
-            }
+//            Image {
+//                anchors.fill: parent
+//                source: "image://gpr/project_" + model.projectId
+//                fillMode: Image.PreserveAspectFit
+//            }
         }
 
         Label {

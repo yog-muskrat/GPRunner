@@ -53,7 +53,6 @@ namespace gpr
 	Client::Client()
 	{
 		readSettings();
-		m_networkManager.connectToHost(m_settings.gitlabRoot, 443);
 	}
 
 	void Client::requestCurrentUser(Callback callback)
@@ -110,8 +109,7 @@ namespace gpr
 	void Client::requestFileDownload(QString const &url, RawCallback callback)
 	{
 		QNetworkRequest request;
-		request.setRawHeader("PRIVATE-TOKEN", m_settings.privateToken.toUtf8());
-		request.setUrl(QUrl::fromUserInput(url));
+		request.setUrl(url);
 
 		qDebug() << "Request to download " << url;
 
@@ -125,9 +123,7 @@ namespace gpr
 				reply->deleteLater();
 				if (reply->error())
 				{
-					qDebug() << "API request error:" << reply->errorString();
-					qDebug() << "URL is " << reply->url();
-					qDebug() << "Error is " << reply->error();
+					qDebug() << "API request error:" << reply->error() << "\n" << reply->errorString();
 					return;
 				}
 
@@ -251,6 +247,7 @@ namespace gpr
 				if (reply->error())
 				{
 					qDebug() << "API request error:" << reply->errorString();
+					qDebug() << "API request error:" << reply->error();
 					return;
 				}
 

@@ -34,8 +34,7 @@ GPManager::GPManager(ImageProvider &imageProvider, QObject *parent)
 void GPManager::connect()
 {
 	loadCurrentUser();
-
-	m_client.requestProjects(std::bind_front(&GPManager::parseProjects, this));
+	loadProjects();
 
 	m_updateTimer.start();
 }
