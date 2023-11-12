@@ -20,7 +20,8 @@ public:
 	enum Role
 	{
 		ProjectIdRole = Qt::ItemDataRole::UserRole,
-		HasUnreadNotesRole
+		HasUnreadNotesRole,
+		HasCurrentUserMRsRole
 	};
 
 	ProjectModel(GPManager &manager);

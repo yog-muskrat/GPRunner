@@ -82,8 +82,8 @@ Window {
 
             Rectangle {
                 color: palette.window
-                Layout.maximumWidth: 200
-                Layout.minimumWidth: 200
+                Layout.maximumWidth: 250
+                Layout.minimumWidth: 250
                 Layout.fillHeight: true
 
                 ColumnLayout {
@@ -146,22 +146,39 @@ Window {
                     anchors.fill: parent
                     spacing: 0
 
-                    MergeRequests {
-                        id: mergeRequests
+                    TabBar {
+                        id: tabBar
 
                         Layout.fillWidth: true
-                        Layout.fillHeight: true
 
-                        currentProject: projects.currentProject
+                        TabButton { text: "MRs" }
+                        TabButton { text: "Pipelines" }
+                        TabButton { text: "Statistics" }
                     }
 
-                    Pipelines {
-                        id: pipelines
-
+                    StackLayout {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
 
-                        currentProject: projects.currentProject
+                        currentIndex: tabBar.currentIndex
+
+                        MergeRequests {
+                            id: mergeRequests
+
+                            currentProject: projects.currentProject
+                        }
+
+                        Pipelines {
+                            id: pipelines
+
+                            currentProject: projects.currentProject
+                        }
+
+                        PipelineStatistics {
+                            id: statistics
+
+                            currentProject: pipelines.currentProject
+                        }
                     }
                 }
             }

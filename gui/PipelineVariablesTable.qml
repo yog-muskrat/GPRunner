@@ -88,15 +88,14 @@ Item {
         }
 
         RowLayout {
-            spacing: 5
-
             Button {
+                enabled: currentProject > 0
                 text: "+"
                 onClicked: gpm.addVariable()
             }
 
             Button {
-                enabled: variables.currentRow > 0
+                enabled: currentProject > 0 && variables.currentRow >= 0
                 text: "-"
                 onClicked: gpm.removeVariable(variables.currentRow)
             }

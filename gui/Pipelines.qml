@@ -9,36 +9,20 @@ SplitView {
 
     onCurrentProjectChanged: ref.model = gpm.getProjectBranches(currentProject)
 
-    StackLayout {
-        currentIndex: statisticsButton.checked ? statistics.StackLayout.index : pipelinesTable.StackLayout.index
+    PipelineTable {
+        id: pipelinesTable
+
+        currentProject: pipelines.currentProject
 
         SplitView.minimumWidth: 500
-        implicitWidth: 750
-
-        PipelineTable {
-            id: pipelinesTable
-
-            currentProject: pipelines.currentProject
-        }
-
-        PipelineStatistics {
-            id: statistics
-
-            currentProject: pipelines.currentProject
-        }
     }
 
     ColumnLayout {
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-        implicitWidth: 250
-
         PipelineVariablesTable {
             currentProject: pipelines.currentProject
 
             Layout.fillWidth: true
             Layout.fillHeight: true
-            enabled: currentProject > 0
         }
 
         RowLayout {
@@ -60,12 +44,6 @@ SplitView {
                 text: "⏵"
                 enabled: currentProject > 0
                 onClicked: gpm.runPipeline(currentProject, ref.currentText)
-            }
-            Button {
-                id: statisticsButton
-                text: "📈"
-                enabled: currentProject > 0
-                checkable: true
             }
         }
     }

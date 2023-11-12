@@ -3,23 +3,23 @@ import QtQuick.Layouts
 import QtQuick.Controls
 
 SplitView {
+    id: mergeRequests
     required property int currentProject
 
-    id: mergeRequests
+    anchors.fill: parent
+    orientation: Qt.Vertical
 
     MRTable {
         id: mrList
 
-        SplitView.minimumWidth: 500
-        implicitWidth: 750
+        SplitView.minimumHeight: 350
+        //SplitView.preferredHeight: parent.height / 2
 
         currentProject: mergeRequests.currentProject
     }
 
     MergeRequestDiscussions {
         id: discussions
-
-        implicitWidth: 250
 
         currentProject: mergeRequests.currentProject
         currentMrId: mrList.currentMrId

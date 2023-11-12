@@ -1,52 +1,54 @@
-import QtQuick
+﻿import QtQuick
 import QtQuick.Layouts
+import QtQuick.Controls
 
 ListView {
-    property int currentProject
     id: projects
+    property int currentProject
 
     focus: true
     clip: true
 
     model: gpm.projectModel
 
-    delegate: Item {
+    delegate: Rectangle {
         width: ListView.view.width
         implicitHeight: itemText.implicitHeight
+        color: index == projects.currentIndex ? palette.highlight : "transparent"
 
-        Rectangle {
+        Label {
+            id: itemText
             anchors.fill: parent
-            color: index == projects.currentIndex ? palette.highlight : ((index % 2) == 0 ? palette.alternateBase : palette.base)
+            padding: 5
+            text: model.display
+            font.bold: model.hasCurrentUserMRs
+            color: index == projects.currentIndex ? palette.highlightedText : palette.text
+        }
 
-            Text {
-                id: itemText
-                anchors.fill: parent
-                padding: 5
-                text: model.display
-                font.bold: model.font.bold
-                color: index == projects.currentIndex ? palette.highlightedText : palette.text
-            }
+        Item {
+            id: unreadIndicator
 
-            Rectangle {
-                id: unreadIndicator
+            anchors.right: parent.right
+            anchors.verticalCenter: itemText.verticalCenter
 
-                anchors.right: parent.right
-                anchors.rightMargin: 5
-                anchors.verticalCenter: itemText.verticalCenter
-                visible: model.hasUnreadNotes
+            visible: model.hasUnreadNotes
+            implicitWidth: visible ? unreadIndicatorLabel.implicitWidth : 0
+            implicitHeight: visible ? unreadIndicatorLabel.implicitHeight : 0
 
-                width: itemText.implicitHeight / 3
-                height: width
-                radius: width / 2
+            Label {
+                id: unreadIndicatorLabel
+
+                rightPadding: 5
+                text: "●"
                 color: "#B21818"
             }
+        }
 
-            TapHandler { 
-                onTapped: {
-                    projects.currentIndex = index
-                    projects.currentProject = model.projectId
-                    gpm.setCurrentProject(projectId)
-                }
+        TapHandler {
+            onTapped: {
+                projects.currentIndex = index;
+                projects.currentProject = model.projectId;
+                gpm.setCurrentProject(projectId);
             }
         }
     }

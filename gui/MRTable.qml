@@ -27,6 +27,7 @@ Item {
 
             TableView {
                 id: mrs
+
                 anchors.fill: parent
 
                 focus: true
@@ -149,7 +150,6 @@ Item {
                             text: "●"
                             color: "#B21818"
                         }
-
                     }
                 }
             }

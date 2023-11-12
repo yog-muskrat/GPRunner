@@ -82,21 +82,6 @@ QVariant ProjectModel::data(QModelIndex const &index, int role) const
 			return result;
 		}
 	}
-	else if (role == Qt::ItemDataRole::FontRole)
-	{
-		QFont font;
-
-		bool const bold = std::ranges::any_of(
-			prj->openMRs(), 
-			[this](QPointer<gpr::api::MR> const &mr)
-			{
-				return mr->isUserInvolved(m_manager.getCurrentUser());
-			});
-
-		font.setBold(bold);
-
-		return font;
-	}
 	else if (role == Role::ProjectIdRole)
 	{
 		return prj->id();
@@ -110,6 +95,12 @@ QVariant ProjectModel::data(QModelIndex const &index, int role) const
 				return mr->isUserInvolved(m_manager.getCurrentUser()) && mr->hasNewNotes();
 			});
 	}
+	else if (role == Role::HasCurrentUserMRsRole)
+	{
+		return std::ranges::any_of(
+			prj->openMRs(),
+			[this](auto const &mr) { return mr->isUserInvolved(m_manager.getCurrentUser()); });
+	}
 
 	return QVariant();
 }
@@ -117,9 +108,9 @@ QVariant ProjectModel::data(QModelIndex const &index, int role) const
 QHash<int, QByteArray> ProjectModel::roleNames() const
 {
 	auto names = QAbstractTableModel::roleNames();
-	names.insert(Qt::FontRole, "font");
 	names.insert(Role::ProjectIdRole, "projectId");
 	names.insert(Role::HasUnreadNotesRole, "hasUnreadNotes");
+	names.insert(Role::HasCurrentUserMRsRole, "hasCurrentUserMRs");
 	return names;
 }
 

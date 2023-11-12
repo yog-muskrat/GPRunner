@@ -9,8 +9,8 @@ Item {
     clip: true
 
     ColumnLayout {
-        spacing: 0
         anchors.fill: parent
+        spacing: 0
 
         HorizontalHeaderView {
             id: header
@@ -37,7 +37,7 @@ Item {
                 columnWidthProvider: Utility.calcColumnWidth.bind(this, header)
 
                 delegate: Rectangle {
-                    implicitWidth: itemText.implicitWidth + button.implicitWidth
+                    implicitWidth: button.implicitWidth + itemText.implicitWidth
                     implicitHeight: itemText.implicitHeight
                     color: row == pipelines.currentRow ? palette.highlight : ((row % 2) == 0 ? palette.alternateBase : palette.base)
 
