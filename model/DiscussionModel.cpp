@@ -116,11 +116,15 @@ QVariant DiscussionModel::discussionData(gpr::Discussion const &discussion, int 
 			auto const row = std::ranges::distance(resolvables.cbegin(), pos);
 			auto const count = std::ranges::count_if(m_mr->discussions(), &gpr::Discussion::isResolvable);
 
-			return QString("Дискуссия [%1/%2] от %3").arg(row).arg(count).arg(discussion.notes.front().author);
+			return QString("Дискуссия [%1/%2] от %3").arg(row + 1).arg(count).arg(discussion.notes.front().author);
 		}
 	}
+	if (role == Role::HasUnreadNotes)
+	{
+		return m_mr->isUserInvolved(m_manager.getCurrentUser())
+		    && std::ranges::any_of(discussion.notes, std::not_fn(&gpr::Note::wasShown));
+	}
 	if (role == Role::NoteCount)                            return discussion.notes.size();
-	if (role == Role::HasUnreadNotes)                       return std::ranges::any_of(discussion.notes, std::not_fn(&gpr::Note::wasShown));
 	if (role == Role::Author && !discussion.isEmpty())      return discussion.notes.front().author;
 	if (role == Role::Avatar && !discussion.isEmpty())      return discussion.notes.front().authorAvatar;
 	if (role == Role::CreatedDate && !discussion.isEmpty()) return discussion.notes.front().created;
