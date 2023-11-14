@@ -35,7 +35,9 @@ public:
 		Resolvable,
 		Resolved,
 		CanResolve,
-		CanUnresolve
+		CanUnresolve,
+		NoteCount,
+		HasUnreadNotes
 	};
 
 	DiscussionModel(GPManager &manager);

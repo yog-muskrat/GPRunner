@@ -47,7 +47,7 @@ ScrollView {
                 id: discussion
                 visible: isDiscussion
 
-                implicitWidth: discussionHeader.implicitWidth + discussionStatus.implicitWidth
+                implicitWidth: discussionHeader.implicitWidth + discussionNotes.implicitWidth + unreadIndicator.implicitWidth + discussionStatus.implicitWidth
                 implicitHeight: Math.max(discussionHeader.implicitHeight, discussionStatus.implicitHeight)
                 width: treeDelegate.width
 
@@ -87,6 +87,45 @@ ScrollView {
 
                         text: model.display
                         padding: treeDelegate.padding
+                    }
+                }
+
+                Item {
+                    id: discussionNotes
+
+                    visible: model.noteCount > 0
+                    implicitWidth: visible ? noteCountLabel.implicitWidth : 0
+                    implicitHeight: visible ? noteCountLabel.implicitHeight : 0
+
+                    anchors.right: unreadIndicator.left
+                    anchors.verticalCenter: discussionHeader.verticalCenter
+
+                    Label {
+                        id: noteCountLabel
+
+                        visible: model.noteCount > 0
+
+                        rightPadding: 5
+                        text: "[" + model.noteCount + "]"
+                    }
+                }
+
+                Item {
+                    id: unreadIndicator
+
+                    anchors.right: discussionStatus.left
+                    anchors.verticalCenter: discussionHeader.verticalCenter
+
+                    visible: model.hasUnreadNotes
+                    implicitWidth: visible ? unreadIndicatorLabel.implicitWidth : 0
+                    implicitHeight: visible ? unreadIndicatorLabel.implicitHeight : 0
+
+                    Label {
+                        id: unreadIndicatorLabel
+
+                        rightPadding: 5
+                        text: "●"
+                        color: "#B21818"
                     }
                 }
 

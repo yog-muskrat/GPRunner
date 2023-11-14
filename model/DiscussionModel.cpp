@@ -1,4 +1,6 @@
-﻿#include "model/DiscussionModel.h"
+﻿#include <ranges>
+
+#include "model/DiscussionModel.h"
 #include "model/classes/MR.h"
 
 #include "GPManager.h"
@@ -94,29 +96,31 @@ QHash<int, QByteArray> DiscussionModel::roleNames() const
 	names.insert(Role::CanResolve, "canResolve");
 	names.insert(Role::CanUnresolve, "canUnresolve");
 	names.insert(Role::DiscussionId, "discussionId");
+	names.insert(Role::NoteCount, "noteCount");
+	names.insert(Role::HasUnreadNotes, "hasUnreadNotes");
 	return names;
 }
 
 QVariant DiscussionModel::discussionData(gpr::Discussion const &discussion, int role) const
 {
 	if (role == Qt::ItemDataRole::DisplayRole)
-	{ 
-		auto pos = std::ranges::find(m_mr->discussions(), discussion.id, &gpr::Discussion::id);
-		assert(pos != m_mr->discussions().end());
+	{
+		auto resolvables = m_mr->discussions() | std::views::filter(&gpr::Discussion::isResolvable);
 
-		auto const row = std::ranges::distance(m_mr->discussions().begin(), pos);
+		if(auto pos = std::ranges::find(resolvables, discussion.id, &gpr::Discussion::id); pos == std::ranges::cend(resolvables))
+		{
+			return QString("Комментарий от %1").arg(discussion.notes.front().author);
+		}
+		else
+		{
+			auto const row = std::ranges::distance(resolvables.cbegin(), pos);
+			auto const count = std::ranges::count_if(m_mr->discussions(), &gpr::Discussion::isResolvable);
 
-		auto const unreadNotes = m_mr->isUserInvolved(m_manager.getCurrentUser())
-		                           ? std::ranges::count_if(discussion.notes, std::not_fn(&gpr::Note::wasShown))
-		                           : 0;
-
-		return QString("%1 [%2/%3]%4 от %5")
-		    .arg(discussion.isResolvable() ? "Дискуссия" : "Комментарий")
-		    .arg(row + 1)
-		    .arg(m_mr->discussions().size())
-			.arg(unreadNotes > 0 ? " ●" : "")
-		    .arg(discussion.notes.front().author);
+			return QString("Дискуссия [%1/%2] от %3").arg(row).arg(count).arg(discussion.notes.front().author);
+		}
 	}
+	if (role == Role::NoteCount)                            return discussion.notes.size();
+	if (role == Role::HasUnreadNotes)                       return std::ranges::any_of(discussion.notes, std::not_fn(&gpr::Note::wasShown));
 	if (role == Role::Author && !discussion.isEmpty())      return discussion.notes.front().author;
 	if (role == Role::Avatar && !discussion.isEmpty())      return discussion.notes.front().authorAvatar;
 	if (role == Role::CreatedDate && !discussion.isEmpty()) return discussion.notes.front().created;
@@ -145,13 +149,15 @@ QVariant DiscussionModel::noteData(gpr::Discussion const &, gpr::Note const &not
 		note.wasShown = true;
 		return note.body;
 	}
-	if (role == Role::Author)       return note.author;
-	if (role == Role::Avatar)       return note.authorAvatar;
-	if (role == Role::CreatedDate)  return note.created;
-	if (role == Role::Resolvable)   return note.resolvable;
-	if (role == Role::Resolved)     return note.resolved;
-	if (role == Role::CanResolve)   return false;
-	if (role == Role::CanUnresolve) return false;
+	if (role == Role::Author)         return note.author;
+	if (role == Role::Avatar)         return note.authorAvatar;
+	if (role == Role::CreatedDate)    return note.created;
+	if (role == Role::Resolvable)     return note.resolvable;
+	if (role == Role::Resolved)       return note.resolved;
+	if (role == Role::CanResolve)     return false;
+	if (role == Role::CanUnresolve)   return false;
+	if (role == Role::NoteCount)      return 0;
+	if (role == Role::HasUnreadNotes) return false;
 	return QVariant{};
 }
 
