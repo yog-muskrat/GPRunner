@@ -16,6 +16,7 @@ namespace gpr::api
 
 			QString status;
 			QString source;
+			QString username;
 			QString ref;
 			QDateTime created;
 			QDateTime updated;
@@ -32,6 +33,9 @@ namespace gpr::api
 
 		QString source() const;
 		void setSource(QString source);
+
+		QString username() const;
+		void setUsername(QString const &name);
 
 		QString ref() const;
 		void setRef(QString ref);

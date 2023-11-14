@@ -12,6 +12,7 @@ public:
 	{
 		Id,
 		Ref,
+		User,
 		Status,
 		Source,
 		Created,

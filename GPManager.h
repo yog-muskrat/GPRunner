@@ -26,8 +26,7 @@ class GPManager : public QObject
 	Q_PROPERTY(QObject *mrModel READ getMRModel NOTIFY mrModelChanged)
 	Q_PROPERTY(QObject *variableModel READ getVariableModel NOTIFY variableModelChanged)
 	Q_PROPERTY(QObject *discussionModel READ getDiscussionModel NOTIFY discussionModelChanged)
-	Q_PROPERTY(QString currentUser READ getCurrentUser NOTIFY currentUserChanged)
-	Q_PROPERTY(QString currentUserAvatar READ getCurrentUserAvatar NOTIFY currentUserAvatarChanged)
+	Q_PROPERTY(gpr::User currentUser READ getCurrentUser NOTIFY currentUserChanged)
 	Q_PROPERTY(bool hasNewNotes READ hasNewNotes NOTIFY newNotesReceived)
 
 public:
@@ -65,8 +64,7 @@ public:
 	QAbstractItemModel *getVariableModel();
 	QAbstractItemModel *getDiscussionModel();
 
-	QString getCurrentUser() const { return m_currentUser; }
-	QString getCurrentUserAvatar() const { return m_currentUserAvatar; }
+	gpr::User getCurrentUser() const { return m_currentUser; }
 	bool hasNewNotes() const;
 
 	Q_INVOKABLE void addVariable();
@@ -78,8 +76,7 @@ Q_SIGNALS:
 	void projectModelChanged();
 	void variableModelChanged();
 	void discussionModelChanged();
-	void currentUserChanged(QString);
-	void currentUserAvatarChanged(QString);
+	void currentUserChanged(gpr::User const &);
 	void newNotesReceived() const;
 	void notification(QString title, QString message) const;
 
@@ -131,8 +128,7 @@ private:
 
 	QTimer m_updateTimer;
 	
-	QString m_currentUser;
-	QString m_currentUserAvatar;
+	gpr::User m_currentUser;
 
 	ImageProvider &m_imageProvider;
 

@@ -89,7 +89,6 @@ QHash<int, QByteArray> DiscussionModel::roleNames() const
 	auto names = QAbstractItemModel::roleNames();
 	names.insert(Qt::FontRole, "font");
 	names.insert(Role::Author, "author");
-	names.insert(Role::Avatar, "avatar");
 	names.insert(Role::CreatedDate, "created");
 	names.insert(Role::Resolvable, "resolvable");
 	names.insert(Role::Resolved, "resolved");
@@ -109,14 +108,14 @@ QVariant DiscussionModel::discussionData(gpr::Discussion const &discussion, int 
 
 		if(auto pos = std::ranges::find(resolvables, discussion.id, &gpr::Discussion::id); pos == std::ranges::cend(resolvables))
 		{
-			return QString("Комментарий от %1").arg(discussion.notes.front().author);
+			return QString("Комментарий от %1").arg(discussion.notes.front().author.username);
 		}
 		else
 		{
 			auto const row = std::ranges::distance(resolvables.cbegin(), pos);
 			auto const count = std::ranges::count_if(m_mr->discussions(), &gpr::Discussion::isResolvable);
 
-			return QString("Дискуссия [%1/%2] от %3").arg(row + 1).arg(count).arg(discussion.notes.front().author);
+			return QString("Дискуссия [%1/%2] от %3").arg(row + 1).arg(count).arg(discussion.notes.front().author.username);
 		}
 	}
 	if (role == Role::HasUnreadNotes)
@@ -125,8 +124,7 @@ QVariant DiscussionModel::discussionData(gpr::Discussion const &discussion, int 
 		    && std::ranges::any_of(discussion.notes, std::not_fn(&gpr::Note::wasShown));
 	}
 	if (role == Role::NoteCount)                            return discussion.notes.size();
-	if (role == Role::Author && !discussion.isEmpty())      return discussion.notes.front().author;
-	if (role == Role::Avatar && !discussion.isEmpty())      return discussion.notes.front().authorAvatar;
+	if (role == Role::Author && !discussion.isEmpty())      return QVariant::fromValue(discussion.notes.front().author);
 	if (role == Role::CreatedDate && !discussion.isEmpty()) return discussion.notes.front().created;
 	if (role == Role::Resolvable)                           return discussion.isResolvable();
 	if (role == Role::Resolved)                             return discussion.isResolved();
@@ -153,8 +151,7 @@ QVariant DiscussionModel::noteData(gpr::Discussion const &, gpr::Note const &not
 		note.wasShown = true;
 		return note.body;
 	}
-	if (role == Role::Author)         return note.author;
-	if (role == Role::Avatar)         return note.authorAvatar;
+	if (role == Role::Author)         return QVariant::fromValue(note.author);
 	if (role == Role::CreatedDate)    return note.created;
 	if (role == Role::Resolvable)     return note.resolvable;
 	if (role == Role::Resolved)       return note.resolved;

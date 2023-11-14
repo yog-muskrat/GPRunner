@@ -180,13 +180,13 @@ QVariant MRModel::editRole(gpr::api::MR const &mr, Column column) const
 		case Column::Id:
 		case Column::Title:
 		case Column::Author:
+		case Column::Assignee:
+		case Column::Reviewer:
 		case Column::Discussions:
 		case Column::SourceBranch:
 		case Column::TargetBranch: return displayRole(mr, column);
 		case Column::Status:       return mr.mergeStatus();
 		case Column::Pipeline:     return mr.pipelineStatus();
-		case Column::Assignee:     return mr.assignee();
-		case Column::Reviewer:     return mr.reviewer();
 		case Column::Created:      return mr.createdAt();
 		case Column::Updated:      return mr.updatedAt();
 		default: break;
@@ -202,10 +202,10 @@ QVariant MRModel::displayRole(gpr::api::MR const &mr, Column column) const
 		case Column::Title:        return mr.title();
 		case Column::Status:       return getStatusInfo(mr.mergeStatus()).shortInfo;
 		case Column::Pipeline:     return getPipelineStatusIcon(mr.pipelineStatus());
-		case Column::Author:       return mr.author();
+		case Column::Author:       return mr.author().username;
 		case Column::Discussions:  return getDiscussionsString(mr);
-		case Column::Assignee:     return mr.assignee();
-		case Column::Reviewer:     return mr.reviewer();
+		case Column::Assignee:     return mr.assignee().username;
+		case Column::Reviewer:     return mr.reviewer().username;
 		case Column::SourceBranch: return mr.sourceBranch();
 		case Column::TargetBranch: return mr.targetBranch();
 		case Column::Created:      return getDateTimeString(mr.createdAt());

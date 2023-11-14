@@ -131,7 +131,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="client\Client.h" />
-    <ClInclude Include="GPClasses.h" />
+    <QtMoc Include="GPClasses.h" />
     <ClInclude Include="ImageProvider.h" />
     <ClInclude Include="model\classes\Parser.h" />
     <QtMoc Include="model\DiscussionModel.h" />

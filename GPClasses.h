@@ -8,6 +8,20 @@
 
 namespace gpr
 {
+	struct User
+	{
+		Q_GADGET
+
+		Q_PROPERTY(QString username MEMBER username)
+		Q_PROPERTY(QString avatarUrl MEMBER avatarUrl)
+
+	public:
+		QString username;
+		QString avatarUrl;
+
+		friend auto operator<=>(User const &, User const &) = default;
+	};
+
 	struct Settings
 	{
 		QString gitlabRoot{};
@@ -26,8 +40,7 @@ namespace gpr
 	struct Note
 	{
 		int id {};
-		QString author;
-		QString authorAvatar;
+		User author;
 		QString body;
 		QDateTime created;
 		QDateTime updated;
@@ -61,3 +74,5 @@ namespace gpr
 		QString status;
 	};
 } // namespace gpr
+
+Q_DECLARE_METATYPE(gpr::User)

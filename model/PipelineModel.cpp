@@ -41,6 +41,7 @@ QVariant PipelineModel::headerData(int section, Qt::Orientation orientation, int
 	{
 		case Column::Id: return "ID";
 		case Column::Ref: return "Ref";
+		case Column::User: return "User";
 		case Column::Source: return "Source";
 		case Column::Status: return "Status";
 		case Column::Created: return "Created";
@@ -60,6 +61,7 @@ QVariant PipelineModel::data(QModelIndex const &index, int role) const
 	{
 		if (index.column() == Column::Id) return pipeline->id();
 		if (index.column() == Column::Ref) return pipeline->ref();
+		if (index.column() == Column::User) return pipeline->username();
 		if (index.column() == Column::Status) return pipeline->status();
 		if (index.column() == Column::Source) return pipeline->source();
 		if (index.column() == Column::Created)

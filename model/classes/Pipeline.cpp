@@ -46,6 +46,17 @@ namespace gpr::api
 		Q_EMIT modified();
 	}
 
+	QString Pipeline::username() const
+	{
+		return m_data.username;
+	}
+
+	void Pipeline::setUsername(QString const &name)
+	{
+		m_data.username = name;
+		Q_EMIT modified();
+	}
+
 	QString Pipeline::ref() const
 	{
 		return m_data.ref;

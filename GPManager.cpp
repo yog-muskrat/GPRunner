@@ -431,11 +431,10 @@ void GPManager::parseCurrentUser(QJsonDocument const &doc)
 {
 	auto const obj = doc.object();
 
-	m_currentUser = obj.value("username").toString();
-	m_currentUserAvatar = obj["avatar_url"].toString();
+	m_currentUser.username = obj.value("username").toString();
+	m_currentUser.avatarUrl = obj["avatar_url"].toString();
 
 	Q_EMIT currentUserChanged(m_currentUser);
-	Q_EMIT currentUserAvatarChanged(m_currentUserAvatar);
 }
 
 void GPManager::parseProviderImage(QString const &id, QByteArray data)

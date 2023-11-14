@@ -99,12 +99,12 @@ Window {
                     Button {
                         Layout.fillWidth: true
                         text: qsTr("Connect")
-                        visible: !gpm.currentUser
+                        visible: !gpm.currentUser.username
                         onClicked: gpm.connect()
                     }
 
                     Item {
-                        visible: gpm.currentUser
+                        visible: gpm.currentUser.username
                         Layout.fillWidth: true
                         height: 64
 
@@ -115,7 +115,7 @@ Window {
                             anchors.left: parent.left
                             anchors.bottom: parent.bottom
 
-                            source: gpm.currentUserAvatar
+                            source: gpm.currentUser.avatarUrl
                             fillMode: Image.PreserveAspectFit
                         }
 
@@ -123,7 +123,7 @@ Window {
                             anchors.left: avatar.right
                             anchors.verticalCenter: avatar.verticalCenter
 
-                            text: "Logged as\n" + gpm.currentUser
+                            text: "Logged as\n" + gpm.currentUser.username
                             padding: 5
                         }
                     }
@@ -132,7 +132,7 @@ Window {
                         text: "Not connected"
                         padding: 5
                         Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                        visible: !gpm.currentUser
+                        visible: !gpm.currentUser.username
                     }
                 }
             }

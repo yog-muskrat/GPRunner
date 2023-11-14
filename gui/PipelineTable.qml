@@ -93,7 +93,7 @@ Item {
                     }
 
                     function getButtonVisible(column, status) {
-                        return column == 2 && status != "success" && status != "skipped";
+                        return column == 3 && status != "success" && status != "skipped";
                     }
 
                     function getButtonText(status) {

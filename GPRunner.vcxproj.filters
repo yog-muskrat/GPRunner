@@ -74,6 +74,7 @@
     <QtMoc Include="model\DiscussionModel.h">
       <Filter>model</Filter>
     </QtMoc>
+    <QtMoc Include="GPClasses.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
@@ -118,7 +119,6 @@
     </QtRcc>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GPClasses.h" />
     <ClInclude Include="model\classes\Parser.h">
       <Filter>model\classes</Filter>
     </ClInclude>

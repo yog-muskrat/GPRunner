@@ -20,9 +20,9 @@ namespace gpr::api
 			QDateTime updated;
 			QString title;
 			QString status;
-			QString author;
-			QString assignee;
-			QString reviewer;
+			User author;
+			User assignee;
+			User reviewer;
 			QString sourceBranch;
 			QString targetBranch;
 			QString url;
@@ -46,14 +46,14 @@ namespace gpr::api
 		QString title() const;
 		void setTitle(QString title);
 
-		QString author() const;
-		void setAuthor(QString author);
+		User author() const;
+		void setAuthor(User author);
 
-		QString assignee() const;
-		void setAssignee(QString assignee);
+		User assignee() const;
+		void setAssignee(User assignee);
 
-		QString reviewer() const;
-		void setReviewer(QString reviewer);
+		User reviewer() const;
+		void setReviewer(User reviewer);
 
 		QString sourceBranch() const;
 		void setSourceBranch(QString sourceBranch);
@@ -77,6 +77,7 @@ namespace gpr::api
 
 		std::vector<QString> const &approvedBy() const;
 		void setApprovedBy(std::vector<QString> list);
+		bool isApprovedBy(User const &user) const;
 		bool isApprovedBy(QString const &username) const;
 
 		std::vector<Discussion> const &discussions() const;
@@ -84,6 +85,7 @@ namespace gpr::api
 		void updateDiscussions(std::vector<Discussion> discussions);
 
 		bool isUserInvolved(QString const &username) const;
+		bool isUserInvolved(User const &user) const;
 
 		friend auto operator<=>(MR const &, MR const &) = default;
 

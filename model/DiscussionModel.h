@@ -29,7 +29,6 @@ public:
 	enum Role
 	{
 		Author = Qt::ItemDataRole::UserRole,
-		Avatar,
 		DiscussionId,
 		CreatedDate,
 		Resolvable,

@@ -182,7 +182,7 @@ ScrollView {
 
                         width:  imgSize
                         height: imgSize
-                        source: model.avatar
+                        source: model.author.avatarUrl
                         fillMode: Image.PreserveAspectFit
                     }
 
@@ -191,7 +191,7 @@ ScrollView {
 
                         anchors.left: image.right
                         anchors.top: image.top
-                        text: model.author + "\n" + new Date(model.created).toLocaleString(Qt.locale("ru_RU"), Locale.ShortFormat)
+                        text: model.author.username + "\n" + new Date(model.created).toLocaleString(Qt.locale("ru_RU"), Locale.ShortFormat)
                         leftPadding: treeDelegate.padding
                     }
                 }

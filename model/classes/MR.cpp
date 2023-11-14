@@ -65,34 +65,34 @@ namespace gpr::api
 		Q_EMIT modified();
 	}
 
-	QString MR::author() const
+	User MR::author() const
 	{
 		return m_data.author;
 	}
 
-	void MR::setAuthor(QString author)
+	void MR::setAuthor(User author)
 	{
 		m_data.author = std::move(author);
 		Q_EMIT modified();
 	}
 
-	QString MR::assignee() const
+	User MR::assignee() const
 	{
 		return m_data.assignee;
 	}
 
-	void MR::setAssignee(QString assignee)
+	void MR::setAssignee(User assignee)
 	{
 		m_data.assignee = std::move(assignee);
 		Q_EMIT modified();
 	}
 
-	QString MR::reviewer() const
+	User MR::reviewer() const
 	{
 		return m_data.reviewer;
 	}
 
-	void MR::setReviewer(QString reviewer)
+	void MR::setReviewer(User reviewer)
 	{
 		m_data.reviewer = std::move(reviewer);
 		Q_EMIT modified();
@@ -185,6 +185,11 @@ namespace gpr::api
 		return m_approvedBy;
 	}
 
+	bool MR::isApprovedBy(User const &user) const
+	{
+		return isApprovedBy(user.username);
+	}
+
 	bool MR::isApprovedBy(QString const &username) const
 	{
 		return std::ranges::contains(m_approvedBy, username);
@@ -234,10 +239,15 @@ namespace gpr::api
 		m_discussionsLoaded = true;
 	}
 
+	bool MR::isUserInvolved(User const &user) const
+	{
+		return isUserInvolved(user.username);
+	}
+
 	bool MR::isUserInvolved(QString const &username) const
 	{
 		// TODO: Проверять упоминания пользователя в дискуссиях.
-		return m_data.author == username || m_data.assignee == username || m_data.reviewer == username;
+		return m_data.author.username == username || m_data.assignee.username == username || m_data.reviewer.username == username;
 	}
 
 	void MR::updateDiscussionNotes(Discussion &discussion, std::vector<Note> notes)

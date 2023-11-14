@@ -33,6 +33,7 @@ namespace gpr::api
 			.id = json.value("id").toInt(),
 			.status = json.value("status").toString(),
 			.source = json.value("source").toString(),
+			.username = json["user"]["username"].toString(),
 			.ref = json.value("ref").toString(),
 			.created = toDateTime(json.value("created_at")),
 			.updated = toDateTime(json.value("updated_at"))};
@@ -72,8 +73,8 @@ namespace gpr::api
 		{
 			discussion.notes.push_back(Note{
 				.id = note["id"].toInt(),
-				.author = note["author"]["username"].toString(),
-				.authorAvatar = note["author"]["avatar_url"].toString(),
+				.author =
+					{.username = note["author"]["username"].toString(), .avatarUrl = note["author"]["avatar_url"].toString()},
 				.body = note["body"].toString(),
 				.created = toDateTime(note["created_at"]),
 				.updated = toDateTime(note["updated_at"]),
