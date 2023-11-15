@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "model/classes/Project.h"
 #include "model/classes/Pipeline.h"
@@ -10,7 +10,11 @@ class QJsonDocument;
 namespace gpr::api
 {
 	Project::Data parseProject(QJsonObject const &json);
-	Pipeline::Data parsePipeline(QJsonObject const &json);
+	/**
+	 * @brief Сокращенная версия описания пайплайна. В частности, не содержит информации о пользователе
+	*/
+	Pipeline::Data parseProjectPipeline(QJsonObject const &json);
+	Pipeline::Data parsePipelineInfo(QJsonObject const &json);
 	MR::Data parseMR(QJsonObject const &json);
 	QString parseMRDetails(QJsonObject const &json);
 	Discussion parseDiscussion(QJsonObject const &json);

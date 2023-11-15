@@ -3,6 +3,8 @@
 #include <QObject>
 #include <QDateTime>
 
+#include "GPClasses.h"
+
 namespace gpr::api
 {
 	class Pipeline : public QObject
@@ -16,8 +18,9 @@ namespace gpr::api
 
 			QString status;
 			QString source;
-			QString username;
+			User user;
 			QString ref;
+			QString url;
 			QDateTime created;
 			QDateTime updated;
 		};
@@ -34,11 +37,14 @@ namespace gpr::api
 		QString source() const;
 		void setSource(QString source);
 
-		QString username() const;
-		void setUsername(QString const &name);
+		User const &user() const;
+		void setUser(User user);
 
 		QString ref() const;
 		void setRef(QString ref);
+
+		QString url() const;
+		void setUrl(QString url);
 
 		QDateTime createdAt() const;
 		void setCreatedAt(QDateTime created);

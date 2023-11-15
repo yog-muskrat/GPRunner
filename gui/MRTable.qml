@@ -69,7 +69,7 @@ Item {
 
                             ToolTip.delay: 500
                             ToolTip.timeout: 3000
-                            ToolTip.text: "Open MR in browser"
+                            ToolTip.text: "Open in browser"
                             ToolTip.visible: urlHover.hovered
                         }
                     }

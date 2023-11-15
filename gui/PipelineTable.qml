@@ -31,35 +31,63 @@ Item {
                 clip: true
 
                 model: gpm.pipelineModel
-                selectionModel: ItemSelectionModel {
-                }
+                selectionModel: ItemSelectionModel { }
 
                 columnWidthProvider: Utility.calcColumnWidth.bind(this, header)
 
                 delegate: Rectangle {
-                    implicitWidth: button.implicitWidth + itemText.implicitWidth
+                    implicitWidth: urlButton.implicitWidth + actionButton.implicitWidth + itemText.implicitWidth
                     implicitHeight: itemText.implicitHeight
+
                     color: row == pipelines.currentRow ? palette.highlight : palette.base
 
                     Item {
-                        id: button
+                        id: urlButton
 
+                        anchors.left: parent.left
                         anchors.verticalCenter: itemText.verticalCenter
 
-                        visible: getButtonVisible(column, pipelineStatus)
+                        visible: model.pipelineUrl
                         
-                        implicitWidth: visible ? buttonLabel.implicitWidth : 0
-                        implicitHeight: visible ? buttonLabel.implicitHeight : 0
+                        implicitWidth: visible ? urlButtonLabel.implicitWidth : 0
+                        implicitHeight: visible ? urlButtonLabel.implicitHeight : 0
 
-                        HoverHandler {
-                                cursorShape: Qt.PointingHandCursor
+                        HoverHandler
+                        {
+                            id: urlHover
+                            cursorShape: Qt.PointingHandCursor
                         }
-                        TapHandler {
-                                onTapped: pipelineAction(pipelineStatus)
-                        }
+                        TapHandler { onTapped: Qt.openUrlExternally(model.pipelineUrl) }
 
                         Label {
-                            id: buttonLabel
+                            id: urlButtonLabel
+
+                            leftPadding: 5
+                            text: "🌐"
+
+                            ToolTip.delay: 500
+                            ToolTip.timeout: 3000
+                            ToolTip.text: "Open in browser"
+                            ToolTip.visible: urlHover.hovered
+                        }
+                    }
+
+                    Item {
+                        id: actionButton
+
+                        anchors.left: urlButton.right
+                        anchors.verticalCenter: itemText.verticalCenter
+
+                        visible: getActionButtonVisible(model.pipelineStatus)
+                        
+                        implicitWidth: visible ? actionButtonLabel.implicitWidth : 0
+                        implicitHeight: visible ? actionButtonLabel.implicitHeight : 0
+
+                        HoverHandler { cursorShape: Qt.PointingHandCursor }
+                        TapHandler { onTapped: pipelineAction(pipelineStatus) }
+
+                        Label {
+                            id: actionButtonLabel
 
                             leftPadding: 5
 
@@ -71,7 +99,7 @@ Item {
                     Label {
                         id: itemText
 
-                        anchors.left: button.right
+                        anchors.left: actionButton.right
 
                         padding: 5
 
@@ -92,8 +120,8 @@ Item {
                         return pipelines.currentRow ? palette.highlightedText : palette.text;
                     }
 
-                    function getButtonVisible(column, status) {
-                        return column == 3 && status != "success" && status != "skipped";
+                    function getActionButtonVisible(status) {
+                        return status && status != "success" && status != "skipped";
                     }
 
                     function getButtonText(status) {

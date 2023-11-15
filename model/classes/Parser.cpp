@@ -15,6 +15,11 @@ namespace gpr::api
 		{
 			return QDateTime::fromString(json.toString(), Qt::DateFormat::ISODate);
 		}
+
+		gpr::User toUser(QJsonValue const &json)
+		{
+			return {.username = json["username"].toString(), .avatarUrl = json["avatar_url"].toString()};
+		}
 	} // namespace
 
 	Project::Data gpr::api::parseProject(QJsonObject const &json)
@@ -27,16 +32,23 @@ namespace gpr::api
 		};
 	}
 
-	Pipeline::Data parsePipeline(QJsonObject const &json)
+	Pipeline::Data parseProjectPipeline(QJsonObject const &json)
 	{
 		return {
 			.id = json.value("id").toInt(),
 			.status = json.value("status").toString(),
 			.source = json.value("source").toString(),
-			.username = json["user"]["username"].toString(),
 			.ref = json.value("ref").toString(),
+			.url = json.value("web_url").toString(),
 			.created = toDateTime(json.value("created_at")),
 			.updated = toDateTime(json.value("updated_at"))};
+	}
+
+	Pipeline::Data parsePipelineInfo(QJsonObject const &json)
+	{
+		auto data = parseProjectPipeline(json);
+		data.user = toUser(json["user"]);
+		return data;
 	}
 
 	MR::Data parseMR(QJsonObject const &json)
@@ -48,9 +60,9 @@ namespace gpr::api
 			.updated = toDateTime(json.value("updated_at")),
 			.title = json.value("title").toString(),
 			.status = json.value("state").toString(),
-			.author = json.value("author").toObject().value("username").toString(),
-			.assignee = json.value("assignee").toObject().value("username").toString(),
-			.reviewer = json.value("reviewers").toArray().first().toObject().value("username").toString(),
+			.author = toUser(json["author"]),
+			.assignee = toUser(json["assignee"]),
+			.reviewer =toUser(json.value("reviewers").toArray().first()),
 			.sourceBranch = json.value("source_branch").toString(),
 			.targetBranch = json.value("target_branch").toString(),
 			.url = json.value("web_url").toString(),
@@ -73,8 +85,7 @@ namespace gpr::api
 		{
 			discussion.notes.push_back(Note{
 				.id = note["id"].toInt(),
-				.author =
-					{.username = note["author"]["username"].toString(), .avatarUrl = note["author"]["avatar_url"].toString()},
+				.author = toUser(note["author"]),
 				.body = note["body"].toString(),
 				.created = toDateTime(note["created_at"]),
 				.updated = toDateTime(note["updated_at"]),

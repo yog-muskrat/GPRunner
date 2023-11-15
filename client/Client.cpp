@@ -21,15 +21,19 @@ namespace gpr
 			QString const User{"/user"};
 			QString const Projects{"/projects"};
 			QString const ProjectPipelines{"/projects/%1/pipelines"};
+			QString const ProjectPipelineInfo{"/projects/%1/pipelines/%2"};
 			QString const ProjectBranches{"/projects/%1/repository/branches"};
-			QString const ProjectOpenMRs{"/projects/%1/merge_requests?state=opened"};
 			QString const ProjectFile{"/projects/%1/repository/files/%3?ref=%2"};
+
+			QString const ProjectOpenMRs{"/projects/%1/merge_requests?state=opened"};
 			QString const ProjectMRDetails{"/projects/%1/merge_requests/%2/"};
 			QString const ProjectMRDiscussions{"/projects/%1/merge_requests/%2/discussions"};
 			QString const ProjectMRDiscussionResolved{"/projects/%1/merge_requests/%2/discussions/%3?resolved=%4"};
 			QString const ProjectMRApprovals{"/projects/%1/merge_requests/%2/approvals"};
+
 			QString const ProjectMRApprove{"/projects/%1/merge_requests/%2/approve"};
 			QString const ProjectMRUnapprove{"/projects/%1/merge_requests/%2/unapprove"};
+
 			QString const ProjectPipelineRun{"/projects/%1/pipeline"};
 			QString const ProjectPipelineCancel{"/projects/%1/pipelines/%2/cancel"};
 			QString const ProjectPipelineRetry{"/projects/%1/pipelines/%2/retry"};
@@ -83,6 +87,11 @@ namespace gpr
 	void Client::requestProjectMRs(int projectId, Callback callback)
 	{
 		makeGetRequest(prepareRequest(endpoint::ProjectOpenMRs, projectId), std::move(callback));
+	}
+
+	void Client::requestPipelineInfo(int projectId, int pipelineId, Callback callback)
+	{
+		makeGetRequest(prepareRequest(endpoint::ProjectPipelineInfo, projectId, pipelineId), std::move(callback));
 	}
 
 	void Client::requestPipelineVariables(int projectId, QString const &ref, Callback callback)

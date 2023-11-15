@@ -129,6 +129,11 @@ void GPManager::loadProjectMRInfo(int projectId)
 	}
 }
 
+void GPManager::loadPipelineInfo(int projectId, int pipelineId)
+{
+	m_client.requestPipelineInfo(projectId, pipelineId, std::bind_front(&GPManager::parsePipelineInfo, this, projectId, pipelineId));
+}
+
 void GPManager::loadCurrentUser()
 {
 	m_client.requestCurrentUser(std::bind_front(&GPManager::parseCurrentUser, this));
@@ -320,9 +325,35 @@ void GPManager::parsePipelines(int projectId, QJsonDocument const &doc)
 	}
 
 	auto pipelines = doc.array() | std::views::transform(&QJsonValueRef::toObject)
-	               | std::views::transform(gpr::api::parsePipeline) | std::ranges::to<std::vector>();
+	               | std::views::transform(gpr::api::parseProjectPipeline) | std::ranges::to<std::vector>();
 
 	project->updatePipelines(std::move(pipelines));
+
+	for (auto const &pipeline :
+	     project->pipelines() | std::views::filter([](auto const &p) { return p->user().username.isEmpty(); }))
+	{
+		loadPipelineInfo(projectId, pipeline->id());
+	}
+}
+
+void GPManager::parsePipelineInfo(int projectId, int pipelineId, QJsonDocument const &doc)
+{
+	auto project = m_projectModel.findProject(projectId);
+	if (!project)
+	{
+		qDebug() << "Invalid project id: " << projectId;
+		return;
+	}
+
+	auto pipeline = project->findPipeline(pipelineId);
+	if (!pipeline)
+	{
+		qDebug() << "Invalid pipeline id: " << pipelineId;
+		return;
+	}
+
+	auto data = gpr::api::parsePipelineInfo(doc.object());
+	pipeline->setUser(std::move(data.user));
 }
 
 void GPManager::parseMRs(int projectId, QJsonDocument const &doc)

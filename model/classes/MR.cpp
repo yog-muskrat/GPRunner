@@ -65,7 +65,7 @@ namespace gpr::api
 		Q_EMIT modified();
 	}
 
-	User MR::author() const
+	User const &MR::author() const
 	{
 		return m_data.author;
 	}
@@ -76,7 +76,7 @@ namespace gpr::api
 		Q_EMIT modified();
 	}
 
-	User MR::assignee() const
+	User const &MR::assignee() const
 	{
 		return m_data.assignee;
 	}
@@ -87,7 +87,7 @@ namespace gpr::api
 		Q_EMIT modified();
 	}
 
-	User MR::reviewer() const
+	User const &MR::reviewer() const
 	{
 		return m_data.reviewer;
 	}

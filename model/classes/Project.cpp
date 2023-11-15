@@ -1,4 +1,4 @@
-#include <cassert>
+﻿#include <cassert>
 #include <ranges>
 
 #include "model/classes/Pipeline.h"
@@ -135,7 +135,11 @@ namespace gpr::api
 		{
 			if (auto pipeline = findPipeline(pipelineData.id))
 			{
+				// NOTE: Имя пользователя получается отдельно, поэтому, чтобы оно не обнулилось, нужно сохранить его вручную.
+				auto user = pipeline->user();
 				pipeline->update(std::move(pipelineData));
+				pipeline->setUser(std::move(user));
+
 				Q_EMIT pipelineUpdated(pipeline);
 			}
 			else

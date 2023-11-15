@@ -61,7 +61,7 @@ QVariant PipelineModel::data(QModelIndex const &index, int role) const
 	{
 		if (index.column() == Column::Id) return pipeline->id();
 		if (index.column() == Column::Ref) return pipeline->ref();
-		if (index.column() == Column::User) return pipeline->username();
+		if (index.column() == Column::User) return pipeline->user().username;
 		if (index.column() == Column::Status) return pipeline->status();
 		if (index.column() == Column::Source) return pipeline->source();
 		if (index.column() == Column::Created)
@@ -87,10 +87,15 @@ QVariant PipelineModel::data(QModelIndex const &index, int role) const
 		if (index.column() == Column::Updated) return pipeline->updatedAt();
 	}
 
-	if (role == Role::PipelineIdRole)       return pipeline->id();
-	if (role == Role::PipelineStatusRole)   return pipeline->status();
-	if (role == Role::PipelineSourceRole)   return pipeline->source();
-	if (role == Qt::ItemDataRole::FontRole) return QFont{};
+	if (role == Role::PipelineIdRole) return pipeline->id();
+	if (role == Role::PipelineStatusRole)
+	{
+		return index.column() == Column::Status ? pipeline->status() : QString{};
+	}
+	if(role == Role::PipelineUrlRole)
+	{
+		return index.column() == Column::Id ? pipeline->url() : QString{};
+	}
 
 	return QVariant();
 }
@@ -98,10 +103,9 @@ QVariant PipelineModel::data(QModelIndex const &index, int role) const
 QHash<int, QByteArray> PipelineModel::roleNames() const
 {
 	auto names = QAbstractTableModel::roleNames();
-	names.insert(Qt::FontRole, "font");
 	names.insert(Role::PipelineIdRole, "pipelineId");
-	names.insert(Role::PipelineSourceRole, "pipelineSource");
 	names.insert(Role::PipelineStatusRole, "pipelineStatus");
+	names.insert(Role::PipelineUrlRole, "pipelineUrl");
 
 	return names;
 }

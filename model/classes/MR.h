@@ -46,13 +46,13 @@ namespace gpr::api
 		QString title() const;
 		void setTitle(QString title);
 
-		User author() const;
+		User const &author() const;
 		void setAuthor(User author);
 
-		User assignee() const;
+		User const &assignee() const;
 		void setAssignee(User assignee);
 
-		User reviewer() const;
+		User const &reviewer() const;
 		void setReviewer(User reviewer);
 
 		QString sourceBranch() const;
