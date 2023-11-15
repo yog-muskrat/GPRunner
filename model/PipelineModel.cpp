@@ -96,6 +96,10 @@ QVariant PipelineModel::data(QModelIndex const &index, int role) const
 	{
 		return index.column() == Column::Id ? pipeline->url() : QString{};
 	}
+	if(role == Role::PipelineUserRole && index.column() == Column::User)
+	{
+		return QVariant::fromValue(pipeline->user());
+	}
 
 	return QVariant();
 }
@@ -106,6 +110,7 @@ QHash<int, QByteArray> PipelineModel::roleNames() const
 	names.insert(Role::PipelineIdRole, "pipelineId");
 	names.insert(Role::PipelineStatusRole, "pipelineStatus");
 	names.insert(Role::PipelineUrlRole, "pipelineUrl");
+	names.insert(Role::PipelineUserRole, "pipelineUser");
 
 	return names;
 }

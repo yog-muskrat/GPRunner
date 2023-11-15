@@ -112,7 +112,9 @@
     <ClCompile Include="model\ProjectModel.cpp" />
     <ClCompile Include="model\VariableModel.cpp" />
     <None Include=".clang-format" />
+    <None Include="gui\DefaultToolTip.qml" />
     <None Include="gui\DatePicker.qml" />
+    <None Include="gui\HorizontalSpacer.qml" />
     <None Include="gui\MergeRequestDiscussions.qml" />
     <None Include="gui\MergeRequests.qml" />
     <None Include="gui\MRTable.qml" />
@@ -121,7 +123,9 @@
     <None Include="gui\PipelineVariablesTable.qml" />
     <None Include="gui\ProjectList.qml" />
     <None Include="gui\Pipelines.qml" />
+    <None Include="gui\UnreadMarker.qml" />
     <None Include="gui\Utility.js" />
+    <None Include="gui\VerticalSpacer.qml" />
     <QtRcc Include="gui\qml.qrc" />
     <None Include="cpp.hint" />
     <None Include="gui\main.qml" />

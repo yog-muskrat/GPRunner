@@ -32,6 +32,7 @@ public:
 		Url = Qt::UserRole,
 		MrId,
 		MrIid,
+		User,
 		HasUnreadNotes,
 		IsApproved,
 		CanApprove,

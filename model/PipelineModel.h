@@ -24,7 +24,8 @@ public:
 	{
 		PipelineIdRole = Qt::ItemDataRole::UserRole + 1,
 		PipelineStatusRole,
-		PipelineUrlRole
+		PipelineUrlRole,
+		PipelineUserRole,
 	};
 
 	PipelineModel(QObject *parent = nullptr)

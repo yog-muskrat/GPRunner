@@ -112,6 +112,18 @@
     <None Include="gui\MergeRequestDiscussions.qml">
       <Filter>gui</Filter>
     </None>
+    <None Include="gui\HorizontalSpacer.qml">
+      <Filter>gui</Filter>
+    </None>
+    <None Include="gui\VerticalSpacer.qml">
+      <Filter>gui</Filter>
+    </None>
+    <None Include="gui\UnreadMarker.qml">
+      <Filter>gui</Filter>
+    </None>
+    <None Include="gui\DefaultToolTip.qml">
+      <Filter>gui</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="gui\qml.qrc">

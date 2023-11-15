@@ -34,122 +34,84 @@ Item {
                 clip: true
 
                 model: gpm.mrModel
-                selectionModel: ItemSelectionModel {
-                }
+                selectionModel: ItemSelectionModel {}
 
                 columnWidthProvider: Utility.calcColumnWidth.bind(this, header)
 
                 delegate: Rectangle {
-                    implicitWidth: urlButton.implicitWidth + approveButton.implicitWidth + itemText.implicitWidth + unreadIndicator.implicitWidth
-                    implicitHeight: itemText.implicitHeight
+                    implicitWidth: delegateLayout.implicitWidth
+                    implicitHeight: delegateLayout.implicitHeight
 
                     color: row == mrs.currentRow ? palette.highlight : palette.base
 
-                    Item {
-                        id: urlButton
-                        
-                        anchors.left: parent.left
-                        anchors.verticalCenter: itemText.verticalCenter
-                        
-                        visible: model.url
-                        implicitWidth: visible ? urlButtonLabel.implicitWidth : 0
-                        implicitHeight: visible ? urlButtonLabel.implicitHeight: 0
+                    RowLayout {
+                        id: delegateLayout
 
-                        HoverHandler {
-                                id: urlHover
-                                cursorShape: Qt.PointingHandCursor
-                        }
-                        TapHandler { onTapped: Qt.openUrlExternally(model.url) }
+                        anchors.fill: parent
+                        spacing: 0
 
                         Label {
-                            id: urlButtonLabel
+                            visible: model.url ? true : false
 
                             leftPadding: 5
                             text: "🌐"
 
-                            ToolTip.delay: 500
-                            ToolTip.timeout: 3000
-                            ToolTip.text: "Open in browser"
-                            ToolTip.visible: urlHover.hovered
+                            DefaultToolTip { toolTipText: "Open in browser" }
+                            HoverHandler { cursorShape: Qt.PointingHandCursor }
+                            TapHandler { onTapped: Qt.openUrlExternally(model.url) }
                         }
-                    }
 
-                    Item {
-                        id: approveButton
-
-                        anchors.left: urlButton.right
-                        anchors.verticalCenter: itemText.verticalCenter
-
-                        visible: model.canApprove || model.canUnapprove || model.isApproved
-                        implicitWidth: visible ? approveButtonLabel.implicitWidth : 0
-                        implicitHeight: visible ? approveButtonLabel.implicitHeight: 0
-
-                        HoverHandler {
-                            id: approveHover
-                            enabled: model.canApprove || model.canUnapprove
-                            cursorShape: Qt.PointingHandCursor }
-
-                        TapHandler {
-                            enabled: model.canApprove || model.canUnapprove
-                            onTapped: model.canApprove ? gpm.approveMR(currentProject, model.iid) : gpm.unapproveMR(currentProject, model.iid)
+                        Image {
+                            visible: model.user ? true : false
+                            Layout.maximumHeight: 28
+                            Layout.maximumWidth: Layout.maximumHeight
+                            source: model.user ? model.user.avatarUrl : ""
+                            fillMode: Image.PreserveAspectFit
                         }
 
                         Label {
-                            id: approveButtonLabel
+                            padding: 5
 
-                            leftPadding: 5
+                            text: model.display
+                            font.bold: model.user ? (model.user.username == gpm.currentUser.username) : false
+                            color: mrs.currentRow ? palette.highlightedText : palette.text
+
+                            DefaultToolTip { toolTipText: model.toolTip }
+                            TapHandler {
+                                onTapped: {
+                                    currentMrId = model.id
+                                    currentMrIid = model.iid
+                                }
+                            }
+                        }
+
+                        Label {
+                            visible: model.canApprove || model.canUnapprove || model.isApproved
+
+                            rightPadding: 5
+
                             text: isApproved ? "☑" : canApprove ? "☐" : ""
                             color: canApprove ? "yellow" : canUnapprove ? "green" : palette.text
 
-                            ToolTip.delay: 500
-                            ToolTip.timeout: 3000
-                            ToolTip.text: canApprove ? "Approve" : canUnapprove ? "Unapprove" : ""
-                            ToolTip.visible: approveHover.hovered
-                        }
-                    }
+                            DefaultToolTip { toolTipText: canApprove ? "Approve" : canUnapprove ? "Unapprove" : "" }
 
-                    Label {
-                        id: itemText
+                            HoverHandler {
+                                enabled: model.canApprove || model.canUnapprove
+                                cursorShape: Qt.PointingHandCursor
+                            }
 
-                        anchors.left: approveButton.right
-                        anchors.right: unreadIndicator.left
-
-                        padding: 5
-                        text: model.display
-                        font.bold: model.font.bold
-                        color: mrs.currentRow ? palette.highlightedText : palette.text
-                        ToolTip.delay: 500
-                        ToolTip.timeout: 3000
-                        ToolTip.text: model.toolTip
-                        ToolTip.visible: model.toolTip ? hoverHandler.hovered : false
-
-                        HoverHandler { id: hoverHandler }
-                        TapHandler {
-                            onTapped: {
-                                currentMrId = model.id
-                                currentMrIid = model.iid
+                            TapHandler {
+                                enabled: model.canApprove || model.canUnapprove
+                                onTapped: model.canApprove ? gpm.approveMR(currentProject, model.iid) : gpm.unapproveMR(currentProject, model.iid)
                             }
                         }
-                    }
 
-
-                    Item {
-                        id: unreadIndicator
-
-                        anchors.right: parent.right
-                        anchors.verticalCenter: itemText.verticalCenter
-
-                        visible: model.hasUnreadNotes
-                        implicitWidth: visible ? unreadIndicatorLabel.implicitWidth : 0
-                        implicitHeight: visible ? unreadIndicatorLabel.implicitHeight : 0
-
-                        Label {
-                            id: unreadIndicatorLabel
-
+                        UnreadMarker {
+                            visible: model.hasUnreadNotes
                             rightPadding: 5
-                            text: "●"
-                            color: "#B21818"
                         }
+
+                        HorizontalSpacer { }
                     }
                 }
             }

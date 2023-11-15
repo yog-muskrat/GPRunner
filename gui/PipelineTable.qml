@@ -36,86 +36,63 @@ Item {
                 columnWidthProvider: Utility.calcColumnWidth.bind(this, header)
 
                 delegate: Rectangle {
-                    implicitWidth: urlButton.implicitWidth + actionButton.implicitWidth + itemText.implicitWidth
-                    implicitHeight: itemText.implicitHeight
+                    implicitWidth: delegateLayout.implicitWidth
+                    implicitHeight: delegateLayout.implicitHeight
 
                     color: row == pipelines.currentRow ? palette.highlight : palette.base
 
-                    Item {
-                        id: urlButton
+                    RowLayout {
+                        id: delegateLayout
 
-                        anchors.left: parent.left
-                        anchors.verticalCenter: itemText.verticalCenter
-
-                        visible: model.pipelineUrl
-                        
-                        implicitWidth: visible ? urlButtonLabel.implicitWidth : 0
-                        implicitHeight: visible ? urlButtonLabel.implicitHeight : 0
-
-                        HoverHandler
-                        {
-                            id: urlHover
-                            cursorShape: Qt.PointingHandCursor
-                        }
-                        TapHandler { onTapped: Qt.openUrlExternally(model.pipelineUrl) }
+                        anchors.fill: parent
+                        spacing: 0
 
                         Label {
-                            id: urlButtonLabel
+                            visible: model.pipelineUrl
 
                             leftPadding: 5
                             text: "🌐"
 
-                            ToolTip.delay: 500
-                            ToolTip.timeout: 3000
-                            ToolTip.text: "Open in browser"
-                            ToolTip.visible: urlHover.hovered
+                            DefaultToolTip { toolTipText: "Open in browser" } 
+                            HoverHandler { cursorShape: Qt.PointingHandCursor }
+                            TapHandler { onTapped: Qt.openUrlExternally(model.pipelineUrl) }
                         }
-                    }
-
-                    Item {
-                        id: actionButton
-
-                        anchors.left: urlButton.right
-                        anchors.verticalCenter: itemText.verticalCenter
-
-                        visible: getActionButtonVisible(model.pipelineStatus)
-                        
-                        implicitWidth: visible ? actionButtonLabel.implicitWidth : 0
-                        implicitHeight: visible ? actionButtonLabel.implicitHeight : 0
-
-                        HoverHandler { cursorShape: Qt.PointingHandCursor }
-                        TapHandler { onTapped: pipelineAction(pipelineStatus) }
 
                         Label {
-                            id: actionButtonLabel
+                            visible: getActionButtonVisible(model.pipelineStatus)
 
                             leftPadding: 5
 
                             text: getButtonText(pipelineStatus)
                             color: pipelines.currentRow ? palette.highlightedText : palette.text
+
+                            HoverHandler { cursorShape: Qt.PointingHandCursor }
+                            TapHandler { onTapped: pipelineAction(pipelineStatus) }
                         }
-                    }
 
-                    Label {
-                        id: itemText
+                        Image {
+                            visible: model.pipelineUser ? true : false
+                            Layout.maximumHeight: 28
+                            Layout.maximumWidth: Layout.maximumHeight
+                            source: model.pipelineUser ? model.pipelineUser.avatarUrl : ""
+                            fillMode: Image.PreserveAspectFit
+                        }
 
-                        anchors.left: actionButton.right
+                        Label {
+                            padding: 5
 
-                        padding: 5
+                            text: model.display
+                            color: getTextColor(pipelineStatus)
+                        }
 
-                        text: model.display
-                        color: getTextColor(pipelineStatus)
+                        HorizontalSpacer {}
                     }
 
                     function getTextColor(status) {
-                        if (status == "success")
-                            return "#429942";
-                        if (status == "canceled")
-                            return "#999942";
-                        if (status == "failed")
-                            return "#FE4242";
-                        if (status == "running")
-                            return "#4242FE";
+                        if (status == "success")  return "#429942";
+                        if (status == "canceled") return "#999942";
+                        if (status == "failed")   return "#FE4242";
+                        if (status == "running")  return "#4242FE";
                         // TODO: created, waiting_for_resource, preparing, pending, skipped, manual, scheduled
                         return pipelines.currentRow ? palette.highlightedText : palette.text;
                     }

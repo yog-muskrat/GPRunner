@@ -13,52 +13,27 @@ ListView {
 
     delegate: Rectangle {
         width: ListView.view.width
-        implicitHeight: itemText.implicitHeight
+        implicitWidth:  delegateLayout.implicitWidth
+        implicitHeight: delegateLayout.implicitHeight
         color: index == projects.currentIndex ? palette.highlight : "transparent"
 
-        Item {
-            id: projectAvatar
+        RowLayout {
+            id: delegateLayout
 
-            anchors.left: parent.left
-            anchors.verticalCenter: itemText.verticalCenter
-            
-            //width: itemText.implicitHeight
-            width: 0
-            height: width
-
-//            Image {
-//                anchors.fill: parent
-//                source: "image://gpr/project_" + model.projectId
-//                fillMode: Image.PreserveAspectFit
-//            }
-        }
-
-        Label {
-            id: itemText
-
-            anchors.left: projectAvatar.right
-            padding: 5
-            text: model.display
-            font.bold: model.hasCurrentUserMRs
-            color: index == projects.currentIndex ? palette.highlightedText : palette.text
-        }
-
-        Item {
-            id: unreadIndicator
-
-            anchors.right: parent.right
-            anchors.verticalCenter: itemText.verticalCenter
-
-            visible: model.hasUnreadNotes
-            implicitWidth: visible ? unreadIndicatorLabel.implicitWidth : 0
-            implicitHeight: visible ? unreadIndicatorLabel.implicitHeight : 0
+            anchors.fill: parent
 
             Label {
-                id: unreadIndicatorLabel
+                id: itemText
 
+                padding: 5
+                text: model.display
+                font.bold: model.hasCurrentUserMRs
+                color: index == projects.currentIndex ? palette.highlightedText : palette.text
+            }
+
+            UnreadMarker {
+                visible: model.hasUnreadNotes
                 rightPadding: 5
-                text: "●"
-                color: "#B21818"
             }
         }
 

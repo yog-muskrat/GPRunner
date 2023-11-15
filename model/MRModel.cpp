@@ -154,6 +154,13 @@ QVariant MRModel::data(QModelIndex const &index, int role) const
 		if (column == Column::Assignee) return mr.assignee() == m_manager.getCurrentUser() && mr.isApprovedBy(m_manager.getCurrentUser());
 		return false;
 	}
+	if (role == Role::User)
+	{
+		if (column == Column::Author)   return QVariant::fromValue(mr.author());
+		if (column == Column::Reviewer) return QVariant::fromValue(mr.reviewer());
+		if (column == Column::Assignee) return QVariant::fromValue(mr.assignee());
+		return false;
+	}
 
 	return QVariant();
 }
@@ -165,6 +172,7 @@ QHash<int, QByteArray> MRModel::roleNames() const
 	names.emplace(Role::Url, "url");
 	names.emplace(Role::MrId, "id");
 	names.emplace(Role::MrIid, "iid");
+	names.emplace(Role::User, "user");
 	names.emplace(Role::HasUnreadNotes, "hasUnreadNotes");
 	names.emplace(Role::IsApproved, "isApproved");
 	names.emplace(Role::CanApprove, "canApprove");

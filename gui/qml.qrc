@@ -11,6 +11,10 @@
         <file>Utility.js</file>
         <file>MergeRequestDiscussions.qml</file>
         <file>MergeRequests.qml</file>
+        <file>HorizontalSpacer.qml</file>
+        <file>VerticalSpacer.qml</file>
+        <file>UnreadMarker.qml</file>
+        <file>DefaultToolTip.qml</file>
     </qresource>
     <qresource prefix="/icons">
         <file alias="gitlab.png">icons/gitlab.png</file>
