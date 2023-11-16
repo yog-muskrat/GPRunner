@@ -124,6 +124,12 @@
     <None Include="gui\DefaultToolTip.qml">
       <Filter>gui</Filter>
     </None>
+    <None Include="gui\DiscussionNoteDialog.qml">
+      <Filter>gui</Filter>
+    </None>
+    <None Include="gui\DiscussionDelegate.qml">
+      <Filter>gui</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="gui\qml.qrc">

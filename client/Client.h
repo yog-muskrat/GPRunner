@@ -37,8 +37,13 @@ namespace gpr
 		void runPipeline(int projectId, QString const &ref, std::vector<Variable> const &variables);
 		void cancelPipeline(int projectId, int pipelineId);
 		void retryPipeline(int projectId, int pipelineId);
+
 		void resolveDiscussion(int projectId, int mrIid, QString const &discussionId);
 		void unresolveDiscussion(int projectId, int mrIid, QString const &discussionId);
+		void addDiscussionNote(int projectId, int mrIid, QString const &discussionId, QString text);
+		void editDiscussionNote(int projectId, int mrIid, QString const &discussionId, int noteId, QString text);
+		void removeDiscussionNote(int projectId, int mrIid, QString const &discussionId, int noteId);
+
 		void approveMR(int projectId, int mrIid);
 		void unapproveMR(int projectId, int mrIid);
 
@@ -46,6 +51,7 @@ namespace gpr
 		void makeGetRequest(QNetworkRequest request, Callback callback = {});
 		void makePostRequest(QNetworkRequest request, QByteArray data = {}, Callback callback = {});
 		void makePutRequest(QNetworkRequest request, QByteArray data = {}, Callback callback = {});
+		void makeDeleteRequest(QNetworkRequest request, Callback callback = {});
 
 		template<typename ...Ts>
 		QNetworkRequest prepareRequest(QString urlSubpath, Ts && ...args) const;

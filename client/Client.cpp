@@ -28,6 +28,9 @@ namespace gpr
 			QString const ProjectOpenMRs{"/projects/%1/merge_requests?state=opened"};
 			QString const ProjectMRDetails{"/projects/%1/merge_requests/%2/"};
 			QString const ProjectMRDiscussions{"/projects/%1/merge_requests/%2/discussions"};
+			QString const ProjectMRDiscussionNoteAdd{"/projects/%1/merge_requests/%2/discussions/%3/notes"};
+			QString const ProjectMRDiscussionNoteEdit{"/projects/%1/merge_requests/%2/discussions/%3/notes/%4"};
+			QString const ProjectMRDiscussionNoteRemove{"/projects/%1/merge_requests/%2/discussions/%3/notes/%4"};
 			QString const ProjectMRDiscussionResolved{"/projects/%1/merge_requests/%2/discussions/%3?resolved=%4"};
 			QString const ProjectMRApprovals{"/projects/%1/merge_requests/%2/approvals"};
 
@@ -150,7 +153,7 @@ namespace gpr
 
 		QJsonObject param;
 		param.insert("ref", ref);
-		param.insert("variables", prepareVariables(variables));
+		param.insert("variables", prepareVariables(variables)); 
 
 		makePostRequest(std::move(req), QJsonDocument(param).toJson(QJsonDocument::Compact));
 	}
@@ -165,14 +168,41 @@ namespace gpr
 		makePostRequest(prepareRequest(endpoint::ProjectPipelineRetry, projectId, pipelineId));
 	}
 
-	void Client::resolveDiscussion(int projectId, int mrIid, QString const & discussionId)
+	void Client::resolveDiscussion(int projectId, int mrIid, QString const &discussionId)
 	{
 		makePutRequest(prepareRequest(endpoint::ProjectMRDiscussionResolved, projectId, mrIid, discussionId, "true"));
 	}
 
-	void Client::unresolveDiscussion(int projectId, int mrIid, QString const & discussionId)
+	void Client::unresolveDiscussion(int projectId, int mrIid, QString const &discussionId)
 	{
 		makePutRequest(prepareRequest(endpoint::ProjectMRDiscussionResolved, projectId, mrIid, discussionId, "false"));
+	}
+
+	void Client::addDiscussionNote(int projectId, int mrIid, QString const &discussionId, QString text)
+	{
+		auto req = prepareRequest(endpoint::ProjectMRDiscussionNoteAdd, projectId, mrIid, discussionId);
+		req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+		QJsonObject param;
+		param.insert("body", std::move(text));
+
+		makePostRequest(std::move(req), QJsonDocument(param).toJson(QJsonDocument::Compact));
+	}
+
+	void Client::editDiscussionNote(int projectId, int mrIid, QString const & discussionId, int noteId, QString text)
+	{
+		auto req = prepareRequest(endpoint::ProjectMRDiscussionNoteEdit, projectId, mrIid, discussionId, noteId);
+		req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+		QJsonObject param;
+		param.insert("body", std::move(text));
+
+		makePutRequest(std::move(req), QJsonDocument(param).toJson(QJsonDocument::Compact));
+	}
+
+	void Client::removeDiscussionNote(int projectId, int mrIid, QString const &discussionId, int noteId)
+	{
+		makeDeleteRequest(prepareRequest(endpoint::ProjectMRDiscussionNoteRemove, projectId, mrIid, discussionId, noteId));
 	}
 
 	void Client::approveMR(int projectId, int mrIid)
@@ -200,6 +230,12 @@ namespace gpr
 	void Client::makePutRequest(QNetworkRequest request, QByteArray data, Callback callback)
 	{
 		auto reply = m_networkManager.put(std::move(request), std::move(data));
+		connectReplyCallback(reply, std::move(callback));
+	}
+
+	void Client::makeDeleteRequest(QNetworkRequest request, Callback callback)
+	{
+		auto reply = m_networkManager.deleteResource(std::move(request));
 		connectReplyCallback(reply, std::move(callback));
 	}
 

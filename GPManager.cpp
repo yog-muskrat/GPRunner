@@ -206,6 +206,21 @@ void GPManager::unresolveMRDiscussion(int projectId, int mrIid, QString const &d
 	m_client.unresolveDiscussion(projectId, mrIid, discussionId);
 }
 
+void GPManager::addMRDiscussionNote(int projectId, int mrIid, QString const &discussionId, QString const &note)
+{
+	m_client.addDiscussionNote(projectId, mrIid, discussionId, note);
+}
+
+void GPManager::editMRDiscussionNote(int projectId, int mrIid, QString const &discussionId, int noteId, QString const &note)
+{
+	m_client.editDiscussionNote(projectId, mrIid, discussionId, noteId, note);
+}
+
+void GPManager::removeMRDiscussionNote(int projectId, int mrIid, QString const &discussionId, int noteId)
+{
+	m_client.removeDiscussionNote(projectId, mrIid, discussionId, noteId);
+}
+
 QAbstractItemModel *GPManager::getProjectModel()
 {
 	return &m_projectProxyModel;

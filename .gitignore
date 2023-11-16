@@ -4,3 +4,4 @@ settings.json
 /x64/Debug
 /x64/Release
 *.user
+/GPRunner/x64/Debug

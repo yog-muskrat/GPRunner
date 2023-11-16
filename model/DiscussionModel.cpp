@@ -87,15 +87,17 @@ QModelIndex DiscussionModel::parent(QModelIndex const &index) const
 QHash<int, QByteArray> DiscussionModel::roleNames() const
 {
 	auto names = QAbstractItemModel::roleNames();
-	names.insert(Qt::FontRole, "font");
-	names.insert(Role::Author, "author");
-	names.insert(Role::CreatedDate, "created");
-	names.insert(Role::Resolvable, "resolvable");
-	names.insert(Role::Resolved, "resolved");
-	names.insert(Role::CanResolve, "canResolve");
-	names.insert(Role::CanUnresolve, "canUnresolve");
-	names.insert(Role::DiscussionId, "discussionId");
-	names.insert(Role::NoteCount, "noteCount");
+	names.insert(Qt::FontRole,         "font");
+	names.insert(Role::Author,         "author");
+	names.insert(Role::CreatedDate,    "created");
+	names.insert(Role::Resolvable,     "resolvable");
+	names.insert(Role::Resolved,       "resolved");
+	names.insert(Role::CanResolve,     "canResolve");
+	names.insert(Role::CanUnresolve,   "canUnresolve");
+	names.insert(Role::CanEdit,        "canEdit");
+	names.insert(Role::DiscussionId,   "discussionId");
+	names.insert(Role::NoteId,         "noteId");
+	names.insert(Role::NoteCount,      "noteCount");
 	names.insert(Role::HasUnreadNotes, "hasUnreadNotes");
 	return names;
 }
@@ -129,6 +131,7 @@ QVariant DiscussionModel::discussionData(gpr::Discussion const &discussion, int 
 	if (role == Role::Resolvable)                           return discussion.isResolvable();
 	if (role == Role::Resolved)                             return discussion.isResolved();
 	if (role == Role::DiscussionId)                         return discussion.id;
+	if (role == Role::CanEdit)                              return false;
 	if (role == Role::CanResolve)
 	{
 		return !discussion.isEmpty() && discussion.notes.front().author == m_manager.getCurrentUser() && discussion.isResolvable()
@@ -142,7 +145,7 @@ QVariant DiscussionModel::discussionData(gpr::Discussion const &discussion, int 
 	return QVariant{};
 }
 
-QVariant DiscussionModel::noteData(gpr::Discussion const &, gpr::Note const &note, int role) const
+QVariant DiscussionModel::noteData(gpr::Discussion const &discussion, gpr::Note const &note, int role) const
 {
 	if (role == Qt::ItemDataRole::DisplayRole)
 	{
@@ -155,10 +158,13 @@ QVariant DiscussionModel::noteData(gpr::Discussion const &, gpr::Note const &not
 	if (role == Role::CreatedDate)    return note.created;
 	if (role == Role::Resolvable)     return note.resolvable;
 	if (role == Role::Resolved)       return note.resolved;
-	if (role == Role::CanResolve)     return false;
-	if (role == Role::CanUnresolve)   return false;
+	if (role == Role::CanResolve)     return note.author == m_manager.getCurrentUser() && note.resolvable && !note.resolved;
+	if (role == Role::CanUnresolve)   return note.author == m_manager.getCurrentUser() && note.resolvable && note.resolved;;
+	if (role == Role::CanEdit)        return note.author == m_manager.getCurrentUser();
 	if (role == Role::NoteCount)      return 0;
 	if (role == Role::HasUnreadNotes) return false;
+	if (role == Role::DiscussionId)   return discussion.id;
+	if (role == Role::NoteId)         return note.id;
 	return QVariant{};
 }
 

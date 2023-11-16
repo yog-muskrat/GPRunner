@@ -114,6 +114,8 @@
     <None Include=".clang-format" />
     <None Include="gui\DefaultToolTip.qml" />
     <None Include="gui\DatePicker.qml" />
+    <None Include="gui\DiscussionDelegate.qml" />
+    <None Include="gui\DiscussionNoteDialog.qml" />
     <None Include="gui\HorizontalSpacer.qml" />
     <None Include="gui\MergeRequestDiscussions.qml" />
     <None Include="gui\MergeRequests.qml" />

@@ -15,6 +15,8 @@
         <file>VerticalSpacer.qml</file>
         <file>UnreadMarker.qml</file>
         <file>DefaultToolTip.qml</file>
+        <file>DiscussionNoteDialog.qml</file>
+        <file>DiscussionDelegate.qml</file>
     </qresource>
     <qresource prefix="/icons">
         <file alias="gitlab.png">icons/gitlab.png</file>

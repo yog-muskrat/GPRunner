@@ -30,9 +30,11 @@ public:
 	{
 		Author = Qt::ItemDataRole::UserRole,
 		DiscussionId,
+		NoteId,
 		CreatedDate,
 		Resolvable,
 		Resolved,
+		CanEdit,
 		CanResolve,
 		CanUnresolve,
 		NoteCount,
