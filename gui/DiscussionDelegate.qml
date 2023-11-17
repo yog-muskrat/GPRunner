@@ -161,12 +161,13 @@ Item {
             id: noteHeader
 
             x: indent * depth
-            y: padding
-            implicitHeight: image.height + padding
-            implicitWidth: image.width + authorLabel.implicitWidth
+            implicitHeight: image.height + padding * 2
+            implicitWidth: image.width + authorLabel.implicitWidth + editNote.implicitWidth + removeNote.implicitWidth
 
             Image {
                 id: image
+
+                y: padding
 
                 width:  imgSize
                 height: imgSize
@@ -182,6 +183,38 @@ Item {
                 text: model.author.username + "\n" + new Date(model.created).toLocaleString(Qt.locale("ru_RU"), Locale.ShortFormat)
                 leftPadding: treeDelegate.padding
             }
+
+            Label {
+                id: editNote
+
+                anchors.top: image.top
+                anchors.left: authorLabel.right
+
+                visible: model.canEdit
+                text: "✎"
+                
+                DefaultToolTip { toolTipText: "Edit" }
+                HoverHandler { cursorShape: Qt.PointingHandCursor }
+                TapHandler {
+                    onTapped: treeDelegate.editNoteRequested(model.discussionId, model.noteId, model.display)
+                }
+            }
+
+            Label {
+                id: removeNote
+
+                anchors.top: image.top
+                anchors.left: editNote.right
+
+                visible: model.canEdit
+                text: "🗑"
+
+                DefaultToolTip { toolTipText: "Remove" }
+                HoverHandler { cursorShape: Qt.PointingHandCursor }
+                TapHandler {
+                    onTapped: treeDelegate.removeNoteRequested(model.discussionId, model.noteId)
+                }
+            }
         }
 
         Label {
@@ -196,37 +229,26 @@ Item {
             text: model.display
             textFormat: Text.MarkdownText
             rightPadding: treeDelegate.padding
-            bottomPadding: treeDelegate.indent
+            bottomPadding: treeDelegate.padding
         }
 
         Item {
             id: noteFooter
 
-            visible: isLastChild(treeView.index(row, column)) || model.canEdit
+            visible: isLastChild(treeView.index(row, column))
 
             anchors.top: noteBody.bottom
             anchors.left: noteBody.left
-            anchors.bottomMargin: treeDelegate.padding
-            implicitHeight: visible ? 40 : 0
+            implicitHeight: visible ? footerLayout.implicitHeight + padding * 2 : indent
+            implicitWidth: visible ? footerLayout.implicitWidth : 0
 
             RowLayout {
+                id: footerLayout
                 anchors.fill: parent
 
                 Button {
                     text: "Add reply"
                     onClicked: treeDelegate.addNoteRequested(model.discussionId)
-                }
-
-                Button {
-                    visible: model.canEdit
-                    text: "Edit note"
-                    onClicked: treeDelegate.editNoteRequested(model.discussionId, model.noteId, model.display)
-                }
-
-                Button {
-                    visible: model.canEdit
-                    text: "Remove note"
-                    onClicked: treeDelegate.removeNoteRequested(model.discussionId, model.noteId)
                 }
 
                 Button {

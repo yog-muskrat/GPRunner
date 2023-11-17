@@ -17,7 +17,10 @@ Dialog {
     contentItem: TextArea {
         id: note
         textFormat: TextEdit.MarkdownText
-        text: parent.noteText
+    }
+
+    onNoteTextChanged: {
+        note.text = noteText
     }
 
     onAccepted: {
