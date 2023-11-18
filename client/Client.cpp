@@ -27,7 +27,7 @@ namespace gpr
 
 			QString const ProjectOpenMRs{"/projects/%1/merge_requests?state=opened"};
 			QString const ProjectMRDetails{"/projects/%1/merge_requests/%2/"};
-			QString const ProjectMRDiscussions{"/projects/%1/merge_requests/%2/discussions?per_page=50"};
+			QString const ProjectMRDiscussions{"/projects/%1/merge_requests/%2/discussions"};
 			QString const ProjectMRDiscussionNoteAdd{"/projects/%1/merge_requests/%2/discussions/%3/notes"};
 			QString const ProjectMRDiscussionNoteEdit{"/projects/%1/merge_requests/%2/discussions/%3/notes/%4"};
 			QString const ProjectMRDiscussionNoteRemove{"/projects/%1/merge_requests/%2/discussions/%3/notes/%4"};
@@ -74,7 +74,7 @@ namespace gpr
 
 	void Client::requestProjectPipelines(int projectId, Callback callback)
 	{
-		makeGetRequest(prepareRequest(endpoint::ProjectPipelines, projectId), std::move(callback));
+		makeGetRequest(prepareRequest(endpoint::ProjectPipelines, projectId), std::move(callback), true);
 	}
 
 	void Client::requestProjectPipelineTestReport(int projectId, int pipelineId, Callback callback)
@@ -109,7 +109,6 @@ namespace gpr
 
 	void Client::requestMRDiscussions(int projectId, int mrIid, Callback callback)
 	{
-		// TODO: pagination
 		makeGetRequest(prepareRequest(endpoint::ProjectMRDiscussions, projectId, mrIid), std::move(callback));
 	}
 
@@ -202,10 +201,18 @@ namespace gpr
 		makePostRequest(prepareRequest(endpoint::ProjectMRUnapprove, projectId, mrIid));
 	}
 
-	void Client::makeGetRequest(QNetworkRequest request, Callback callback)
+	void Client::makeGetRequest(QNetworkRequest request, Callback callback, bool noPagination)
 	{
 		auto reply = m_networkManager.get(std::move(request));
-		connectReplyCallback(reply, std::move(callback));
+		connectReplyCallback(reply, std::move(callback), noPagination);
+	}
+
+	void Client::makePaginatedGetRequest(QUrl nextUrl, Callback callback, QJsonArray currentData)
+	{
+		auto request = prepareRequest();
+		request.setUrl(nextUrl);
+		auto reply = m_networkManager.get(std::move(request));
+		connectPaginatedReplyCallback(reply, std::move(callback), std::move(currentData));
 	}
 
 	void Client::makePostRequest(QNetworkRequest request, QJsonObject const &data, Callback callback)
@@ -236,6 +243,14 @@ namespace gpr
 		connectReplyCallback(reply, std::move(callback));
 	}
 
+	QNetworkRequest Client::prepareRequest() const
+	{
+		QNetworkRequest request;
+		request.setRawHeader("PRIVATE-TOKEN", m_settings.privateToken.toUtf8());
+
+		return request;
+	}
+
 	template<typename... Ts>
 	QNetworkRequest Client::prepareRequest(QString urlSubpath, Ts &&...args) const
 	{
@@ -244,8 +259,7 @@ namespace gpr
 			urlSubpath = std::move(urlSubpath).arg(toArg(std::forward<Ts>(args))...);
 		}
 
-		QNetworkRequest request;
-		request.setRawHeader("PRIVATE-TOKEN", m_settings.privateToken.toUtf8());
+		auto request = prepareRequest();
 		request.setUrl(QUrl(QString("%1/api/v4%2").arg(m_settings.gitlabRoot).arg(std::move(urlSubpath))));
 		return request;
 	}
@@ -277,13 +291,13 @@ namespace gpr
 		m_settings.privateToken = doc.object().value("private-token").toString();
 	}
 
-	void Client::connectReplyCallback(QNetworkReply *reply, Callback callback)
+	void Client::connectReplyCallback(QNetworkReply *reply, Callback callback, bool noPagination)
 	{
 		assert(reply);
 		QObject::connect(
 			reply,
 			&QNetworkReply::finished,
-			[reply, callback = std::move(callback)]
+			[this, reply, callback = std::move(callback), noPagination]
 			{
 				reply->deleteLater();
 				if (reply->error())
@@ -295,8 +309,65 @@ namespace gpr
 
 				if (callback)
 				{
-					std::invoke(callback, QJsonDocument::fromJson(reply->readAll()));
+					auto data = QJsonDocument::fromJson(reply->readAll());
+
+					if (auto next = getNextPageLink(reply->rawHeader("link")); next && !noPagination)
+					{
+						makePaginatedGetRequest(*next, std::move(callback), std::move(data).array());
+					}
+					else
+					{
+						std::invoke(callback, std::move(data));
+					}
 				}
 			});
+	}
+
+	void Client::connectPaginatedReplyCallback(QNetworkReply * reply, Callback callback, QJsonArray data)
+	{
+		assert(reply);
+		QObject::connect(
+			reply,
+			&QNetworkReply::finished,
+			[this, reply, data = std::move(data), callback = std::move(callback)] () mutable
+			{
+				reply->deleteLater();
+				if (reply->error())
+				{
+					qDebug() << "API request error:" << reply->errorString();
+					qDebug() << "API request error:" << reply->error();
+					return;
+				}
+
+				for(auto newData : QJsonDocument::fromJson(reply->readAll()).array()) data.push_back(std::move(newData));
+
+				if (auto next = getNextPageLink(reply->rawHeader("link")))
+				{
+					makePaginatedGetRequest(*next, std::move(callback), std::move(data));
+				}
+				else
+				{
+					std::invoke(callback, QJsonDocument{std::move(data)});
+				}
+			});
+	}
+
+	std::optional<QUrl> Client::getNextPageLink(QByteArray const & linkHeader)
+	{
+		for(auto const &linkInfo : QString(linkHeader).split(",", Qt::SplitBehaviorFlags::SkipEmptyParts))
+		{
+			auto const linkParts = linkInfo.split(";", Qt::SplitBehaviorFlags::SkipEmptyParts);
+			assert(linkParts.size() == 2);
+
+			if(linkParts.at(1).contains("next"))
+			{
+				auto link = linkParts.first().trimmed();
+				link.removeFirst();
+				link.removeLast();
+
+				return link;
+			}
+		}
+		return std::optional<QUrl>();
 	}
 } // namespace gpr

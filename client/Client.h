@@ -49,18 +49,26 @@ namespace gpr
 		void unapproveMR(int projectId, int mrIid);
 
 	private:
-		void makeGetRequest(QNetworkRequest request, Callback callback = {});
+		using PaginationCallback = std::function<void(QJsonDocument )>;
+
+		void makeGetRequest(QNetworkRequest request, Callback callback, bool noPagination = false);
+		void makePaginatedGetRequest(QUrl nextUrl, Callback callback, QJsonArray data);
 		void makePostRequest(QNetworkRequest request, QJsonObject const &data = {}, Callback callback = {});
 		void makePutRequest(QNetworkRequest request, QJsonObject const &data = {}, Callback callback = {});
 		void makeDeleteRequest(QNetworkRequest request, Callback callback = {});
+
+		QNetworkRequest prepareRequest() const;
 
 		template<typename ...Ts>
 		QNetworkRequest prepareRequest(QString urlSubpath, Ts && ...args) const;
 		QJsonArray prepareVariables(std::vector<Variable> const &variables) const;
 
+		static std::optional<QUrl> getNextPageLink(QByteArray const &linkHeader);
+
 		void readSettings();
 
-		void connectReplyCallback(QNetworkReply *reply, Callback callback = {});
+		void connectReplyCallback(QNetworkReply *reply, Callback callback = {}, bool disablePagination = false);
+		void connectPaginatedReplyCallback(QNetworkReply *reply, Callback callback, QJsonArray data = {});
 
 		QNetworkAccessManager m_networkManager;
 
