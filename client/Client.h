@@ -3,8 +3,9 @@
 #include <functional>
 #include <variant>
 
-#include <QJsonDocument>
 #include <QJsonArray>
+#include <QJsonObject>
+#include <QJsonDocument>
 #include <QNetworkAccessManager>
 
 #include "GPClasses.h"
@@ -49,8 +50,8 @@ namespace gpr
 
 	private:
 		void makeGetRequest(QNetworkRequest request, Callback callback = {});
-		void makePostRequest(QNetworkRequest request, QByteArray data = {}, Callback callback = {});
-		void makePutRequest(QNetworkRequest request, QByteArray data = {}, Callback callback = {});
+		void makePostRequest(QNetworkRequest request, QJsonObject const &data = {}, Callback callback = {});
+		void makePutRequest(QNetworkRequest request, QJsonObject const &data = {}, Callback callback = {});
 		void makeDeleteRequest(QNetworkRequest request, Callback callback = {});
 
 		template<typename ...Ts>
