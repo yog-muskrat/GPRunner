@@ -31,7 +31,7 @@ Dialog {
             gpm.addMRDiscussionNote(currentProject, currentMrIid, discussionId, note.text)
         }
         else {
-            gpm.addMRNote(currentProject, currentMrIid, note.text)
+            gpm.addMRDiscussion(currentProject, currentMrIid, note.text)
         }
         reset();
     }
@@ -41,6 +41,7 @@ Dialog {
     function reset() {
         discussionId = ""
         noteId = 0
-        noteText = 0
+        noteText = ""
+        note.text = ""
     }
 }

@@ -58,6 +58,7 @@ public:
 	Q_INVOKABLE void resolveMRDiscussion(int projectId, int mrIid, QString const &discussionId);
 	Q_INVOKABLE void unresolveMRDiscussion(int projectId, int mrIid, QString const &discussionId);
 	Q_INVOKABLE void addMRDiscussionNote(int projectId, int mrIid, QString const &discussionId, QString const &note);
+	Q_INVOKABLE void addMRDiscussion(int projectId, int mrIid, QString const &note);
 	Q_INVOKABLE void editMRDiscussionNote(int projectId, int mrIid, QString const &discussionId, int noteId, QString const &note);
 	Q_INVOKABLE void removeMRDiscussionNote(int projectId, int mrIid, QString const &discussionId, int noteId);
 

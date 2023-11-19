@@ -11,6 +11,11 @@ Item {
 
     clip: true
 
+    onCurrentProjectChanged: {
+        currentMrId = 0
+        currentMrIid = 0
+    }
+
     ColumnLayout {
         anchors.fill: parent
         spacing: 0

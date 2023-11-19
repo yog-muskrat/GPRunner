@@ -12,7 +12,6 @@ SplitView {
         id: mrList
 
         SplitView.minimumHeight: 350
-        //SplitView.preferredHeight: parent.height / 2
 
         currentProject: mergeRequests.currentProject
     }

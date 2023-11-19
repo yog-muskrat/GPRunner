@@ -12,7 +12,7 @@ class MRModel : public QAbstractTableModel
 public:
 	enum Column
 	{
-		Id,
+		Iid,
 		Status,
 		Pipeline,
 		Discussions,

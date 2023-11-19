@@ -211,6 +211,11 @@ void GPManager::addMRDiscussionNote(int projectId, int mrIid, QString const &dis
 	m_client.addDiscussionNote(projectId, mrIid, discussionId, note);
 }
 
+void GPManager::addMRDiscussion(int projectId, int mrIid, QString const &note)
+{
+	m_client.addDiscussion(projectId, mrIid, note);
+}
+
 void GPManager::editMRDiscussionNote(int projectId, int mrIid, QString const &discussionId, int noteId, QString const &note)
 {
 	m_client.editDiscussionNote(projectId, mrIid, discussionId, noteId, note);

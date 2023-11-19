@@ -97,7 +97,7 @@ QVariant MRModel::headerData(int section, Qt::Orientation orientation, int role)
 
 	switch (section)
 	{
-		case Column::Id: return "ID";
+		case Column::Iid: return "IID";
 		case Column::Title: return "Title";
 		case Column::Status: return "?";
 		case Column::Pipeline: return "PL";
@@ -127,7 +127,7 @@ QVariant MRModel::data(QModelIndex const &index, int role) const
 	if (role == Qt::FontRole)         return fontRole(mr, column);
 	if (role == Role::Url)
 	{
-		if(column == Column::Id) return mr.url();
+		if(column == Column::Iid) return mr.url();
 		return QString{};
 	}
 	if (role == Role::MrId)           return mr.id();
@@ -185,7 +185,7 @@ QVariant MRModel::editRole(gpr::api::MR const &mr, Column column) const
 {
 	switch (column)
 	{
-		case Column::Id:
+		case Column::Iid:
 		case Column::Title:
 		case Column::Author:
 		case Column::Assignee:
@@ -206,7 +206,7 @@ QVariant MRModel::displayRole(gpr::api::MR const &mr, Column column) const
 {
 	switch (column)
 	{
-		case Column::Id:           return mr.id();
+		case Column::Iid:           return mr.iid();
 		case Column::Title:        return mr.title();
 		case Column::Status:       return getStatusInfo(mr.mergeStatus()).shortInfo;
 		case Column::Pipeline:     return getPipelineStatusIcon(mr.pipelineStatus());

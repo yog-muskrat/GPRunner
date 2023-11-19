@@ -28,6 +28,7 @@ namespace gpr
 			QString const ProjectOpenMRs{"/projects/%1/merge_requests?state=opened"};
 			QString const ProjectMRDetails{"/projects/%1/merge_requests/%2/"};
 			QString const ProjectMRDiscussions{"/projects/%1/merge_requests/%2/discussions"};
+			QString const ProjectMRDiscussionAdd{"/projects/%1/merge_requests/%2/discussions?body=%3"};
 			QString const ProjectMRDiscussionNoteAdd{"/projects/%1/merge_requests/%2/discussions/%3/notes"};
 			QString const ProjectMRDiscussionNoteEdit{"/projects/%1/merge_requests/%2/discussions/%3/notes/%4"};
 			QString const ProjectMRDiscussionNoteRemove{"/projects/%1/merge_requests/%2/discussions/%3/notes/%4"};
@@ -170,6 +171,11 @@ namespace gpr
 	void Client::unresolveDiscussion(int projectId, int mrIid, QString const &discussionId)
 	{
 		makePutRequest(prepareRequest(endpoint::ProjectMRDiscussionResolved, projectId, mrIid, discussionId, "false"));
+	}
+
+	void Client::addDiscussion(int projectId, int mrIid, QString text)
+	{
+		makePostRequest(prepareRequest(endpoint::ProjectMRDiscussionAdd, projectId, mrIid), {{"body", std::move(text)}});
 	}
 
 	void Client::addDiscussionNote(int projectId, int mrIid, QString const &discussionId, QString text)

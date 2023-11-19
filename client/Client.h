@@ -41,6 +41,7 @@ namespace gpr
 
 		void resolveDiscussion(int projectId, int mrIid, QString const &discussionId);
 		void unresolveDiscussion(int projectId, int mrIid, QString const &discussionId);
+		void addDiscussion(int projectId, int mrIid, QString text);
 		void addDiscussionNote(int projectId, int mrIid, QString const &discussionId, QString text);
 		void editDiscussionNote(int projectId, int mrIid, QString const &discussionId, int noteId, QString text);
 		void removeDiscussionNote(int projectId, int mrIid, QString const &discussionId, int noteId);
