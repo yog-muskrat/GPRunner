@@ -139,6 +139,10 @@ void ProjectModel::onProjectUpdated(QPointer<gpr::api::Project> project)
 
 void ProjectModel::connectProject(QPointer<gpr::api::Project> project)
 {
+	connect(project, &gpr::api::Project::mrAdded,   [this, project](auto mr) { Q_EMIT projectMergeRequestAdded(project, mr); });
+	connect(project, &gpr::api::Project::mrRemoved, [this, project](auto mr) { Q_EMIT projectMergeRequestRemoved(project, mr); });
+	connect(project, &gpr::api::Project::mrUpdated, [this, project](auto mr) { Q_EMIT projectMergeRequestUpdated(project, mr); });
+
 	connect(
 		project,
 		&gpr::api::Project::mrDiscussionAdded,

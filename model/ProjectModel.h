@@ -44,6 +44,10 @@ public:
 	QHash<int, QByteArray> roleNames() const override;
 
 Q_SIGNALS:
+	void projectMergeRequestAdded(QPointer<gpr::api::Project>, QPointer<gpr::api::MR>);
+	void projectMergeRequestRemoved(QPointer<gpr::api::Project>, QPointer<gpr::api::MR>);
+	void projectMergeRequestUpdated(QPointer<gpr::api::Project>, QPointer<gpr::api::MR>);
+
 	void projectMrDiscussionAdded(QPointer<gpr::api::Project>, QPointer<gpr::api::MR>, gpr::Discussion const &);
 	void projectMrDiscussionUpdated(QPointer<gpr::api::Project>, QPointer<gpr::api::MR>, gpr::Discussion const &);
 	void projectMrDiscussionRemoved(QPointer<gpr::api::Project>, QPointer<gpr::api::MR>, gpr::Discussion const &);

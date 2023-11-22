@@ -113,6 +113,8 @@ private:
 	void onDiscussionNoteAdded(QPointer<gpr::api::Project> project, QPointer<gpr::api::MR> mr, gpr::Discussion const &discussion, gpr::Note const &note);
 	void onDiscussionNoteUpdated(QPointer<gpr::api::Project> project, QPointer<gpr::api::MR> mr, gpr::Discussion const &discussion, gpr::Note const &note);
 
+	void onMergeRequestRemoved(QPointer<gpr::api::Project> project, QPointer<gpr::api::MR> mr);
+
 	void update();
 
 	ProjectModel m_projectModel;

@@ -176,6 +176,15 @@ void GPManager::onDiscussionNoteUpdated(
 	}
 }
 
+void GPManager::onMergeRequestRemoved(QPointer<gpr::api::Project> project, QPointer<gpr::api::MR> mr)
+{
+	if(project->id() == m_currentProject && mr->id() == m_currentMR)
+	{
+		m_currentMR = -1;
+		m_mrModel.clear();
+	}
+}
+
 void GPManager::cancelPipeline(int pipelineId)
 {
 	m_client.cancelPipeline(m_currentProject, pipelineId);
@@ -296,6 +305,7 @@ void GPManager::initModels()
 
 	m_discussionProxyModel.setSourceModel(&m_discussionModel);
 
+	QObject::connect(&m_projectModel, &ProjectModel::projectMergeRequestRemoved, this, &GPManager::onMergeRequestRemoved);
 	QObject::connect(&m_projectModel, &ProjectModel::projectMrDiscussionAdded, this, &GPManager::onDiscussionAdded);
 	QObject::connect(&m_projectModel, &ProjectModel::projectMrDiscussionNoteAdded, this, &GPManager::onDiscussionNoteAdded);
 	QObject::connect(&m_projectModel, &ProjectModel::projectMrDiscussionNoteUpdated, this, &GPManager::onDiscussionNoteUpdated);
