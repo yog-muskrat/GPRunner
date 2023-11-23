@@ -62,11 +62,27 @@ Item {
             }
         }
 
-        Button {
-            visible: currentMrIid > 0
+        RowLayout {
+                visible: currentMrIid > 0
 
-            text: "Add discussion"
-            onClicked: { dialog.open() }
+            Button {
+                text: "Add discussion"
+                onClicked: { dialog.open() }
+            }
+
+//            TODO
+//            Button {
+//                text: "Collapse resolved"
+//                onClicked: {
+//                    for(let row = 0; row < mrs.rows; row++) {
+//                        let idx = mrs.index(row, 0)
+//                        let data = mrs.model.data(idx, 261)
+//                        console.log("data", data)
+//
+//                        if(data) mrs.collapse(row)
+//                    }
+//                }
+//            }
         }
     }
 }

@@ -16,7 +16,7 @@ Dialog {
 
     contentItem: TextArea {
         id: note
-        textFormat: TextEdit.MarkdownText
+        wrapMode: TextEdit.WordWrap
     }
 
     onNoteTextChanged: {
