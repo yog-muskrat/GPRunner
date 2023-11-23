@@ -181,7 +181,8 @@ void GPManager::onMergeRequestRemoved(QPointer<gpr::api::Project> project, QPoin
 	if(project->id() == m_currentProject && mr->id() == m_currentMR)
 	{
 		m_currentMR = -1;
-		m_mrModel.clear();
+		m_discussionModel.clear();
+		m_pipelineModel.clear();
 	}
 }
 
