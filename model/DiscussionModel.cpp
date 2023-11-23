@@ -43,7 +43,7 @@ int DiscussionModel::rowCount(QModelIndex const &parent) const
 
 QVariant DiscussionModel::data(QModelIndex const &index, int role) const
 {
-	assert(index.isValid());
+	if(!index.isValid()) return {};
 
 	if (index.parent().isValid())
 	{

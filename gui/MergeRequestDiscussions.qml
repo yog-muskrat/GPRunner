@@ -11,6 +11,18 @@ Item {
 
     onCurrentMrIdChanged: gpm.setCurrentMR(currentProject, currentMrId)
 
+    function expandCollapseIf(pred, expand) {
+        for(let row = 0; row < mrs.rows; row++) {
+            let idx = mrs.index(row, 0)
+            if(idx.parent.valid) continue;
+            if(pred(idx)) expand ? mrs.expand(row) : mrs.collapse(row)
+        }
+    }
+
+    // TODO: Получать роль по имени
+    function isResolved(idx)   { return mrs.model.data(idx, 261) == true }
+    function isUnresolved(idx) { return mrs.model.data(idx, 261) != true }
+
     ColumnLayout
     {
         anchors.fill: parent
@@ -66,23 +78,34 @@ Item {
                 visible: currentMrIid > 0
 
             Button {
-                text: "Add discussion"
+                text: "🗨"
                 onClicked: { dialog.open() }
+                DefaultToolTip {
+                    toolTipText: "Add discussion"
+                }
             }
 
-//            TODO
-//            Button {
-//                text: "Collapse resolved"
-//                onClicked: {
-//                    for(let row = 0; row < mrs.rows; row++) {
-//                        let idx = mrs.index(row, 0)
-//                        let data = mrs.model.data(idx, 261)
-//                        console.log("data", data)
-//
-//                        if(data) mrs.collapse(row)
-//                    }
-//                }
-//            }
+            HorizontalSpacer {}
+
+            Button {
+                visible: mrs.rows > 0
+                text: "Expand/collapse all"
+                onClicked: {
+                    expandCollapseIf((x)=>true, !mrs.isExpanded(0))
+                }
+            }
+
+            Button {
+                visible: mrs.rows > 0
+                text: "Collapse resolved"
+                onClicked: { expandCollapseIf(isResolved, false) }
+            }
+
+            Button {
+                visible: mrs.rows > 0
+                text: "Expand unresolved"
+                onClicked: { expandCollapseIf(isUnresolved, true) }
+            }
         }
     }
 }
