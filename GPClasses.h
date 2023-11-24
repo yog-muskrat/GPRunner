@@ -62,6 +62,12 @@ namespace gpr
 		bool isResolvable() const { return std::ranges::any_of(notes, &Note::resolvable); }
 		bool isResolved() const { return std::ranges::all_of(notes, &Note::resolved); }
 
+		User author() const
+		{
+			// NOTE: Автором дискуссии считаем автора первой заметки
+			return isEmpty() ? User{} : notes.front().author;
+		}
+
 		bool operator==(Discussion const &other) const { return id == other.id; }
 	};
 
