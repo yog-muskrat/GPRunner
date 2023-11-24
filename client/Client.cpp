@@ -223,23 +223,27 @@ namespace gpr
 
 	void Client::makePostRequest(QNetworkRequest request, QJsonObject const &data, Callback callback)
 	{
+		QByteArray ba;
 		if(!data.isEmpty())
 		{
 			request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+			ba = QJsonDocument{data}.toJson(QJsonDocument::Compact);
 		}
 
-		auto reply = m_networkManager.post(std::move(request), QJsonDocument{data}.toJson(QJsonDocument::Compact));
+		auto reply = m_networkManager.post(std::move(request), std::move(ba));
 		connectReplyCallback(reply, std::move(callback));
 	}
 
 	void Client::makePutRequest(QNetworkRequest request, QJsonObject const &data, Callback callback)
 	{
+		QByteArray ba;
 		if(!data.isEmpty())
 		{
 			request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+			ba = QJsonDocument{data}.toJson(QJsonDocument::Compact);
 		}
 
-		auto reply = m_networkManager.put(std::move(request), QJsonDocument{data}.toJson(QJsonDocument::Compact));
+		auto reply = m_networkManager.put(std::move(request), std::move(ba));
 		connectReplyCallback(reply, std::move(callback));
 	}
 
