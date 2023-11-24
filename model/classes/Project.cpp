@@ -86,7 +86,7 @@ namespace gpr::api
 
 		for (auto &mrData : mrs)
 		{
-			if (auto mr = findMR(mrData.id))
+			if (auto mr = findMRById(mrData.id))
 			{
 				mr->update(std::move(mrData));
 				Q_EMIT mrUpdated(mr);
@@ -111,7 +111,16 @@ namespace gpr::api
 		Q_EMIT modified();
 	}
 
-	QPointer<MR> Project::findMR(int mrId) const
+	QPointer<MR> Project::findMRByIid(int mrIid) const
+	{
+		if (auto const pos = std::ranges::find(m_openMRs, mrIid, &MR::iid); pos != m_openMRs.cend())
+		{
+			return *pos;
+		}
+		return nullptr;
+	}
+
+	QPointer<MR> Project::findMRById(int mrId) const
 	{
 		if (auto const pos = std::ranges::find(m_openMRs, mrId, &MR::id); pos != m_openMRs.cend())
 		{

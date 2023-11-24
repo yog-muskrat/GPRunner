@@ -42,7 +42,8 @@ namespace gpr::api
 
 		std::vector<QPointer<MR>>const &openMRs() const;
 		void updateMRs(std::vector<MR::Data> mrs);
-		QPointer<MR> findMR(int mrId) const;
+		QPointer<MR> findMRById(int mrId) const;
+		QPointer<MR> findMRByIid(int mrIid) const;
 
 		std::vector<QPointer<Pipeline>> const &pipelines() const;
 		void updatePipelines(std::vector<Pipeline::Data> pipelines);

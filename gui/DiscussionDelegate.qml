@@ -3,6 +3,9 @@ import QtQuick.Layouts
 import QtQuick.Controls
 
 Item {
+    required property int projectId
+    required property int mrIid
+
     signal addNoteRequested(discussionId: string)
     signal addDiscussionRequested()
     signal addCommentRequested()
@@ -111,6 +114,10 @@ Item {
             implicitHeight: visible ? unreadIndicatorLabel.implicitHeight : 0
 
             UnreadMarker {
+                projectId: treeDelegate.projectId
+                mrIid: treeDelegate.mrIid
+                discussionId: model.discussionId
+
                 id: unreadIndicatorLabel
 
                 rightPadding: 5

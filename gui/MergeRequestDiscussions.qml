@@ -41,6 +41,9 @@ Item {
                 columnWidthProvider: function (column) { return width }
 
                 delegate: DiscussionDelegate {
+                    projectId: discussions.currentProject
+                    mrIid: discussions.currentMrIid
+
                     onAddNoteRequested: function(discussionId) {
                         dialog.discussionId = discussionId
                         dialog.open()

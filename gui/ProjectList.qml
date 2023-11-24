@@ -32,6 +32,8 @@ ListView {
             }
 
             UnreadMarker {
+                projectId: model.projectId
+
                 visible: model.hasUnreadNotes
                 rightPadding: 5
             }

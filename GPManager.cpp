@@ -64,7 +64,7 @@ void GPManager::setCurrentMR(int projectId, int mrId)
 	auto project = m_projectModel.findProject(projectId);
 	assert(project);
 
-	auto mr = project->findMR(mrId);
+	auto mr = project->findMRById(mrId);
 	assert(mr);
 
 	m_currentMR = mrId;
@@ -234,6 +234,57 @@ void GPManager::editMRDiscussionNote(int projectId, int mrIid, QString const &di
 void GPManager::removeMRDiscussionNote(int projectId, int mrIid, QString const &discussionId, int noteId)
 {
 	m_client.removeDiscussionNote(projectId, mrIid, discussionId, noteId);
+}
+
+void GPManager::markDiscussionsRead(int projectId)
+{
+	auto const prj = m_projectModel.findProject(projectId);
+	assert(prj);
+	for(auto const &mr : prj->openMRs())
+	{
+		markDiscussionsRead(projectId, mr->iid());
+	}
+}
+
+void GPManager::markDiscussionsRead(int projectId, int mrIid)
+{
+	auto const prj = m_projectModel.findProject(projectId);
+	assert(prj);
+
+	auto const mr = prj->findMRByIid(mrIid);
+	assert(mr);
+
+	auto discussions = mr->discussions();
+	for(auto &discussion : discussions)
+	{
+		for(auto &note : discussion.notes)
+		{
+			note.wasShown = true;
+		}
+	}
+
+	mr->updateDiscussions(std::move(discussions));
+}
+
+void GPManager::markDiscussionsRead(int projectId, int mrIid, QString const &discussionId)
+{
+	auto const prj = m_projectModel.findProject(projectId);
+	assert(prj);
+
+	auto const mr = prj->findMRByIid(mrIid);
+	assert(mr);
+
+	auto discussions = mr->discussions();
+
+	if(auto pos = std::ranges::find(discussions, discussionId, &gpr::Discussion::id); pos != discussions.end())
+	{
+		for(auto &note : pos->notes)
+		{
+			note.wasShown = true;
+		}
+
+		mr->updateDiscussions(std::move(discussions));
+	}
 }
 
 QAbstractItemModel *GPManager::getProjectModel()
@@ -413,7 +464,7 @@ void GPManager::parseMRDetails(int projectId, int mrId, QJsonDocument const &doc
 		return;
 	}
 
-	auto mr = project->findMR(mrId);
+	auto mr = project->findMRById(mrId);
 	if(!mr)
 	{
 		qDebug() << "Invalid MR id: " << mrId;
@@ -432,7 +483,7 @@ void GPManager::parseMRDiscussions(int projectId, int mrId, QJsonDocument const 
 		return;
 	}
 
-	auto mr = project->findMR(mrId);
+	auto mr = project->findMRById(mrId);
 	if(!mr)
 	{
 		qDebug() << "Invalid MR id: " << mrId;
@@ -457,7 +508,7 @@ void GPManager::parseMRApprovals(int projectId, int mrId, QJsonDocument const &d
 		return;
 	}
 
-	auto mr = project->findMR(mrId);
+	auto mr = project->findMRById(mrId);
 	if(!mr)
 	{
 		qDebug() << "Invalid MR id: " << mrId;

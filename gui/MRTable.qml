@@ -112,6 +112,9 @@ Item {
                         }
 
                         UnreadMarker {
+                            projectId: currentProject
+                            mrIid: model.iid
+
                             visible: model.hasUnreadNotes
                             rightPadding: 5
                         }
