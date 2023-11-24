@@ -38,6 +38,7 @@ public:
 		CanResolve,
 		CanUnresolve,
 		NoteCount,
+		NoteUrl,
 		HasUnreadNotes
 	};
 

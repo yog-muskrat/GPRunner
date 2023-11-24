@@ -169,57 +169,58 @@ Item {
 
             x: indent * depth
             implicitHeight: image.height + padding * 2
-            implicitWidth: image.width + authorLabel.implicitWidth + editNote.implicitWidth + removeNote.implicitWidth
+            implicitWidth: noteHeaderLayout.implicitWidth
 
-            Image {
-                id: image
+            RowLayout {
+                id: noteHeaderLayout
 
                 y: padding
+                spacing: padding
 
-                width:  imgSize
-                height: imgSize
-                source: model.author.avatarUrl
-                fillMode: Image.PreserveAspectFit
-            }
+                Image {
+                    id: image
 
-            Label {
-                id: authorLabel
+                    Layout.alignment: Qt.AlignTop
+                    Layout.maximumHeight: imgSize
+                    Layout.maximumWidth: imgSize
 
-                anchors.left: image.right
-                anchors.top: image.top
-                text: model.author.username + "\n" + new Date(model.created).toLocaleString(Qt.locale("ru_RU"), Locale.ShortFormat)
-                leftPadding: treeDelegate.padding
-            }
-
-            Label {
-                id: editNote
-
-                anchors.top: image.top
-                anchors.left: authorLabel.right
-
-                visible: model.canEdit
-                text: "✎"
-                
-                DefaultToolTip { toolTipText: "Edit" }
-                HoverHandler { cursorShape: Qt.PointingHandCursor }
-                TapHandler {
-                    onTapped: treeDelegate.editNoteRequested(model.discussionId, model.noteId, model.display)
+                    source: model.author.avatarUrl
+                    fillMode: Image.PreserveAspectFit
                 }
-            }
 
-            Label {
-                id: removeNote
+                Label {
+                    Layout.alignment: Qt.AlignTop
+                
+                    text: model.author.username + "\n" + new Date(model.created).toLocaleString(Qt.locale("ru_RU"), Locale.ShortFormat)
+                    leftPadding: treeDelegate.padding
+                }
 
-                anchors.top: image.top
-                anchors.left: editNote.right
+                TextLinkButton {
+                    Layout.alignment: Qt.AlignTop
+                    visible: model.noteUrl ? true : false
+                    url: model.noteUrl
+                }
 
-                visible: model.canEdit
-                text: "🗑"
+                TextLinkButton {
+                    Layout.alignment: Qt.AlignTop
 
-                DefaultToolTip { toolTipText: "Remove" }
-                HoverHandler { cursorShape: Qt.PointingHandCursor }
-                TapHandler {
-                    onTapped: treeDelegate.removeNoteRequested(model.discussionId, model.noteId)
+                    visible: model.canEdit
+                    text: "✎"
+
+                    DefaultToolTip { toolTipText: "Edit" }
+                    HoverHandler { cursorShape: Qt.PointingHandCursor }
+                    TapHandler { onTapped: treeDelegate.editNoteRequested(model.discussionId, model.noteId, model.display) }
+                }
+
+                Label {
+                    Layout.alignment: Qt.AlignTop
+
+                    visible: model.canEdit
+                    text: "🗑"
+
+                    DefaultToolTip { toolTipText: "Remove" }
+                    HoverHandler { cursorShape: Qt.PointingHandCursor }
+                    TapHandler { onTapped: treeDelegate.removeNoteRequested(model.discussionId, model.noteId) }
                 }
             }
         }

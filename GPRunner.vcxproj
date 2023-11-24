@@ -129,6 +129,7 @@
     <None Include="gui\PipelineVariablesTable.qml" />
     <None Include="gui\ProjectList.qml" />
     <None Include="gui\Pipelines.qml" />
+    <None Include="gui\TextLinkButton.qml" />
     <None Include="gui\UnreadMarker.qml" />
     <None Include="gui\Utility.js" />
     <None Include="gui\VerticalSpacer.qml" />

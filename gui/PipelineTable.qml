@@ -47,15 +47,11 @@ Item {
                         anchors.fill: parent
                         spacing: 0
 
-                        Label {
+
+                        TextLinkButton {
                             visible: model.pipelineUrl
-
                             leftPadding: 5
-                            text: "🌐"
-
-                            DefaultToolTip { toolTipText: "Open in browser" } 
-                            HoverHandler { cursorShape: Qt.PointingHandCursor }
-                            TapHandler { onTapped: Qt.openUrlExternally(model.pipelineUrl) }
+                            url: model.pipelineUrl
                         }
 
                         Label {

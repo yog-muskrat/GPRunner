@@ -85,6 +85,7 @@ namespace gpr::api
 		void updateDiscussions(std::vector<Discussion> discussions);
 		void markDiscussionsRead();
 		void markDiscussionRead(QString const &discussionId);
+		QString noteUrl(gpr::Note const &note) const;
 
 		bool isUserInvolved(QString const &username) const;
 		bool isUserInvolved(User const &user) const;

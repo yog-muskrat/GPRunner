@@ -98,6 +98,7 @@ QHash<int, QByteArray> DiscussionModel::roleNames() const
 	names.insert(Role::DiscussionId,   "discussionId");
 	names.insert(Role::NoteId,         "noteId");
 	names.insert(Role::NoteCount,      "noteCount");
+	names.insert(Role::NoteUrl,        "noteUrl");
 	names.insert(Role::HasUnreadNotes, "hasUnreadNotes");
 	return names;
 }
@@ -126,6 +127,7 @@ QVariant DiscussionModel::discussionData(gpr::Discussion const &discussion, int 
 		    && std::ranges::any_of(discussion.notes, std::not_fn(&gpr::Note::wasShown));
 	}
 	if (role == Role::NoteCount)                            return discussion.notes.size();
+	if (role == Role::NoteUrl)                              return m_mr->noteUrl(discussion.notes.front());
 	if (role == Role::Author && !discussion.isEmpty())      return QVariant::fromValue(discussion.notes.front().author);
 	if (role == Role::CreatedDate && !discussion.isEmpty()) return discussion.notes.front().created;
 	if (role == Role::Resolvable)                           return discussion.isResolvable();
@@ -165,6 +167,7 @@ QVariant DiscussionModel::noteData(gpr::Discussion const &discussion, gpr::Note 
 	if (role == Role::HasUnreadNotes) return false;
 	if (role == Role::DiscussionId)   return discussion.id;
 	if (role == Role::NoteId)         return note.id;
+	if (role == Role::NoteUrl)        return m_mr->noteUrl(note);
 	return QVariant{};
 }
 

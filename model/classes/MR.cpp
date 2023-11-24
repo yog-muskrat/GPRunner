@@ -259,6 +259,11 @@ namespace gpr::api
 		}
 	}
 
+	QString MR::noteUrl(gpr::Note const &note) const
+	{
+		return QString{"%1#note_%2"}.arg(url()).arg(note.id);
+	}
+
 	bool MR::isUserInvolved(User const &user) const
 	{
 		return isUserInvolved(user.username);

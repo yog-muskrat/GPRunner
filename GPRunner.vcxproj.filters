@@ -130,6 +130,9 @@
     <None Include="gui\DiscussionDelegate.qml">
       <Filter>gui</Filter>
     </None>
+    <None Include="gui\TextLinkButton.qml">
+      <Filter>gui</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="gui\qml.qrc">

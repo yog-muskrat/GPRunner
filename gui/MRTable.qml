@@ -55,15 +55,10 @@ Item {
                         anchors.fill: parent
                         spacing: 0
 
-                        Label {
-                            visible: model.url ? true : false
-
+                        TextLinkButton {
                             leftPadding: 5
-                            text: "🌐"
-
-                            DefaultToolTip { toolTipText: "Open in browser" }
-                            HoverHandler { cursorShape: Qt.PointingHandCursor }
-                            TapHandler { onTapped: Qt.openUrlExternally(model.url) }
+                            visible: model.url ? true : false
+                            url: model.url
                         }
 
                         Image {
