@@ -239,6 +239,26 @@ namespace gpr::api
 		m_discussionsLoaded = true;
 	}
 
+	void MR::markDiscussionsRead()
+	{
+		for(auto &discussion : m_discussions)
+		{
+			discussion.markRead();
+			Q_EMIT discussionUpdated(discussion);
+		}
+		Q_EMIT modified();
+	}
+
+	void MR::markDiscussionRead(QString const &discussionId)
+	{
+		if(auto pos = std::ranges::find(m_discussions, discussionId, &Discussion::id); pos != m_discussions.end())
+		{
+			pos->markRead();
+			Q_EMIT discussionUpdated(*pos);
+			Q_EMIT modified();
+		}
+	}
+
 	bool MR::isUserInvolved(User const &user) const
 	{
 		return isUserInvolved(user.username);

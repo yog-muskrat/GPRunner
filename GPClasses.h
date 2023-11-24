@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <ranges>
 
 #include <QDateTime>
 #include <QPixmap>
@@ -67,6 +68,8 @@ namespace gpr
 			// NOTE: Автором дискуссии считаем автора первой заметки
 			return isEmpty() ? User{} : notes.front().author;
 		}
+
+		void markRead() { std::ranges::fill(notes | std::views::transform(&Note::wasShown), true); }
 
 		bool operator==(Discussion const &other) const { return id == other.id; }
 	};

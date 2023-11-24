@@ -240,10 +240,7 @@ void GPManager::markDiscussionsRead(int projectId)
 {
 	auto const prj = m_projectModel.findProject(projectId);
 	assert(prj);
-	for(auto const &mr : prj->openMRs())
-	{
-		markDiscussionsRead(projectId, mr->iid());
-	}
+	std::ranges::for_each(prj->openMRs(), &gpr::api::MR::markDiscussionsRead);
 }
 
 void GPManager::markDiscussionsRead(int projectId, int mrIid)
@@ -254,16 +251,7 @@ void GPManager::markDiscussionsRead(int projectId, int mrIid)
 	auto const mr = prj->findMRByIid(mrIid);
 	assert(mr);
 
-	auto discussions = mr->discussions();
-	for(auto &discussion : discussions)
-	{
-		for(auto &note : discussion.notes)
-		{
-			note.wasShown = true;
-		}
-	}
-
-	mr->updateDiscussions(std::move(discussions));
+	mr->markDiscussionsRead();
 }
 
 void GPManager::markDiscussionsRead(int projectId, int mrIid, QString const &discussionId)
@@ -274,17 +262,7 @@ void GPManager::markDiscussionsRead(int projectId, int mrIid, QString const &dis
 	auto const mr = prj->findMRByIid(mrIid);
 	assert(mr);
 
-	auto discussions = mr->discussions();
-
-	if(auto pos = std::ranges::find(discussions, discussionId, &gpr::Discussion::id); pos != discussions.end())
-	{
-		for(auto &note : pos->notes)
-		{
-			note.wasShown = true;
-		}
-
-		mr->updateDiscussions(std::move(discussions));
-	}
+	mr->markDiscussionRead(discussionId);
 }
 
 QAbstractItemModel *GPManager::getProjectModel()
