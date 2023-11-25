@@ -147,5 +147,13 @@
       <Filter>client</Filter>
     </ClInclude>
     <ClInclude Include="ImageProvider.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="GPRunner.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="gui\icons\gitlab-green.png" />
+    <Image Include="gui\icons\gitlab-green.ico" />
   </ItemGroup>
 </Project>
