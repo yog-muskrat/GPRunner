@@ -19,6 +19,8 @@ namespace gpr
 		namespace endpoint
 		{
 			QString const User{"/user"};
+			QString const Users{"/users?active=true"};
+
 			QString const Projects{"/projects"};
 			QString const ProjectPipelines{"/projects/%1/pipelines"};
 			QString const ProjectPipelineInfo{"/projects/%1/pipelines/%2"};
@@ -66,6 +68,11 @@ namespace gpr
 	void Client::requestCurrentUser(Callback callback)
 	{
 		makeGetRequest(prepareRequest(endpoint::User), std::move(callback));
+	}
+
+	void Client::requestActiveUsers(Callback callback)
+	{
+		makeGetRequest(prepareRequest(endpoint::Users), std::move(callback));
 	}
 
 	void Client::requestProjects(Callback callback)
@@ -116,6 +123,16 @@ namespace gpr
 	void Client::requestMRApprovals(int projectId, int mrIid, Callback callback)
 	{
 		makeGetRequest(prepareRequest(endpoint::ProjectMRApprovals, projectId, mrIid), std::move(callback));
+	}
+
+	void Client::setMRReviewer(int projectId, int mrIid, int userId)
+	{
+		makePutRequest(prepareRequest(endpoint::ProjectMRDetails, projectId, mrIid), {{"reviewer_ids", QJsonArray{{userId}}}});
+	}
+
+	void Client::setMRAssignee(int projectId, int mrIid, int userId)
+	{
+		makePutRequest(prepareRequest(endpoint::ProjectMRDetails, projectId, mrIid), {{"assignee_ids", QJsonArray{{userId}}}});
 	}
 
 	void Client::requestFileDownload(QString const &url, RawCallback callback)

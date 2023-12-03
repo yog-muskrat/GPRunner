@@ -13,10 +13,12 @@ namespace gpr
 	{
 		Q_GADGET
 
+		Q_PROPERTY(int id MEMBER id)
 		Q_PROPERTY(QString username MEMBER username)
 		Q_PROPERTY(QString avatarUrl MEMBER avatarUrl)
 
 	public:
+		int id{};
 		QString username;
 		QString avatarUrl;
 

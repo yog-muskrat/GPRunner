@@ -23,6 +23,7 @@ int main(int argc, char *argv[])
 	QQmlApplicationEngine engine;
 	engine.addImageProvider("gpr", imageProvider);
 	engine.rootContext()->setContextProperty("gpm", &manager);
+	engine.addImportPath("qrc:///icons");
 	engine.addImportPath("qrc:///modules");
 	engine.load(QUrl(QStringLiteral("qrc:///modules/main.qml")));
 

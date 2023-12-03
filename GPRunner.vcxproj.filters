@@ -13,6 +13,18 @@
     <Filter Include="client">
       <UniqueIdentifier>{470d65b4-c275-4c9b-912f-bc5d3fa53b5d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="gui\mr">
+      <UniqueIdentifier>{094509e9-9ac2-4a7f-8737-c1e33213ff28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gui\common">
+      <UniqueIdentifier>{7c847ada-0393-45da-bcc2-a61ad547edc4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gui\pipelines">
+      <UniqueIdentifier>{ba0f0512-17db-4fd8-96ce-75912eaa10d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gui\discussions">
+      <UniqueIdentifier>{dc8a5a75-6660-4fb0-8c92-633a0bee1e9f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="model\VariableModel.cpp">
@@ -81,57 +93,60 @@
     <None Include="gui\main.qml">
       <Filter>gui</Filter>
     </None>
-    <None Include="gui\PipelineTable.qml">
-      <Filter>gui</Filter>
-    </None>
     <None Include="gui\ProjectList.qml">
-      <Filter>gui</Filter>
-    </None>
-    <None Include="gui\PipelineVariablesTable.qml">
       <Filter>gui</Filter>
     </None>
     <None Include=".clang-format" />
     <None Include="gui\MRTable.qml">
-      <Filter>gui</Filter>
-    </None>
-    <None Include="gui\Pipelines.qml">
-      <Filter>gui</Filter>
-    </None>
-    <None Include="gui\PipelineStatistics.qml">
-      <Filter>gui</Filter>
-    </None>
-    <None Include="gui\DatePicker.qml">
-      <Filter>gui</Filter>
-    </None>
-    <None Include="gui\Utility.js">
-      <Filter>gui</Filter>
+      <Filter>gui\mr</Filter>
     </None>
     <None Include="gui\MergeRequests.qml">
-      <Filter>gui</Filter>
+      <Filter>gui\mr</Filter>
     </None>
-    <None Include="gui\MergeRequestDiscussions.qml">
-      <Filter>gui</Filter>
-    </None>
-    <None Include="gui\HorizontalSpacer.qml">
-      <Filter>gui</Filter>
-    </None>
-    <None Include="gui\VerticalSpacer.qml">
-      <Filter>gui</Filter>
-    </None>
-    <None Include="gui\UnreadMarker.qml">
-      <Filter>gui</Filter>
+    <None Include="gui\DatePicker.qml">
+      <Filter>gui\common</Filter>
     </None>
     <None Include="gui\DefaultToolTip.qml">
-      <Filter>gui</Filter>
+      <Filter>gui\common</Filter>
     </None>
-    <None Include="gui\DiscussionNoteDialog.qml">
-      <Filter>gui</Filter>
-    </None>
-    <None Include="gui\DiscussionDelegate.qml">
-      <Filter>gui</Filter>
+    <None Include="gui\HorizontalSpacer.qml">
+      <Filter>gui\common</Filter>
     </None>
     <None Include="gui\TextLinkButton.qml">
-      <Filter>gui</Filter>
+      <Filter>gui\common</Filter>
+    </None>
+    <None Include="gui\UnreadMarker.qml">
+      <Filter>gui\common</Filter>
+    </None>
+    <None Include="gui\VerticalSpacer.qml">
+      <Filter>gui\common</Filter>
+    </None>
+    <None Include="gui\Utility.js">
+      <Filter>gui\common</Filter>
+    </None>
+    <None Include="gui\PipelineVariablesTable.qml">
+      <Filter>gui\pipelines</Filter>
+    </None>
+    <None Include="gui\Pipelines.qml">
+      <Filter>gui\pipelines</Filter>
+    </None>
+    <None Include="gui\PipelineStatistics.qml">
+      <Filter>gui\pipelines</Filter>
+    </None>
+    <None Include="gui\PipelineTable.qml">
+      <Filter>gui\pipelines</Filter>
+    </None>
+    <None Include="gui\DiscussionNoteDialog.qml">
+      <Filter>gui\discussions</Filter>
+    </None>
+    <None Include="gui\DiscussionDelegate.qml">
+      <Filter>gui\discussions</Filter>
+    </None>
+    <None Include="gui\MergeRequestDiscussions.qml">
+      <Filter>gui\discussions</Filter>
+    </None>
+    <None Include="gui\MergeRequestTableDelegate.qml">
+      <Filter>gui\mr</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

@@ -77,8 +77,10 @@ void MRModel::setProject(QPointer<gpr::api::Project> project)
 	endResetModel();
 }
 
-int MRModel::rowCount(QModelIndex const &) const
+int MRModel::rowCount(QModelIndex const &parent) const
 {
+	if(parent.isValid()) return 0;
+
 	if (!m_project) return 0;
 	return std::ranges::ssize(m_project->openMRs());
 }
@@ -116,7 +118,10 @@ QVariant MRModel::headerData(int section, Qt::Orientation orientation, int role)
 
 QVariant MRModel::data(QModelIndex const &index, int role) const
 {
-	if (!checkIndex(index)) return {};
+	if (!checkIndex(index, CheckIndexOption::IndexIsValid))
+	{
+		return {};
+	}
 
 	auto const &mr = *m_project->openMRs().at(index.row());
 	auto const column = static_cast<Column>(index.column());
@@ -142,16 +147,19 @@ QVariant MRModel::data(QModelIndex const &index, int role) const
 	}
 	if (role == Role::CanApprove)
 	{
-		if (column == Column::Author)   return mr.author()   == m_manager.getCurrentUser() && !mr.isApprovedBy(m_manager.getCurrentUser());
 		if (column == Column::Reviewer) return mr.reviewer() == m_manager.getCurrentUser() && !mr.isApprovedBy(m_manager.getCurrentUser());
 		if (column == Column::Assignee) return mr.assignee() == m_manager.getCurrentUser() && !mr.isApprovedBy(m_manager.getCurrentUser());
 		return false;
 	}
 	if (role == Role::CanUnapprove)
 	{
-		if (column == Column::Author)   return mr.author()   == m_manager.getCurrentUser() && mr.isApprovedBy(m_manager.getCurrentUser());
 		if (column == Column::Reviewer) return mr.reviewer() == m_manager.getCurrentUser() && mr.isApprovedBy(m_manager.getCurrentUser());
 		if (column == Column::Assignee) return mr.assignee() == m_manager.getCurrentUser() && mr.isApprovedBy(m_manager.getCurrentUser());
+		return false;
+	}
+	if (role == Role::CanEdit)
+	{
+		if (column == Column::Reviewer || column == Column::Assignee) return mr.author() == m_manager.getCurrentUser();
 		return false;
 	}
 	if (role == Role::User)
@@ -163,6 +171,30 @@ QVariant MRModel::data(QModelIndex const &index, int role) const
 	}
 
 	return QVariant();
+}
+
+bool MRModel::setData(QModelIndex const &index, QVariant const &value, int role)
+{
+	if (!checkIndex(index, CheckIndexOption::IndexIsValid))
+	{
+		return false;
+	}
+
+	auto const mr = m_project->openMRs().at(index.row());
+
+	if (role == Qt::EditRole)
+	{
+		if (index.column() == Column::Reviewer)
+		{
+			m_manager.setMRReviewer(m_project->id(), mr->iid(), value.toInt());
+		}
+		else if (index.column() == Column::Assignee)
+		{
+			m_manager.setMRAssignee(m_project->id(), mr->iid(), value.toInt());
+		}
+	}
+
+	return false;
 }
 
 QHash<int, QByteArray> MRModel::roleNames() const
@@ -179,6 +211,16 @@ QHash<int, QByteArray> MRModel::roleNames() const
 	names.emplace(Role::CanUnapprove, "canUnapprove");
 
 	return names;
+}
+
+Qt::ItemFlags MRModel::flags(QModelIndex const &index) const
+{
+	auto flags = Qt::ItemIsSelectable | Qt::ItemIsEnabled;
+	if(data(index, Role::CanEdit).toBool())
+	{
+		flags |= Qt::ItemIsEditable;
+	}
+	return flags;
 }
 
 QVariant MRModel::editRole(gpr::api::MR const &mr, Column column) const

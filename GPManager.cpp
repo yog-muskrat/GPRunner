@@ -34,6 +34,7 @@ GPManager::GPManager(ImageProvider &imageProvider, QObject *parent)
 void GPManager::connect()
 {
 	loadCurrentUser();
+	loadActiveUsers();
 	loadProjects();
 
 	m_updateTimer.start();
@@ -139,6 +140,11 @@ void GPManager::loadCurrentUser()
 	m_client.requestCurrentUser(std::bind_front(&GPManager::parseCurrentUser, this));
 }
 
+void GPManager::loadActiveUsers()
+{
+	m_client.requestActiveUsers(std::bind_front(&GPManager::parseActiveUsers, this));
+}
+
 void GPManager::onDiscussionAdded(
 	QPointer<gpr::api::Project> project,
 	QPointer<gpr::api::MR> mr,
@@ -204,6 +210,16 @@ void GPManager::approveMR(int projectId, int mrIid)
 void GPManager::unapproveMR(int projectId, int mrIid)
 {
 	m_client.unapproveMR(projectId, mrIid);
+}
+
+void GPManager::setMRReviewer(int projectId, int mrIid, int userId)
+{
+	m_client.setMRReviewer(projectId, mrIid, userId);
+}
+
+void GPManager::setMRAssignee(int projectId, int mrIid, int userId)
+{
+	m_client.setMRAssignee(projectId, mrIid, userId);
 }
 
 void GPManager::resolveMRDiscussion(int projectId, int mrIid, QString const &discussionId)
@@ -288,6 +304,20 @@ QAbstractItemModel *GPManager::getVariableModel()
 QAbstractItemModel *GPManager::getDiscussionModel()
 {
 	return &m_discussionProxyModel;
+}
+
+QVariantList GPManager::getActiveUsers() const
+{
+	/*QStringList result;
+	for(auto const &user : m_activeUsers | std::views::transform(&gpr::User::username)) result.append(user);
+	return result;*/
+	QVariantList result;
+	result.reserve(m_activeUsers.size());
+	for(auto v : m_activeUsers | std::views::transform([](auto const &u) { return QVariant::fromValue(u); }))
+	{
+		result.push_back(std::move(v));
+	}
+	return result;
 }
 
 bool GPManager::hasNewNotes() const
@@ -520,12 +550,16 @@ void GPManager::parseBranches(int projectId, QJsonDocument const &doc)
 
 void GPManager::parseCurrentUser(QJsonDocument const &doc)
 {
-	auto const obj = doc.object();
-
-	m_currentUser.username = obj.value("username").toString();
-	m_currentUser.avatarUrl = obj["avatar_url"].toString();
-
+	m_currentUser = gpr::api::parseUser(doc.object());
 	Q_EMIT currentUserChanged(m_currentUser);
+}
+
+void GPManager::parseActiveUsers(QJsonDocument const &doc)
+{
+	m_activeUsers = doc.array() | std::views::transform(&QJsonValueRef::toObject) | std::views::transform(&gpr::api::parseUser) | std::ranges::to<QList>();
+	std::ranges::sort(m_activeUsers, std::ranges::less{}, &gpr::User::username);
+	
+	Q_EMIT activeUsersChanged(getActiveUsers());
 }
 
 void GPManager::parseProviderImage(QString const &id, QByteArray data)

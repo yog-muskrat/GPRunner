@@ -123,6 +123,7 @@
     <None Include="gui\HorizontalSpacer.qml" />
     <None Include="gui\MergeRequestDiscussions.qml" />
     <None Include="gui\MergeRequests.qml" />
+    <None Include="gui\MergeRequestTableDelegate.qml" />
     <None Include="gui\MRTable.qml" />
     <None Include="gui\PipelineStatistics.qml" />
     <None Include="gui\PipelineTable.qml" />

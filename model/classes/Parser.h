@@ -21,4 +21,5 @@ namespace gpr::api
 	std::vector<QString> parseApprovals(QJsonObject const &json);
 	std::vector<Variable> parseVariables(QJsonDocument const &doc);
 	QStringList parseBranches(QJsonDocument const &doc);
+	gpr::User parseUser(QJsonObject const &json);
 } // namespace gpr::api

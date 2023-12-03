@@ -27,6 +27,7 @@ class GPManager : public QObject
 	Q_PROPERTY(QObject *variableModel READ getVariableModel NOTIFY variableModelChanged)
 	Q_PROPERTY(QObject *discussionModel READ getDiscussionModel NOTIFY discussionModelChanged)
 	Q_PROPERTY(gpr::User currentUser READ getCurrentUser NOTIFY currentUserChanged)
+	Q_PROPERTY(QVariantList activeUsers READ getActiveUsers NOTIFY activeUsersChanged)
 	Q_PROPERTY(bool hasNewNotes READ hasNewNotes NOTIFY newNotesReceived)
 
 public:
@@ -54,6 +55,8 @@ public:
 
 	Q_INVOKABLE void approveMR(int projectId, int mrIid);
 	Q_INVOKABLE void unapproveMR(int projectId, int mrIid);
+	Q_INVOKABLE void setMRReviewer(int projectId, int mrIid, int userId);
+	Q_INVOKABLE void setMRAssignee(int projectId, int mrIid, int userId);
 
 	Q_INVOKABLE void resolveMRDiscussion(int projectId, int mrIid, QString const &discussionId);
 	Q_INVOKABLE void unresolveMRDiscussion(int projectId, int mrIid, QString const &discussionId);
@@ -73,6 +76,7 @@ public:
 	QAbstractItemModel *getDiscussionModel();
 
 	gpr::User getCurrentUser() const { return m_currentUser; }
+	QVariantList getActiveUsers() const;
 	bool hasNewNotes() const;
 
 	Q_INVOKABLE void addVariable();
@@ -85,6 +89,7 @@ Q_SIGNALS:
 	void variableModelChanged();
 	void discussionModelChanged();
 	void currentUserChanged(gpr::User const &);
+	void activeUsersChanged(QVariantList const &);
 	void newNotesReceived() const;
 	void notification(QString title, QString message) const;
 
@@ -102,6 +107,7 @@ private:
 	void parseVariables(QJsonDocument const &doc);
 	void parseBranches(int projectId, QJsonDocument const &doc);
 	void parseCurrentUser(QJsonDocument const &doc);
+	void parseActiveUsers(QJsonDocument const &doc);
 
 	void parseProviderImage(QString const&id, QByteArray data);
 
@@ -112,6 +118,7 @@ private:
 	void loadProjectMRInfo(int projectId);
 	void loadPipelineInfo(int projectId, int pipelineId);
 	void loadCurrentUser();
+	void loadActiveUsers();
 
 	void onDiscussionAdded(QPointer<gpr::api::Project> project, QPointer<gpr::api::MR> mr, gpr::Discussion const &discussion);
 	void onDiscussionNoteAdded(QPointer<gpr::api::Project> project, QPointer<gpr::api::MR> mr, gpr::Discussion const &discussion, gpr::Note const &note);
@@ -141,6 +148,8 @@ private:
 	QTimer m_updateTimer;
 	
 	gpr::User m_currentUser;
+
+	QList<gpr::User> m_activeUsers;
 
 	ImageProvider &m_imageProvider;
 

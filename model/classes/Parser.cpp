@@ -15,11 +15,6 @@ namespace gpr::api
 		{
 			return QDateTime::fromString(json.toString(), Qt::DateFormat::ISODate);
 		}
-
-		gpr::User toUser(QJsonValue const &json)
-		{
-			return {.username = json["username"].toString(), .avatarUrl = json["avatar_url"].toString()};
-		}
 	} // namespace
 
 	Project::Data gpr::api::parseProject(QJsonObject const &json)
@@ -47,7 +42,7 @@ namespace gpr::api
 	Pipeline::Data parsePipelineInfo(QJsonObject const &json)
 	{
 		auto data = parseProjectPipeline(json);
-		data.user = toUser(json["user"]);
+		data.user = parseUser(json["user"].toObject());
 		return data;
 	}
 
@@ -60,9 +55,9 @@ namespace gpr::api
 			.updated = toDateTime(json.value("updated_at")),
 			.title = json.value("title").toString(),
 			.status = json.value("state").toString(),
-			.author = toUser(json["author"]),
-			.assignee = toUser(json["assignee"]),
-			.reviewer =toUser(json.value("reviewers").toArray().first()),
+			.author = parseUser(json["author"].toObject()),
+			.assignee = parseUser(json["assignee"].toObject()),
+			.reviewer = parseUser(json.value("reviewers").toArray().first().toObject()),
 			.sourceBranch = json.value("source_branch").toString(),
 			.targetBranch = json.value("target_branch").toString(),
 			.url = json.value("web_url").toString(),
@@ -85,7 +80,7 @@ namespace gpr::api
 		{
 			discussion.notes.push_back(Note{
 				.id = note["id"].toInt(),
-				.author = toUser(note["author"]),
+				.author = parseUser(note["author"].toObject()),
 				.body = note["body"].toString(),
 				.created = toDateTime(note["created_at"]),
 				.updated = toDateTime(note["updated_at"]),
@@ -140,5 +135,9 @@ namespace gpr::api
 			}
 		}
 		return result;
+	}
+	gpr::User parseUser(QJsonObject const &json)
+	{
+		return {.id = json["id"].toInt(), .username = json["username"].toString(), .avatarUrl = json["avatar_url"].toString()};
 	}
 } // namespace gpr::api

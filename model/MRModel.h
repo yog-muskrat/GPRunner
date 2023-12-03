@@ -24,7 +24,7 @@ public:
 		TargetBranch,
 		Updated,
 		Created,
-		Count
+		Count,
 	};
 
 	enum Role
@@ -36,7 +36,8 @@ public:
 		HasUnreadNotes,
 		IsApproved,
 		CanApprove,
-		CanUnapprove
+		CanUnapprove,
+		CanEdit,
 	};
 
 	MRModel(GPManager &manager);
@@ -48,7 +49,9 @@ public:
 	int columnCount(QModelIndex const & = {}) const override;
 	QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
 	QVariant data(QModelIndex const &index, int role = Qt::ItemDataRole::DisplayRole) const override;
+	bool setData(QModelIndex const &index, QVariant const &value, int role = Qt::ItemDataRole::DisplayRole) override;
 	QHash<int, QByteArray> roleNames() const override;
+	Qt::ItemFlags flags(QModelIndex const &index) const override;
 
 private:
 	QVariant editRole(gpr::api::MR const &mr, Column column) const;
@@ -73,3 +76,4 @@ private:
 	QPointer<gpr::api::Project> m_project;
 	GPManager &m_manager;
 };
+ 

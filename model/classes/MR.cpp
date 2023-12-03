@@ -197,8 +197,11 @@ namespace gpr::api
 
 	void MR::setApprovedBy(std::vector<QString> list)
 	{
-		m_approvedBy = std::move(list);
-		Q_EMIT modified();
+		if(m_approvedBy != list)
+		{
+			m_approvedBy = std::move(list);
+			Q_EMIT modified();
+		}
 	}
 
 	void MR::updateDiscussions(std::vector<Discussion> discussions)

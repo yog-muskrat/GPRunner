@@ -18,6 +18,7 @@
         <file>DiscussionNoteDialog.qml</file>
         <file>DiscussionDelegate.qml</file>
         <file>TextLinkButton.qml</file>
+        <file>MergeRequestTableDelegate.qml</file>
     </qresource>
     <qresource prefix="/icons">
         <file alias="gitlab.png">icons/gitlab.png</file>

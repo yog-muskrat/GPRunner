@@ -23,16 +23,23 @@ namespace gpr
 		Client();
 
 		void requestCurrentUser(Callback callback);
+		void requestActiveUsers(Callback callback);
+
 		void requestProjects(Callback callback);
 		void requestProjectPipelines(int projectId, Callback callback);
 		void requestProjectPipelineTestReport(int projectId, int pipelineId, Callback callback);
 		void requestProjectBranches(int projectId, Callback callback);
 		void requestProjectMRs(int projectId, Callback callback);
+
 		void requestPipelineInfo(int projectId, int pipelineId, Callback callback);
 		void requestPipelineVariables(int projectId, QString const &ref, Callback callback);
+
 		void requestMRDetails(int projectId, int mrIid, Callback callback);
 		void requestMRDiscussions(int projectId, int mrIid, Callback callback);
 		void requestMRApprovals(int projectId, int mrIid, Callback callback);
+		void setMRReviewer(int projectId, int mrIid, int userId);
+		void setMRAssignee(int projectId, int mrIid, int userId);
+
 		void requestFileDownload(QString const &url, RawCallback callback);
 
 		void runPipeline(int projectId, QString const &ref, std::vector<Variable> const &variables);
