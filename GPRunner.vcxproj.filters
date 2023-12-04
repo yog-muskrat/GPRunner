@@ -25,6 +25,9 @@
     <Filter Include="gui\discussions">
       <UniqueIdentifier>{dc8a5a75-6660-4fb0-8c92-633a0bee1e9f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="gui\icons">
+      <UniqueIdentifier>{2feff78a-35a0-4206-b204-73ad2d7e31ac}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="model\VariableModel.cpp">
@@ -168,7 +171,11 @@
     <ResourceCompile Include="GPRunner.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="gui\icons\gitlab-green.png" />
-    <Image Include="gui\icons\gitlab-green.ico" />
+    <Image Include="gui\icons\gitlab-green.png">
+      <Filter>gui\icons</Filter>
+    </Image>
+    <Image Include="gui\icons\gitlab-green.ico">
+      <Filter>gui\icons</Filter>
+    </Image>
   </ItemGroup>
 </Project>
