@@ -120,6 +120,8 @@
     <None Include="gui\DatePicker.qml" />
     <None Include="gui\DiscussionDelegate.qml" />
     <None Include="gui\DiscussionNoteDialog.qml" />
+    <None Include="gui\EmojiButton.qml" />
+    <None Include="gui\emojis.json" />
     <None Include="gui\HorizontalSpacer.qml" />
     <None Include="gui\MergeRequestDiscussions.qml" />
     <None Include="gui\MergeRequests.qml" />

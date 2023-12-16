@@ -151,6 +151,12 @@
     <None Include="gui\MergeRequestTableDelegate.qml">
       <Filter>gui\mr</Filter>
     </None>
+    <None Include="gui\emojis.json">
+      <Filter>gui</Filter>
+    </None>
+    <None Include="gui\EmojiButton.qml">
+      <Filter>gui</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="gui\qml.qrc">

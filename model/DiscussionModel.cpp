@@ -100,6 +100,7 @@ QHash<int, QByteArray> DiscussionModel::roleNames() const
 	names.insert(Role::NoteCount,      "noteCount");
 	names.insert(Role::NoteUrl,        "noteUrl");
 	names.insert(Role::HasUnreadNotes, "hasUnreadNotes");
+	names.insert(Role::Reactions,      "reactions");
 	return names;
 }
 
@@ -168,6 +169,12 @@ QVariant DiscussionModel::noteData(gpr::Discussion const &discussion, gpr::Note 
 	if (role == Role::DiscussionId)   return discussion.id;
 	if (role == Role::NoteId)         return note.id;
 	if (role == Role::NoteUrl)        return m_mr->noteUrl(note);
+	if (role == Role::Reactions)
+	{
+		QVariantList reactions;
+		for(auto const &reaction: note.reactions) reactions.push_back(QVariant::fromValue(reaction));
+		return reactions;
+	}
 	return QVariant{};
 }
 

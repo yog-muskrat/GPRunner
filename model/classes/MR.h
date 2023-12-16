@@ -82,10 +82,17 @@ namespace gpr::api
 
 		std::vector<Discussion> const &discussions() const;
 		bool discussionsLoaded() const;
-		void updateDiscussions(std::vector<Discussion> discussions);
+		/**
+		 * @brief Обновляет дискуссии в MR-е
+		 * @param discussions
+		 * @return идентификаторы обновленных заметок (notes)
+		 */
+		std::vector<int> updateDiscussions(std::vector<Discussion> discussions);
 		void markDiscussionsRead();
 		void markDiscussionRead(QString const &discussionId);
 		QString noteUrl(gpr::Note const &note) const;
+
+		void setNoteReactions(int noteId, std::vector<gpr::EmojiReaction> reactions);
 
 		bool isUserInvolved(QString const &username) const;
 		bool isUserInvolved(User const &user) const;
@@ -104,9 +111,10 @@ namespace gpr::api
 		void discussionNoteRemoved(Discussion const &, Note const &);
 
 	private:
-		void updateDiscussionNotes(Discussion &discussion, std::vector<Note> notes);
+		std::vector<int> updateDiscussionNotes(Discussion &discussion, std::vector<Note> notes);
 
 		Discussion *findDiscussion(QString const &id);
+		Note *findDiscussionNote(int noteId);
 		Note *findDiscussionNote(Discussion &discussion, int noteId) const;
 
 		Data m_data;

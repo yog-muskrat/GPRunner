@@ -19,10 +19,12 @@
         <file>DiscussionDelegate.qml</file>
         <file>TextLinkButton.qml</file>
         <file>MergeRequestTableDelegate.qml</file>
+        <file>EmojiButton.qml</file>
     </qresource>
     <qresource prefix="/icons">
         <file alias="gitlab.png">icons/gitlab.png</file>
         <file alias="gitlab-green.png">icons/gitlab-green.png</file>
         <file alias="gitlab-green-notification.png">icons/gitlab-green-notification.png</file>
+        <file>emojis.json</file>
     </qresource>
 </RCC>

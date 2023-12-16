@@ -32,6 +32,7 @@ namespace gpr
 			QString const ProjectMRDiscussions{"/projects/%1/merge_requests/%2/discussions"};
 			QString const ProjectMRDiscussionAdd{"/projects/%1/merge_requests/%2/discussions?body=%3"};
 			QString const ProjectMRDiscussionNoteAdd{"/projects/%1/merge_requests/%2/discussions/%3/notes"};
+			QString const ProjectMRDiscussionNoteEmojis{"/projects/%1/merge_requests/%2/notes/%3/award_emoji"};
 			QString const ProjectMRDiscussionNoteEdit{"/projects/%1/merge_requests/%2/discussions/%3/notes/%4"};
 			QString const ProjectMRDiscussionNoteRemove{"/projects/%1/merge_requests/%2/discussions/%3/notes/%4"};
 			QString const ProjectMRDiscussionResolved{"/projects/%1/merge_requests/%2/discussions/%3?resolved=%4"};
@@ -123,6 +124,11 @@ namespace gpr
 	void Client::requestMRApprovals(int projectId, int mrIid, Callback callback)
 	{
 		makeGetRequest(prepareRequest(endpoint::ProjectMRApprovals, projectId, mrIid), std::move(callback));
+	}
+
+	void Client::requestMRNoteEmojis(int projectId, int mrIid, int noteId, Callback callback)
+	{
+		makeGetRequest(prepareRequest(endpoint::ProjectMRDiscussionNoteEmojis, projectId, mrIid, noteId), std::move(callback));
 	}
 
 	void Client::setMRReviewer(int projectId, int mrIid, int userId)

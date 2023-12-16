@@ -4,6 +4,7 @@
 #include <QAbstractItemModelTester>
 #endif
 
+#include <QFile>
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QJsonObject>
@@ -29,6 +30,7 @@ GPManager::GPManager(ImageProvider &imageProvider, QObject *parent)
 {
 	initModels();
 	initUpdateTimer();
+	readEmojis();
 }
 
 void GPManager::connect()
@@ -504,7 +506,29 @@ void GPManager::parseMRDiscussions(int projectId, int mrId, QJsonDocument const 
 		| std::views::filter(std::not_fn(&gpr::Discussion::isEmpty))
 		| std::ranges::to<std::vector>();
 
-	mr->updateDiscussions(std::move(discussions));
+	for(auto const noteId : mr->updateDiscussions(std::move(discussions)))
+	{
+		m_client.requestMRNoteEmojis(projectId, mr->iid(), noteId, std::bind_front(&GPManager::parseMRNoteEmojis, this, projectId, mrId, noteId));
+	}
+}
+
+void GPManager::parseMRNoteEmojis(int projectId, int mrId, int noteId, QJsonDocument const &doc)
+{
+	auto project = m_projectModel.findProject(projectId);
+	if (!project)
+	{
+		qDebug() << "Invalid project id: " << projectId;
+		return;
+	}
+
+	auto mr = project->findMRById(mrId);
+	if(!mr)
+	{
+		qDebug() << "Invalid MR id: " << mrId;
+		return;
+	}
+
+	mr->setNoteReactions(noteId, gpr::api::parseNoteEmojis(doc, m_emojis));
 }
 
 void GPManager::parseMRApprovals(int projectId, int mrId, QJsonDocument const &doc)
@@ -568,6 +592,14 @@ void GPManager::parseProviderImage(QString const &id, QByteArray data)
 	{
 		m_imageProvider.addPixmap(id, std::move(pm));
 	}
+}
+
+void GPManager::readEmojis()
+{
+	QFile f(":/icons/emojis.json");
+	f.open(QIODevice::ReadOnly);
+
+	m_emojis = gpr::api::parseEmojis(QJsonDocument::fromJson(f.readAll()));
 }
 
 void GPManager::update()

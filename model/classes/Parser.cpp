@@ -1,4 +1,4 @@
-#include <QJsonDocument>
+﻿#include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
 
@@ -136,8 +136,57 @@ namespace gpr::api
 		}
 		return result;
 	}
+
 	gpr::User parseUser(QJsonObject const &json)
 	{
 		return {.id = json["id"].toInt(), .username = json["username"].toString(), .avatarUrl = json["avatar_url"].toString()};
+	}
+
+	std::vector<gpr::EmojiReaction> parseNoteEmojis(QJsonDocument const &doc, std::map<QString, gpr::Emoji> const &emojiDictionary)
+	{
+		std::vector<gpr::EmojiReaction> result;
+
+		for (auto const obj : doc.array() | std::views::transform(&QJsonValueRef::toObject))
+		{
+			auto const name = obj["name"].toString();
+			auto const pos = emojiDictionary.find(name);
+			// TODO: Проверить алиасы, если имя не найдено
+
+			result.push_back(gpr::EmojiReaction{
+				.id = obj["id"].toInt(),
+				.awardableId = obj["awardable_id"].toInt(),
+				.awardableType = obj["awardable_type"].toString(),
+				.reaction = pos == emojiDictionary.cend() ? gpr::Emoji{ .name = name, .moji = "?" } : pos->second,
+				.user = parseUser(obj["user"].toObject()),
+				.created = toDateTime(obj["created_at"]),
+			});
+		}
+
+		return result;
+	}
+
+	std::map<QString, gpr::Emoji> parseEmojis(QJsonDocument const &doc)
+	{
+		std::map<QString, gpr::Emoji> result;
+		auto const dict = doc.object();
+
+		for (auto entry = dict.begin(); entry != dict.end(); ++entry)
+		{
+			auto const value = entry.value().toObject();
+
+			result.emplace(
+				entry.key(),
+				gpr::Emoji{
+					.id = entry.key(),
+					.name = value["name"].toString(),
+					.shortname = value["shortname"].toString(),
+					.category = value["category"].toString(),
+					.aliases = value["aliases"].toArray() | std::views::transform([](auto const &v) { return v.toString(); })
+			                 | std::ranges::to<QStringList>(),
+					.moji = value["moji"].toString(),
+				});
+		}
+
+		return result;
 	}
 } // namespace gpr::api

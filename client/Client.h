@@ -37,6 +37,7 @@ namespace gpr
 		void requestMRDetails(int projectId, int mrIid, Callback callback);
 		void requestMRDiscussions(int projectId, int mrIid, Callback callback);
 		void requestMRApprovals(int projectId, int mrIid, Callback callback);
+		void requestMRNoteEmojis(int projectId, int mrIid, int noteId, Callback callback);
 		void setMRReviewer(int projectId, int mrIid, int userId);
 		void setMRAssignee(int projectId, int mrIid, int userId);
 

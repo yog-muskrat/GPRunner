@@ -39,7 +39,8 @@ public:
 		CanUnresolve,
 		NoteCount,
 		NoteUrl,
-		HasUnreadNotes
+		HasUnreadNotes,
+		Reactions,
 	};
 
 	DiscussionModel(GPManager &manager);

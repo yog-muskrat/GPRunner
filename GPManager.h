@@ -103,6 +103,7 @@ private:
 	void parseMRs(int projectId, QJsonDocument const &doc);
 	void parseMRDetails(int projectId, int mrId, QJsonDocument const &doc);
 	void parseMRDiscussions(int projectId, int mrId, QJsonDocument const &doc);
+	void parseMRNoteEmojis(int projectId, int mrId, int noteId, QJsonDocument const &doc);
 	void parseMRApprovals(int projectId, int mrId, QJsonDocument const &doc);
 	void parseVariables(QJsonDocument const &doc);
 	void parseBranches(int projectId, QJsonDocument const &doc);
@@ -110,6 +111,8 @@ private:
 	void parseActiveUsers(QJsonDocument const &doc);
 
 	void parseProviderImage(QString const&id, QByteArray data);
+
+	void readEmojis();
 
 	void loadProjects();
 	void loadProjectBranches(int projectId);
@@ -152,6 +155,8 @@ private:
 	QList<gpr::User> m_activeUsers;
 
 	ImageProvider &m_imageProvider;
+
+	std::map<QString, gpr::Emoji> m_emojis;
 
 	int m_currentProject{-1};
 	int m_currentMR {-1};

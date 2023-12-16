@@ -169,13 +169,15 @@ Item {
 
             x: indent * depth
             implicitHeight: image.height + padding * 2
-            implicitWidth: noteHeaderLayout.implicitWidth
+            width: parent.width - indent * depth
 
             RowLayout {
                 id: noteHeaderLayout
 
                 y: padding
                 spacing: padding
+
+                width: parent.width
 
                 Image {
                     id: image
@@ -222,6 +224,19 @@ Item {
                     HoverHandler { cursorShape: Qt.PointingHandCursor }
                     TapHandler { onTapped: treeDelegate.removeNoteRequested(model.discussionId, model.noteId) }
                 }
+
+                Item { Layout.minimumWidth: 25 }
+
+                Repeater {
+                    model: reactions
+
+                    EmojiButton {
+                        Layout.alignment: Qt.AlignTop
+                        Layout.minimumWidth: implicitHeight
+                    }
+                }
+
+                HorizontalSpacer {}
             }
         }
 
