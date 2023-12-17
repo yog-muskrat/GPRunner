@@ -506,7 +506,7 @@ void GPManager::parseMRDiscussions(int projectId, int mrId, QJsonDocument const 
 		| std::views::filter(std::not_fn(&gpr::Discussion::isEmpty))
 		| std::ranges::to<std::vector>();
 
-	for(auto const noteId : mr->updateDiscussions(std::move(discussions)))
+	for(auto const noteId : mr->updateDiscussions(std::move(discussions), m_emojis))
 	{
 		m_client.requestMRNoteEmojis(projectId, mr->iid(), noteId, std::bind_front(&GPManager::parseMRNoteEmojis, this, projectId, mrId, noteId));
 	}

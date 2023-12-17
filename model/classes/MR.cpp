@@ -1,10 +1,37 @@
 ﻿#include <cassert>
 #include <ranges>
 
+#include <QtCore/QRegularExpression>
+
 #include "model/classes/MR.h"
 
 namespace gpr::api
 {
+	namespace
+	{
+		void replaceEmojis(Note &note, std::map<QString, gpr::Emoji> const &emojiDict)
+		{
+			QRegularExpression regex{":([a-zA-Z_]+):"};
+
+			qsizetype offset = 0;
+
+			for(auto iter = regex.globalMatch(note.body, offset); iter.hasNext(); iter = regex.globalMatch(note.body, offset))
+			{
+				auto match = iter.next();
+				auto const captured = match.captured(1);
+				if(auto const pos = emojiDict.find(captured); pos != emojiDict.end())
+				{
+					note.body.replace(match.capturedStart(), match.capturedEnd(), pos->second.moji);
+					offset = match.capturedStart() + pos->second.moji.length() + 1;
+				}
+				else
+				{
+					offset = match.capturedEnd();
+				}
+			}
+		}
+	}
+
 	MR::MR(Data data, QObject *parent)
 		: QObject(parent)
 		, m_data{std::move(data)}
@@ -204,7 +231,7 @@ namespace gpr::api
 		}
 	}
 
-	std::vector<int> MR::updateDiscussions(std::vector<Discussion> discussions)
+	std::vector<int> MR::updateDiscussions(std::vector<Discussion> discussions, std::map<QString, gpr::Emoji> const &emojiDict)
 	{
 		std::vector<int> updatedNotes;
 
@@ -217,14 +244,19 @@ namespace gpr::api
 		{
 			if (auto existingDiscussion = findDiscussion(discussion.id))
 			{
-				auto updated = updateDiscussionNotes(*existingDiscussion, std::move(discussion.notes));
+				auto updated = updateDiscussionNotes(*existingDiscussion, std::move(discussion.notes), emojiDict);
 				std::ranges::move(updated, std::back_inserter(updatedNotes));
 				Q_EMIT discussionUpdated(*existingDiscussion);
 			}
 			else
 			{
-				std::ranges::copy(discussion.notes | std::views::transform(&Note::id), std::back_inserter(updatedNotes));
-				std::ranges::fill(discussion.notes | std::views::transform(&Note::wasShown), !m_discussionsLoaded);
+				for(auto &note : discussion.notes) 
+				{
+					replaceEmojis(note, emojiDict);
+					note.wasShown = !m_discussionsLoaded;
+					updatedNotes.push_back(note.id);
+				}
+
 				auto const &newDiscussion = m_discussions.emplace_back(std::move(discussion));
 				Q_EMIT discussionAdded(newDiscussion);
 			}
@@ -281,7 +313,7 @@ namespace gpr::api
 		return m_data.author.username == username || m_data.assignee.username == username || m_data.reviewer.username == username;
 	}
 
-	std::vector<int> MR::updateDiscussionNotes(Discussion &discussion, std::vector<Note> notes)
+	std::vector<int> MR::updateDiscussionNotes(Discussion &discussion, std::vector<Note> notes, std::map<QString, gpr::Emoji> const &emojiDict)
 	{
 		std::vector<int> updatedNotes;
 
@@ -298,6 +330,7 @@ namespace gpr::api
 			{
 				if(note.updated > existingNote->updated)
 				{
+					replaceEmojis(note, emojiDict);
 					updatedNotes.push_back(note.id);
 					auto const wasShown = existingNote->wasShown;
 					auto reactions = std::move(existingNote->reactions);
@@ -309,6 +342,7 @@ namespace gpr::api
 			}
 			else
 			{
+				replaceEmojis(note, emojiDict);
 				updatedNotes.push_back(note.id);
 				auto const &newNote = discussion.notes.emplace_back(std::move(note));
 				Q_EMIT discussionNoteAdded(discussion, newNote);

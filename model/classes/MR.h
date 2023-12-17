@@ -87,7 +87,7 @@ namespace gpr::api
 		 * @param discussions
 		 * @return идентификаторы обновленных заметок (notes)
 		 */
-		std::vector<int> updateDiscussions(std::vector<Discussion> discussions);
+		std::vector<int> updateDiscussions(std::vector<Discussion> discussions, std::map<QString, gpr::Emoji> const &emojiDict);
 		void markDiscussionsRead();
 		void markDiscussionRead(QString const &discussionId);
 		QString noteUrl(gpr::Note const &note) const;
@@ -111,7 +111,7 @@ namespace gpr::api
 		void discussionNoteRemoved(Discussion const &, Note const &);
 
 	private:
-		std::vector<int> updateDiscussionNotes(Discussion &discussion, std::vector<Note> notes);
+		std::vector<int> updateDiscussionNotes(Discussion &discussion, std::vector<Note> notes, std::map<QString, gpr::Emoji> const &emojiDict);
 
 		Discussion *findDiscussion(QString const &id);
 		Note *findDiscussionNote(int noteId);
