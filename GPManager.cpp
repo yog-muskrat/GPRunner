@@ -152,7 +152,7 @@ void GPManager::onDiscussionAdded(
 	QPointer<gpr::api::MR> mr,
 	gpr::Discussion const &discussion)
 {
-	if(mr->isUserInvolved(m_currentUser) && discussion.author() != m_currentUser)
+	if(mr->discussionsLoaded() && mr->isUserInvolved(m_currentUser) && discussion.author() != m_currentUser)
 	{
 		Q_EMIT notification("Новая дискуссия", QString("Новая дискуссия в %1/%2").arg(project->name()).arg(mr->title()));
 		Q_EMIT newNotesReceived();
@@ -165,7 +165,7 @@ void GPManager::onDiscussionNoteAdded(
 	gpr::Discussion const &,
 	gpr::Note const &note)
 {
-	if(mr->isUserInvolved(m_currentUser) && note.author != m_currentUser)
+	if(mr->discussionsLoaded() && mr->isUserInvolved(m_currentUser) && note.author != m_currentUser)
 	{
 		Q_EMIT notification("Новые сообщения", QString("Новые сообщение в %1/%2").arg(project->name()).arg(mr->title()));
 		Q_EMIT newNotesReceived();

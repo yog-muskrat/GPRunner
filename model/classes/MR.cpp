@@ -226,10 +226,7 @@ namespace gpr::api
 				std::ranges::copy(discussion.notes | std::views::transform(&Note::id), std::back_inserter(updatedNotes));
 				std::ranges::fill(discussion.notes | std::views::transform(&Note::wasShown), !m_discussionsLoaded);
 				auto const &newDiscussion = m_discussions.emplace_back(std::move(discussion));
-				if(m_discussionsLoaded)
-				{
-					Q_EMIT discussionAdded(newDiscussion);
-				}
+				Q_EMIT discussionAdded(newDiscussion);
 			}
 		}
 
