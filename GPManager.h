@@ -82,6 +82,8 @@ public:
 	Q_INVOKABLE void addVariable();
 	Q_INVOKABLE void removeVariable(int index);
 
+	std::map<QString, gpr::Emoji> const &emojiDict() const { return m_emojis; }
+
 Q_SIGNALS:
 	void pipelineModelChanged();
 	void mrModelChanged();
@@ -103,7 +105,7 @@ private:
 	void parseMRs(int projectId, QJsonDocument const &doc);
 	void parseMRDetails(int projectId, int mrId, QJsonDocument const &doc);
 	void parseMRDiscussions(int projectId, int mrId, QJsonDocument const &doc);
-	void parseMRNoteEmojis(int projectId, int mrId, int noteId, QJsonDocument const &doc);
+	void parseMRNoteEmojis(int projectId, int mrId, QString const &discussionId, int noteId, QJsonDocument const &doc);
 	void parseMRApprovals(int projectId, int mrId, QJsonDocument const &doc);
 	void parseVariables(QJsonDocument const &doc);
 	void parseBranches(int projectId, QJsonDocument const &doc);
@@ -123,9 +125,22 @@ private:
 	void loadCurrentUser();
 	void loadActiveUsers();
 
-	void onDiscussionAdded(QPointer<gpr::api::Project> project, QPointer<gpr::api::MR> mr, gpr::Discussion const &discussion);
-	void onDiscussionNoteAdded(QPointer<gpr::api::Project> project, QPointer<gpr::api::MR> mr, gpr::Discussion const &discussion, gpr::Note const &note);
-	void onDiscussionNoteUpdated(QPointer<gpr::api::Project> project, QPointer<gpr::api::MR> mr, gpr::Discussion const &discussion, gpr::Note const &note);
+	void onDiscussionAdded(
+		QPointer<gpr::api::Project> project,
+		QPointer<gpr::api::MR> mr,
+		QPointer<gpr::api::Discussion> discussion);
+
+	void onDiscussionNoteAdded(
+		QPointer<gpr::api::Project> project,
+		QPointer<gpr::api::MR> mr,
+		QPointer<gpr::api::Discussion> discussion,
+		QPointer<gpr::api::Note> note);
+
+	void onDiscussionNoteUpdated(
+		QPointer<gpr::api::Project> project,
+		QPointer<gpr::api::MR> mr,
+		QPointer<gpr::api::Discussion> discussion,
+		QPointer<gpr::api::Note> note);
 
 	void onMergeRequestRemoved(QPointer<gpr::api::Project> project, QPointer<gpr::api::MR> mr);
 

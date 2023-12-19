@@ -3,7 +3,7 @@
 #include <QObject>
 #include <QDateTime>
 
-#include "GPClasses.h"
+#include "model/classes/GPClasses.h"
 
 namespace gpr::api
 {

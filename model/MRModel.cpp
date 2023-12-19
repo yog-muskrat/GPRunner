@@ -297,7 +297,7 @@ QString MRModel::getDiscussionsString(gpr::api::MR const &mr) const
 	auto const count = std::ranges::ssize(mr.discussions());
 	if (count > 0)
 	{
-		auto const resolvable = std::ranges::count_if(mr.discussions(), &gpr::Discussion::isResolvable);
+		auto const resolvable = std::ranges::count_if(mr.discussions(), &gpr::api::Discussion::isResolvable);
 
 		if (resolvable != count)
 		{
@@ -306,7 +306,7 @@ QString MRModel::getDiscussionsString(gpr::api::MR const &mr) const
 
 		if (resolvable > 0)
 		{
-			auto const resolved = std::ranges::count_if(mr.discussions(), &gpr::Discussion::isResolved);
+			auto const resolved = std::ranges::count_if(mr.discussions(), &gpr::api::Discussion::isResolved);
 			result += QString("[%1/%2]").arg(resolved).arg(resolvable);
 		}
 	}

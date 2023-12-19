@@ -68,7 +68,6 @@ void GPManager::setCurrentMR(int projectId, int mrId)
 	assert(project);
 
 	auto mr = project->findMRById(mrId);
-	assert(mr);
 
 	m_currentMR = mrId;
 	m_discussionModel.setMR(mr);
@@ -150,9 +149,9 @@ void GPManager::loadActiveUsers()
 void GPManager::onDiscussionAdded(
 	QPointer<gpr::api::Project> project,
 	QPointer<gpr::api::MR> mr,
-	gpr::Discussion const &discussion)
+	QPointer<gpr::api::Discussion> discussion)
 {
-	if(mr->discussionsLoaded() && mr->isUserInvolved(m_currentUser) && discussion.author() != m_currentUser)
+	if(mr->discussionsLoaded() && mr->isUserInvolved(m_currentUser) && discussion->author() != m_currentUser)
 	{
 		Q_EMIT notification("Новая дискуссия", QString("Новая дискуссия в %1/%2").arg(project->name()).arg(mr->title()));
 		Q_EMIT newNotesReceived();
@@ -162,26 +161,30 @@ void GPManager::onDiscussionAdded(
 void GPManager::onDiscussionNoteAdded(
 	QPointer<gpr::api::Project> project,
 	QPointer<gpr::api::MR> mr,
-	gpr::Discussion const &,
-	gpr::Note const &note)
+	QPointer<gpr::api::Discussion> discussion,
+	QPointer<gpr::api::Note> note)
 {
-	if(mr->discussionsLoaded() && mr->isUserInvolved(m_currentUser) && note.author != m_currentUser)
+	if(mr->discussionsLoaded() && mr->isUserInvolved(m_currentUser) && note->author() != m_currentUser)
 	{
 		Q_EMIT notification("Новые сообщения", QString("Новые сообщение в %1/%2").arg(project->name()).arg(mr->title()));
 		Q_EMIT newNotesReceived();
 	}
+
+	m_client.requestMRNoteEmojis(project->id(), mr->iid(), note->id(), std::bind_front(&GPManager::parseMRNoteEmojis, this, project->id(), mr->id(), discussion->id(), note->id()));
 }
 
 void GPManager::onDiscussionNoteUpdated(
-	QPointer<gpr::api::Project>,
+	QPointer<gpr::api::Project> project,
 	QPointer<gpr::api::MR> mr,
-	gpr::Discussion const &,
-	gpr::Note const &)
+	QPointer<gpr::api::Discussion> discussion,
+	QPointer<gpr::api::Note> note)
 {
 	if(mr->isUserInvolved(m_currentUser))
 	{
 		Q_EMIT newNotesReceived();
 	}
+
+	m_client.requestMRNoteEmojis(project->id(), mr->iid(), note->id(), std::bind_front(&GPManager::parseMRNoteEmojis, this, project->id(), mr->id(), discussion->id(), note->id()));
 }
 
 void GPManager::onMergeRequestRemoved(QPointer<gpr::api::Project> project, QPointer<gpr::api::MR> mr)
@@ -280,7 +283,9 @@ void GPManager::markDiscussionsRead(int projectId, int mrIid, QString const &dis
 	auto const mr = prj->findMRByIid(mrIid);
 	assert(mr);
 
-	mr->markDiscussionRead(discussionId);
+	auto const discussion = mr->findDiscussion(discussionId);
+	assert(discussion);
+	discussion->markRead();
 }
 
 QAbstractItemModel *GPManager::getProjectModel()
@@ -310,9 +315,6 @@ QAbstractItemModel *GPManager::getDiscussionModel()
 
 QVariantList GPManager::getActiveUsers() const
 {
-	/*QStringList result;
-	for(auto const &user : m_activeUsers | std::views::transform(&gpr::User::username)) result.append(user);
-	return result;*/
 	QVariantList result;
 	result.reserve(m_activeUsers.size());
 	for(auto v : m_activeUsers | std::views::transform([](auto const &u) { return QVariant::fromValue(u); }))
@@ -330,10 +332,10 @@ bool GPManager::hasNewNotes() const
 		| std::views::filter([this](auto const &mr) { return mr->isUserInvolved(getCurrentUser()); })
 		| std::views::transform(&gpr::api::MR::discussions)
 		| std::views::join
-		| std::views::transform(&gpr::Discussion::notes)
+		| std::views::transform(&gpr::api::Discussion::notes)
 		| std::views::join;
 
-	return !std::ranges::all_of(notes, &gpr::Note::wasShown);
+	return !std::ranges::all_of(notes, &gpr::api::Note::isRead);
 }
 
 void GPManager::addVariable()
@@ -500,19 +502,16 @@ void GPManager::parseMRDiscussions(int projectId, int mrId, QJsonDocument const 
 		return;
 	}
 
-	auto discussions = doc.array()
+	auto discussions =  doc.array()
 		| std::views::transform(&QJsonValueRef::toObject)
 		| std::views::transform(gpr::api::parseDiscussion)
-		| std::views::filter(std::not_fn(&gpr::Discussion::isEmpty))
+		| std::views::filter([](auto const &pair) { return !pair.second.empty(); })
 		| std::ranges::to<std::vector>();
 
-	for(auto const noteId : mr->updateDiscussions(std::move(discussions), m_emojis))
-	{
-		m_client.requestMRNoteEmojis(projectId, mr->iid(), noteId, std::bind_front(&GPManager::parseMRNoteEmojis, this, projectId, mrId, noteId));
-	}
+	mr->updateDiscussions(std::move(discussions));
 }
 
-void GPManager::parseMRNoteEmojis(int projectId, int mrId, int noteId, QJsonDocument const &doc)
+void GPManager::parseMRNoteEmojis(int projectId, int mrId, QString const &discussionId, int noteId, QJsonDocument const &doc)
 {
 	auto project = m_projectModel.findProject(projectId);
 	if (!project)
@@ -528,7 +527,21 @@ void GPManager::parseMRNoteEmojis(int projectId, int mrId, int noteId, QJsonDocu
 		return;
 	}
 
-	mr->setNoteReactions(noteId, gpr::api::parseNoteEmojis(doc, m_emojis));
+	auto discussion = mr->findDiscussion(discussionId);
+	if(!discussion)
+	{
+		qDebug() << "Invalid discussion id: " << discussionId;
+		return;
+	}
+
+	auto note = discussion->findNote(noteId);
+	if(!note)
+	{
+		qDebug() << "Invalid note id: " << noteId;
+		return;
+	}
+
+	note->setReactions(gpr::api::parseNoteEmojis(doc, m_emojis));
 }
 
 void GPManager::parseMRApprovals(int projectId, int mrId, QJsonDocument const &doc)

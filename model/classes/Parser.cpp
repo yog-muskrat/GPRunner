@@ -70,15 +70,16 @@ namespace gpr::api
 		return json.value("pipeline")["status"].toString();
 	}
 
-	Discussion parseDiscussion(QJsonObject const &json)
+	std::pair<Discussion::Data, std::vector<Note::Data>> parseDiscussion(QJsonObject const &json)
 	{
-		Discussion discussion;
-		discussion.id = json["id"].toString();
+		Discussion::Data discussion {.id = json["id"].toString() };
+
+		std::vector<Note::Data> notes;
 
 		for (auto const &note : json["notes"].toArray() | std::views::transform(&QJsonValueRef::toObject)
 		                            | std::views::filter([](auto const &obj) { return !obj["system"].toBool(); }))
 		{
-			discussion.notes.push_back(Note{
+			notes.push_back(Note::Data{
 				.id = note["id"].toInt(),
 				.author = parseUser(note["author"].toObject()),
 				.body = note["body"].toString(),
@@ -88,7 +89,7 @@ namespace gpr::api
 				.resolved = note["resolved"].toBool()});
 		}
 
-		return discussion;
+		return std::make_pair(discussion, std::move(notes));
 	}
 
 	std::vector<QString> parseApprovals(QJsonObject const &json)

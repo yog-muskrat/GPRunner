@@ -62,6 +62,12 @@
     <ClCompile Include="model\DiscussionModel.cpp">
       <Filter>model</Filter>
     </ClCompile>
+    <ClCompile Include="model\classes\Discussion.cpp">
+      <Filter>model\classes</Filter>
+    </ClCompile>
+    <ClCompile Include="model\classes\Note.cpp">
+      <Filter>model\classes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="model\VariableModel.h">
@@ -89,7 +95,15 @@
     <QtMoc Include="model\DiscussionModel.h">
       <Filter>model</Filter>
     </QtMoc>
-    <QtMoc Include="GPClasses.h" />
+    <QtMoc Include="model\classes\GPClasses.h">
+      <Filter>model\classes</Filter>
+    </QtMoc>
+    <QtMoc Include="model\classes\Discussion.h">
+      <Filter>model\classes</Filter>
+    </QtMoc>
+    <QtMoc Include="model\classes\Note.h">
+      <Filter>model\classes</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

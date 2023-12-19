@@ -38,7 +38,7 @@ int DiscussionModel::rowCount(QModelIndex const &parent) const
 	if (parent.internalPointer()) return 0;
 
 	auto const discussion = m_mr->discussions().at(parent.row());
-	return std::ranges::ssize(discussion.notes);
+	return std::ranges::ssize(discussion->notes());
 }
 
 QVariant DiscussionModel::data(QModelIndex const &index, int role) const
@@ -47,9 +47,9 @@ QVariant DiscussionModel::data(QModelIndex const &index, int role) const
 
 	if (index.parent().isValid())
 	{
-		auto const discussion = static_cast<gpr::Discussion const *>(index.internalPointer());
-		auto const &note = discussion->notes.at(index.row());
-		return noteData(*discussion, note, role);
+		auto const discussion = static_cast<gpr::api::Discussion *>(index.internalPointer());
+		auto const &note = discussion->notes().at(index.row());
+		return noteData(discussion, note, role);
 	}
 
 	return discussionData(m_mr->discussions().at(index.row()), role);
@@ -64,8 +64,8 @@ QModelIndex DiscussionModel::index(int row, int column, QModelIndex const &paren
 
 	if (parent.internalPointer()) return {};
 
-	auto const &discussion = m_mr->discussions().at(parent.row());
-	return createIndex(row, column, &discussion);
+	auto const discussion = m_mr->discussions().at(parent.row());
+	return createIndex(row, column, &*discussion);
 }
 
 QModelIndex DiscussionModel::parent(QModelIndex const &index) const
@@ -74,9 +74,9 @@ QModelIndex DiscussionModel::parent(QModelIndex const &index) const
 
 	if (index.internalPointer() == nullptr) return {};
 
-	auto const discussion = static_cast<gpr::Discussion const *>(index.internalPointer());
+	auto const discussion = static_cast<gpr::api::Discussion *>(index.internalPointer());
 
-	auto pos = std::ranges::find(m_mr->discussions(), discussion->id, &gpr::Discussion::id);
+	auto pos = std::ranges::find(m_mr->discussions(), discussion->id(), &gpr::api::Discussion::id);
 	assert(pos != m_mr->discussions().end());
 
 	auto const parentRow = std::ranges::distance(m_mr->discussions().begin(), pos);
@@ -104,75 +104,74 @@ QHash<int, QByteArray> DiscussionModel::roleNames() const
 	return names;
 }
 
-QVariant DiscussionModel::discussionData(gpr::Discussion const &discussion, int role) const
+QVariant DiscussionModel::discussionData(QPointer<gpr::api::Discussion> discussion, int role) const
 {
 	if (role == Qt::ItemDataRole::DisplayRole)
 	{
-		auto resolvables = m_mr->discussions() | std::views::filter(&gpr::Discussion::isResolvable);
+		auto resolvables = m_mr->discussions() | std::views::filter(&gpr::api::Discussion::isResolvable);
 
-		if(auto pos = std::ranges::find(resolvables, discussion.id, &gpr::Discussion::id); pos == std::ranges::cend(resolvables))
+		if(auto pos = std::ranges::find(resolvables, discussion->id(), &gpr::api::Discussion::id); pos == std::ranges::cend(resolvables))
 		{
-			return QString("Комментарий от %1").arg(discussion.notes.front().author.username);
+			return QString("Комментарий от %1").arg(discussion->notes().front()->author().username);
 		}
 		else
 		{
 			auto const row = std::ranges::distance(resolvables.cbegin(), pos);
-			auto const count = std::ranges::count_if(m_mr->discussions(), &gpr::Discussion::isResolvable);
+			auto const count = std::ranges::count_if(m_mr->discussions(), &gpr::api::Discussion::isResolvable);
 
-			return QString("Дискуссия [%1/%2] от %3").arg(row + 1).arg(count).arg(discussion.notes.front().author.username);
+			return QString("Дискуссия [%1/%2] от %3").arg(row + 1).arg(count).arg(discussion->notes().front()->author().username);
 		}
 	}
 	if (role == Role::HasUnreadNotes)
 	{
 		return m_mr->isUserInvolved(m_manager.getCurrentUser())
-		    && std::ranges::any_of(discussion.notes, std::not_fn(&gpr::Note::wasShown));
+		    && std::ranges::any_of(discussion->notes(), std::not_fn(&gpr::api::Note::isRead));
 	}
-	if (role == Role::NoteCount)                            return discussion.notes.size();
-	if (role == Role::NoteUrl)                              return m_mr->noteUrl(discussion.notes.front());
-	if (role == Role::Author && !discussion.isEmpty())      return QVariant::fromValue(discussion.notes.front().author);
-	if (role == Role::CreatedDate && !discussion.isEmpty()) return discussion.notes.front().created;
-	if (role == Role::Resolvable)                           return discussion.isResolvable();
-	if (role == Role::Resolved)                             return discussion.isResolved();
-	if (role == Role::DiscussionId)                         return discussion.id;
-	if (role == Role::CanEdit)                              return false;
+	if (role == Role::NoteCount)                             return discussion->notes().size();
+	if (role == Role::NoteUrl)                               return m_mr->noteUrl(*(discussion->notes().front()));
+	if (role == Role::Author && !discussion->isEmpty())      return QVariant::fromValue(discussion->notes().front()->author());
+	if (role == Role::CreatedDate && !discussion->isEmpty()) return discussion->notes().front()->created();
+	if (role == Role::Resolvable)                            return discussion->isResolvable();
+	if (role == Role::Resolved)                              return discussion->isResolved();
+	if (role == Role::DiscussionId)                          return discussion->id();
+	if (role == Role::CanEdit)                               return false;
 	if (role == Role::CanResolve)
 	{
-		return !discussion.isEmpty() && discussion.notes.front().author == m_manager.getCurrentUser() && discussion.isResolvable()
-		    && !discussion.isResolved();
+		return !discussion->isEmpty() && discussion->notes().front()->author() == m_manager.getCurrentUser() && discussion->isResolvable()
+		    && !discussion->isResolved();
 	}
 	if (role == Role::CanUnresolve)
 	{
-		return !discussion.isEmpty() && discussion.notes.front().author == m_manager.getCurrentUser() && discussion.isResolved();
+		return !discussion->isEmpty() && discussion->notes().front()->author() == m_manager.getCurrentUser() && discussion->isResolved();
 	}
 
 	return QVariant{};
 }
 
-QVariant DiscussionModel::noteData(gpr::Discussion const &discussion, gpr::Note const &note, int role) const
+QVariant DiscussionModel::noteData(QPointer<gpr::api::Discussion> discussion, QPointer<gpr::api::Note> note, int role) const
 {
 	if (role == Qt::ItemDataRole::DisplayRole)
 	{
 		// NOTE: Считаем, что если у модели была запрошена displayRole, то текст заметки был отрисован и увиден пользователем.
-		// TODO: Подумать, как сделать умнее, чтобы не использовать mutable поле.
-		note.wasShown = true;
-		return note.body;
+		note->markRead();
+		return note->body();
 	}
-	if (role == Role::Author)         return QVariant::fromValue(note.author);
-	if (role == Role::CreatedDate)    return note.created;
-	if (role == Role::Resolvable)     return note.resolvable;
-	if (role == Role::Resolved)       return note.resolved;
-	if (role == Role::CanResolve)     return note.author == m_manager.getCurrentUser() && note.resolvable && !note.resolved;
-	if (role == Role::CanUnresolve)   return note.author == m_manager.getCurrentUser() && note.resolvable && note.resolved;;
-	if (role == Role::CanEdit)        return note.author == m_manager.getCurrentUser();
+	if (role == Role::Author)         return QVariant::fromValue(note->author());
+	if (role == Role::CreatedDate)    return note->created();
+	if (role == Role::Resolvable)     return note->isResolvable();
+	if (role == Role::Resolved)       return note->isResolved();
+	if (role == Role::CanResolve)     return note->author() == m_manager.getCurrentUser() && note->isResolvable() && !note->isResolved();
+	if (role == Role::CanUnresolve)   return note->author() == m_manager.getCurrentUser() && note->isResolvable() && note->isResolved();
+	if (role == Role::CanEdit)        return note->author() == m_manager.getCurrentUser();
 	if (role == Role::NoteCount)      return 0;
 	if (role == Role::HasUnreadNotes) return false;
-	if (role == Role::DiscussionId)   return discussion.id;
-	if (role == Role::NoteId)         return note.id;
-	if (role == Role::NoteUrl)        return m_mr->noteUrl(note);
+	if (role == Role::DiscussionId)   return discussion->id();
+	if (role == Role::NoteId)         return note->id();
+	if (role == Role::NoteUrl)        return m_mr->noteUrl(*note);
 	if (role == Role::Reactions)
 	{
 		QVariantList reactions;
-		for(auto const &reaction: note.reactions) reactions.push_back(QVariant::fromValue(reaction));
+		for(auto const &reaction: note->reactions()) reactions.push_back(QVariant::fromValue(reaction));
 		return reactions;
 	}
 	return QVariant{};
@@ -204,7 +203,7 @@ void DiscussionModel::disconnectMR(QPointer<gpr::api::MR> mr)
 	disconnect(mr, &gpr::api::MR::discussionNoteRemoved, this, &DiscussionModel::onDiscussionNoteRemoved);
 }
 
-void DiscussionModel::onDiscussionAdded(gpr::Discussion const &discussion)
+void DiscussionModel::onDiscussionAdded(QPointer<gpr::api::Discussion> discussion)
 {
 	auto const row = getRow(discussion);
 	assert(row >= 0);
@@ -212,14 +211,14 @@ void DiscussionModel::onDiscussionAdded(gpr::Discussion const &discussion)
 	endInsertRows();
 }
 
-void DiscussionModel::onDiscussionUpdated(gpr::Discussion const &discussion)
+void DiscussionModel::onDiscussionUpdated(QPointer<gpr::api::Discussion> discussion)
 {
 	auto const row = getRow(discussion);
 	assert(row >= 0);
 	Q_EMIT dataChanged(index(row, 0), index(row, columnCount() - 1));
 }
 
-void DiscussionModel::onDiscussionRemoved(gpr::Discussion const &discussion)
+void DiscussionModel::onDiscussionRemoved(QPointer<gpr::api::Discussion> discussion)
 {
 	auto const row = getRow(discussion);
 	assert(row >= 0);
@@ -227,7 +226,7 @@ void DiscussionModel::onDiscussionRemoved(gpr::Discussion const &discussion)
 	endRemoveRows();
 }
 
-void DiscussionModel::onDiscussionNoteAdded(gpr::Discussion const &discussion, gpr::Note const &note)
+void DiscussionModel::onDiscussionNoteAdded(QPointer<gpr::api::Discussion> discussion, QPointer<gpr::api::Note> note)
 {
 	auto const parentRow = getRow(discussion);
 	assert(parentRow >= 0);
@@ -241,7 +240,7 @@ void DiscussionModel::onDiscussionNoteAdded(gpr::Discussion const &discussion, g
 	endInsertRows();
 }
 
-void DiscussionModel::onDiscussionNoteUpdated(gpr::Discussion const &discussion, gpr::Note const &note)
+void DiscussionModel::onDiscussionNoteUpdated(QPointer<gpr::api::Discussion> discussion, QPointer<gpr::api::Note> note)
 {
 	auto const parentRow = getRow(discussion);
 	assert(parentRow >= 0);
@@ -254,7 +253,7 @@ void DiscussionModel::onDiscussionNoteUpdated(gpr::Discussion const &discussion,
 	Q_EMIT dataChanged(index(row, 0, parentIndex), index(row, columnCount() - 1, parentIndex));
 }
 
-void DiscussionModel::onDiscussionNoteRemoved(gpr::Discussion const &discussion, gpr::Note const &note)
+void DiscussionModel::onDiscussionNoteRemoved(QPointer<gpr::api::Discussion> discussion, QPointer<gpr::api::Note> note)
 {
 	auto const parentRow = getRow(discussion);
 	assert(parentRow >= 0);
@@ -268,7 +267,7 @@ void DiscussionModel::onDiscussionNoteRemoved(gpr::Discussion const &discussion,
 	endRemoveRows();
 }
 
-int DiscussionModel::getRow(gpr::Discussion const &discussion) const
+int DiscussionModel::getRow(QPointer<gpr::api::Discussion> discussion) const
 {
 	if(auto const pos = std::ranges::find(m_mr->discussions(), discussion); pos != m_mr->discussions().cend())
 	{
@@ -277,11 +276,11 @@ int DiscussionModel::getRow(gpr::Discussion const &discussion) const
 	return -1;
 }
 
-int DiscussionModel::getRow(gpr::Discussion const &discussion, gpr::Note const &note) const
+int DiscussionModel::getRow(QPointer<gpr::api::Discussion> discussion, QPointer<gpr::api::Note> note) const
 {
-	if(auto const pos = std::ranges::find(discussion.notes, note); pos != discussion.notes.cend())
+	if(auto const pos = std::ranges::find(discussion->notes(), note); pos != discussion->notes().cend())
 	{
-		return static_cast<int>(std::ranges::distance(discussion.notes.cbegin(), pos));
+		return static_cast<int>(std::ranges::distance(discussion->notes().cbegin(), pos));
 	}
 	return -1;
 }

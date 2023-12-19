@@ -85,44 +85,6 @@ namespace gpr
 		friend auto operator<=>(Variable const &, Variable const &) = default;
 	};
 
-	struct Note
-	{
-		int id {};
-		User author;
-		QString body;
-		QDateTime created;
-		QDateTime updated;
-
-		bool resolvable{};
-		bool resolved{};
-
-		std::vector<EmojiReaction> reactions;
-
-		mutable bool wasShown{false};
-
-		bool operator==(Note const &other) const { return id == other.id; }
-	};
-
-	struct Discussion
-	{
-		QString id;
-		std::vector<Note> notes;
-
-		bool isEmpty() const { return notes.empty(); }
-		bool isResolvable() const { return std::ranges::any_of(notes, &Note::resolvable); }
-		bool isResolved() const { return std::ranges::all_of(notes, &Note::resolved); }
-
-		User author() const
-		{
-			// NOTE: Автором дискуссии считаем автора первой заметки
-			return isEmpty() ? User{} : notes.front().author;
-		}
-
-		void markRead() { std::ranges::fill(notes | std::views::transform(&Note::wasShown), true); }
-
-		bool operator==(Discussion const &other) const { return id == other.id; }
-	};
-
 	struct PipelineTestReport
 	{
 		QDateTime updated;

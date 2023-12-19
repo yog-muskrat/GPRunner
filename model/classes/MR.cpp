@@ -1,40 +1,14 @@
 ﻿#include <cassert>
 #include <ranges>
 
-#include <QtCore/QRegularExpression>
-
 #include "model/classes/MR.h"
 
 namespace gpr::api
 {
-	namespace
-	{
-		void replaceEmojis(Note &note, std::map<QString, gpr::Emoji> const &emojiDict)
-		{
-			QRegularExpression regex{":([a-zA-Z_]+):"};
-
-			qsizetype offset = 0;
-
-			for(auto iter = regex.globalMatch(note.body, offset); iter.hasNext(); iter = regex.globalMatch(note.body, offset))
-			{
-				auto match = iter.next();
-				auto const captured = match.captured(1);
-				if(auto const pos = emojiDict.find(captured); pos != emojiDict.end())
-				{
-					note.body.replace(match.capturedStart(), match.capturedEnd(), pos->second.moji);
-					offset = match.capturedStart() + pos->second.moji.length() + 1;
-				}
-				else
-				{
-					offset = match.capturedEnd();
-				}
-			}
-		}
-	}
-
-	MR::MR(Data data, QObject *parent)
+	MR::MR(GPManager &manager, Data data, QObject *parent)
 		: QObject(parent)
 		, m_data{std::move(data)}
+		, m_manager{manager}
 	{}
 
 	int MR::id() const
@@ -147,7 +121,7 @@ namespace gpr::api
 		Q_EMIT modified();
 	}
 
-	std::vector<Discussion> const &MR::discussions() const
+	std::vector<QPointer<Discussion>> const &MR::discussions() const
 	{
 		return m_discussions;
 	}
@@ -193,7 +167,7 @@ namespace gpr::api
 	bool MR::hasNewNotes() const
 	{
 		auto notes = m_discussions | std::views::transform(&Discussion::notes) | std::views::join;
-		return !std::ranges::all_of(notes, &Note::wasShown);
+		return !std::ranges::all_of(notes, &Note::isRead);
 	}
 
 	bool MR::discussionsLoaded() const
@@ -231,75 +205,59 @@ namespace gpr::api
 		}
 	}
 
-	std::vector<int> MR::updateDiscussions(std::vector<Discussion> discussions, std::map<QString, gpr::Emoji> const &emojiDict)
+	void MR::updateDiscussions(std::vector<std::pair<Discussion::Data, std::vector<Note::Data>>> discussions)
 	{
-		std::vector<int> updatedNotes;
+		auto const removed =
+			m_discussions
+			| std::views::filter(
+				[&discussions](auto discussion)
+				{ return !std::ranges::contains(discussions, discussion->id(), [](auto const &p) { return p.first.id; }); })
+			| std::views::transform(&Discussion::id) | std::ranges::to<std::vector>();
 
-		auto const removed = m_discussions
-			| std::views::filter([&discussions](auto const &discussion) { return !std::ranges::contains(discussions, discussion.id, &Discussion::id); })
-			| std::views::transform(&Discussion::id)
-			| std::ranges::to<std::vector>();
-
-		for (auto &discussion : discussions)
+		for (auto &[discussionData, notes] : discussions)
 		{
-			if (auto existingDiscussion = findDiscussion(discussion.id))
+			QPointer<Discussion> discussion;
+
+			if (discussion = findDiscussion(discussionData.id))
 			{
-				auto updated = updateDiscussionNotes(*existingDiscussion, std::move(discussion.notes), emojiDict);
-				std::ranges::move(updated, std::back_inserter(updatedNotes));
-				Q_EMIT discussionUpdated(*existingDiscussion);
+				discussion->update(std::move(discussionData));
 			}
 			else
 			{
-				for(auto &note : discussion.notes) 
-				{
-					replaceEmojis(note, emojiDict);
-					note.wasShown = !m_discussionsLoaded;
-					updatedNotes.push_back(note.id);
-				}
+				discussion = m_discussions.emplace_back(new Discussion(m_manager, std::move(discussionData), this));
+				connectDiscussion(discussion);
+				Q_EMIT discussionAdded(discussion);
 
-				auto const &newDiscussion = m_discussions.emplace_back(std::move(discussion));
-				Q_EMIT discussionAdded(newDiscussion);
 			}
+			discussion->updateNotes(std::move(notes));
 		}
 
 		for (auto const &discussionId : removed)
 		{
-			auto existingDiscussion = findDiscussion(discussionId);
-			assert(existingDiscussion);
-			Q_EMIT discussionRemoved(*existingDiscussion);
-			std::erase(m_discussions, *existingDiscussion);
+			auto pos = std::ranges::find(m_discussions, discussionId, &Discussion::id);
+			assert(pos != m_discussions.cend());
+			Q_EMIT discussionRemoved(*pos);
+			m_discussions.erase(pos);
 		}
 
 		Q_EMIT modified();
 
-		m_discussionsLoaded = true;
-
-		return updatedNotes;
+		if(!m_discussionsLoaded)
+		{
+			std::ranges::for_each(m_discussions, &Discussion::setLoadFinished);
+			m_discussionsLoaded = true;
+		}
 	}
 
 	void MR::markDiscussionsRead()
 	{
-		for(auto &discussion : m_discussions)
-		{
-			discussion.markRead();
-			Q_EMIT discussionUpdated(discussion);
-		}
+		std::ranges::for_each(m_discussions, &Discussion::markRead);
 		Q_EMIT modified();
 	}
 
-	void MR::markDiscussionRead(QString const &discussionId)
+	QString MR::noteUrl(gpr::api::Note const &note) const
 	{
-		if(auto pos = std::ranges::find(m_discussions, discussionId, &Discussion::id); pos != m_discussions.end())
-		{
-			pos->markRead();
-			Q_EMIT discussionUpdated(*pos);
-			Q_EMIT modified();
-		}
-	}
-
-	QString MR::noteUrl(gpr::Note const &note) const
-	{
-		return QString{"%1#note_%2"}.arg(url()).arg(note.id);
+		return QString{"%1#note_%2"}.arg(url()).arg(note.id());
 	}
 
 	bool MR::isUserInvolved(User const &user) const
@@ -313,98 +271,23 @@ namespace gpr::api
 		return m_data.author.username == username || m_data.assignee.username == username || m_data.reviewer.username == username;
 	}
 
-	std::vector<int> MR::updateDiscussionNotes(Discussion &discussion, std::vector<Note> notes, std::map<QString, gpr::Emoji> const &emojiDict)
-	{
-		std::vector<int> updatedNotes;
-
-		auto const removed = discussion.notes
-			| std::views::filter([&notes](auto const &note) { return !std::ranges::contains(notes, note.id, &Note::id); })
-			| std::views::transform(&Note::id)
-			| std::ranges::to<std::vector>();
-
-		for (auto &note : notes)
-		{
-			if(!m_discussionsLoaded) note.wasShown = true;
-
-			if (auto existingNote = findDiscussionNote(discussion, note.id))
-			{
-				if(note.updated > existingNote->updated)
-				{
-					replaceEmojis(note, emojiDict);
-					updatedNotes.push_back(note.id);
-					auto const wasShown = existingNote->wasShown;
-					auto reactions = std::move(existingNote->reactions);
-					*existingNote = std::move(note);
-					existingNote->wasShown = wasShown;
-					existingNote->reactions = std::move(reactions);
-					Q_EMIT discussionNoteUpdated(discussion, *existingNote);
-				}
-			}
-			else
-			{
-				replaceEmojis(note, emojiDict);
-				updatedNotes.push_back(note.id);
-				auto const &newNote = discussion.notes.emplace_back(std::move(note));
-				Q_EMIT discussionNoteAdded(discussion, newNote);
-			}
-		}
-
-		for (auto const &noteId : removed)
-		{
-			auto existingNote = findDiscussionNote(discussion, noteId);
-			assert(existingNote);
-			Q_EMIT discussionNoteRemoved(discussion, *existingNote);
-			std::erase(discussion.notes, *existingNote);
-		}
-
-		Q_EMIT modified();
-
-		m_discussionsLoaded = true;
-
-		return updatedNotes;
-	}
-
-
-	void MR::setNoteReactions(int noteId, std::vector<gpr::EmojiReaction> reactions)
-	{
-		for(auto &discussion : m_discussions)
-		{
-			if(auto pos = std::ranges::find(discussion.notes, noteId, &Note::id); pos != discussion.notes.cend())
-			{
-				pos->reactions = std::move(reactions);
-				Q_EMIT discussionNoteUpdated(discussion, *pos);
-				return;
-			}
-		}
-	}
-
-
-	Discussion *MR::findDiscussion(QString const &id)
+	QPointer<Discussion> MR::findDiscussion(QString const &id) const
 	{
 		if(auto const pos = std::ranges::find(m_discussions, id, &Discussion::id); pos != m_discussions.end())
 		{
-			return &(*pos);
+			return *pos;
 		}
+
 		return nullptr;
 	}
 
-	Note *MR::findDiscussionNote(int noteId)
+	void MR::connectDiscussion(QPointer<Discussion> discussion)
 	{
-		auto notes = m_discussions | std::views::transform(&Discussion::notes) | std::views::join;
+		connect(discussion, &Discussion::modified, [this, discussion]{ Q_EMIT discussionUpdated(discussion); });
 
-		if(auto const pos = std::ranges::find(notes, noteId, &Note::id); pos != std::ranges::end(notes))
-		{
-			return &*pos;
-		}
-		return nullptr;
+		connect(discussion, &Discussion::noteAdded  , [this, discussion](QPointer<Note> note){ Q_EMIT discussionNoteAdded(discussion, note); });
+		connect(discussion, &Discussion::noteUpdated, [this, discussion](QPointer<Note> note){ Q_EMIT discussionNoteUpdated(discussion, note); });
+		connect(discussion, &Discussion::noteRemoved, [this, discussion](QPointer<Note> note){ Q_EMIT discussionNoteRemoved(discussion, note); });
 	}
 
-	Note *MR::findDiscussionNote(Discussion &discussion, int noteId) const
-	{
-		if(auto const pos = std::ranges::find(discussion.notes, noteId, &Note::id); pos != discussion.notes.end())
-		{
-			return &(*pos);
-		}
-		return nullptr;
-	}
 } // namespace gpr::api

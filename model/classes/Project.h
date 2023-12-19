@@ -6,6 +6,8 @@
 #include "model/classes/Pipeline.h"
 #include "model/classes/MR.h"
 
+class GPManager;
+
 namespace gpr::api
 {
 	class Project : public QObject
@@ -22,7 +24,7 @@ namespace gpr::api
 			// TODO: QPixmap avatar;
 		};
 
-		Project(Data data, QObject *parent);
+		Project(GPManager &manager, Data data, QObject *parent);
 
 		int id() const;
 
@@ -53,15 +55,19 @@ namespace gpr::api
 
 	Q_SIGNALS:
 		void modified();
+
 		void mrAdded(QPointer<MR>);
 		void mrRemoved(QPointer<MR>);
 		void mrUpdated(QPointer<MR>);
-		void mrDiscussionAdded(QPointer<MR>, Discussion const &);
-		void mrDiscussionUpdated(QPointer<MR>, Discussion const &);
-		void mrDiscussionRemoved(QPointer<MR>, Discussion const &);
-		void mrDiscussionNoteAdded(QPointer<MR>, Discussion const &, Note const &);
-		void mrDiscussionNoteUpdated(QPointer<MR>, Discussion const &, Note const &);
-		void mrDiscussionNoteRemoved(QPointer<MR>, Discussion const &, Note const &);
+
+		void mrDiscussionAdded(QPointer<MR>, QPointer<Discussion>);
+		void mrDiscussionUpdated(QPointer<MR>, QPointer<Discussion>);
+		void mrDiscussionRemoved(QPointer<MR>, QPointer<Discussion>);
+
+		void mrDiscussionNoteAdded(QPointer<MR>, QPointer<Discussion>, QPointer<Note>);
+		void mrDiscussionNoteUpdated(QPointer<MR>, QPointer<Discussion>, QPointer<Note>);
+		void mrDiscussionNoteRemoved(QPointer<MR>, QPointer<Discussion>, QPointer<Note>);
+
 		void pipelineAdded(QPointer<Pipeline>);
 		void pipelineRemoved(QPointer<Pipeline>);
 		void pipelineUpdated(QPointer<Pipeline>);
@@ -70,6 +76,8 @@ namespace gpr::api
 		void connectMR(QPointer<MR> mr);
 
 		Data m_data;
+
+		GPManager &m_manager;
 
 		std::vector<QPointer<MR>> m_openMRs;
 		std::vector<QPointer<Pipeline>> m_pipelines;

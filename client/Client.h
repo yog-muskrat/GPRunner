@@ -8,7 +8,7 @@
 #include <QJsonDocument>
 #include <QNetworkAccessManager>
 
-#include "GPClasses.h"
+#include "model/classes/GPClasses.h"
 
 class QNetworkRequest;
 

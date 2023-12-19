@@ -2,7 +2,7 @@
 
 #include <QAbstractTableModel>
 
-#include "GPClasses.h"
+#include "model/classes/GPClasses.h"
 #include "model/classes/Project.h"
 
 class GPManager;
@@ -48,13 +48,13 @@ Q_SIGNALS:
 	void projectMergeRequestRemoved(QPointer<gpr::api::Project>, QPointer<gpr::api::MR>);
 	void projectMergeRequestUpdated(QPointer<gpr::api::Project>, QPointer<gpr::api::MR>);
 
-	void projectMrDiscussionAdded(QPointer<gpr::api::Project>, QPointer<gpr::api::MR>, gpr::Discussion const &);
-	void projectMrDiscussionUpdated(QPointer<gpr::api::Project>, QPointer<gpr::api::MR>, gpr::Discussion const &);
-	void projectMrDiscussionRemoved(QPointer<gpr::api::Project>, QPointer<gpr::api::MR>, gpr::Discussion const &);
+	void projectMrDiscussionAdded(QPointer<gpr::api::Project>, QPointer<gpr::api::MR>, QPointer<gpr::api::Discussion>);
+	void projectMrDiscussionUpdated(QPointer<gpr::api::Project>, QPointer<gpr::api::MR>, QPointer<gpr::api::Discussion>);
+	void projectMrDiscussionRemoved(QPointer<gpr::api::Project>, QPointer<gpr::api::MR>, QPointer<gpr::api::Discussion>);
 
-	void projectMrDiscussionNoteAdded(QPointer<gpr::api::Project>, QPointer<gpr::api::MR>, gpr::Discussion const &, gpr::Note const &);
-	void projectMrDiscussionNoteUpdated(QPointer<gpr::api::Project>, QPointer<gpr::api::MR>, gpr::Discussion const &, gpr::Note const &);
-	void projectMrDiscussionNoteRemoved(QPointer<gpr::api::Project>, QPointer<gpr::api::MR>, gpr::Discussion const &, gpr::Note const &);
+	void projectMrDiscussionNoteAdded(QPointer<gpr::api::Project>, QPointer<gpr::api::MR>, QPointer<gpr::api::Discussion>, QPointer<gpr::api::Note>);
+	void projectMrDiscussionNoteUpdated(QPointer<gpr::api::Project>, QPointer<gpr::api::MR>, QPointer<gpr::api::Discussion>, QPointer<gpr::api::Note>);
+	void projectMrDiscussionNoteRemoved(QPointer<gpr::api::Project>, QPointer<gpr::api::MR>, QPointer<gpr::api::Discussion>, QPointer<gpr::api::Note>);
 
 private:
 	void onProjectUpdated(QPointer<gpr::api::Project> project);

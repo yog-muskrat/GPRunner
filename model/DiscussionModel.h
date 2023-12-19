@@ -13,6 +13,8 @@ namespace gpr
 	namespace api
 	{
 		class MR;
+		class Discussion;
+		class Note;
 	}
 } // namespace gpr
 
@@ -56,22 +58,22 @@ public:
 	QHash<int, QByteArray> roleNames() const override;
 
 private:
-	QVariant discussionData(gpr::Discussion const &discussion, int role) const;
-	QVariant noteData(gpr::Discussion const &discussion, gpr::Note const &note, int role) const;
+	QVariant discussionData(QPointer<gpr::api::Discussion> discussion, int role) const;
+	QVariant noteData(QPointer<gpr::api::Discussion> discussion, QPointer<gpr::api::Note> note, int role) const;
 
 	void connectMR(QPointer<gpr::api::MR> mr);
 	void disconnectMR(QPointer<gpr::api::MR> mr);
 
-	void onDiscussionAdded(gpr::Discussion const &discussion);
-	void onDiscussionUpdated(gpr::Discussion const &discussion);
-	void onDiscussionRemoved(gpr::Discussion const &discussion);
+	void onDiscussionAdded(QPointer<gpr::api::Discussion> discussion);
+	void onDiscussionUpdated(QPointer<gpr::api::Discussion> discussion);
+	void onDiscussionRemoved(QPointer<gpr::api::Discussion> discussion);
 
-	void onDiscussionNoteAdded(gpr::Discussion const &discussion, gpr::Note const &note);
-	void onDiscussionNoteUpdated(gpr::Discussion const &discussion, gpr::Note const &note);
-	void onDiscussionNoteRemoved(gpr::Discussion const &discussion, gpr::Note const &note);
+	void onDiscussionNoteAdded(QPointer<gpr::api::Discussion> discussion, QPointer<gpr::api::Note> note);
+	void onDiscussionNoteUpdated(QPointer<gpr::api::Discussion> discussion, QPointer<gpr::api::Note> note);
+	void onDiscussionNoteRemoved(QPointer<gpr::api::Discussion> discussion, QPointer<gpr::api::Note> note);
 
-	int getRow(gpr::Discussion const &discussion) const;
-	int getRow(gpr::Discussion const &discussion, gpr::Note const &note) const;
+	int getRow(QPointer<gpr::api::Discussion> discussion) const;
+	int getRow(QPointer<gpr::api::Discussion> discussion, QPointer<gpr::api::Note> note) const;
 
 	GPManager &m_manager;
 

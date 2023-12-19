@@ -27,7 +27,7 @@ void ProjectModel::addProject(gpr::api::Project::Data projectData)
 	else
 	{
 		beginResetModel();
-		auto project = new gpr::api::Project(std::move(projectData), this);
+		auto project = new gpr::api::Project(m_manager, std::move(projectData), this);
 		connectProject(project);
 
 		connect(project, &gpr::api::Project::modified, [this, project] { onProjectUpdated(project); });
@@ -146,29 +146,29 @@ void ProjectModel::connectProject(QPointer<gpr::api::Project> project)
 	connect(
 		project,
 		&gpr::api::Project::mrDiscussionAdded,
-		[this, project](auto mr, auto const &discussion) { Q_EMIT projectMrDiscussionAdded(project, mr, discussion); });
+		[this, project](auto mr, auto discussion) { Q_EMIT projectMrDiscussionAdded(project, mr, discussion); });
 	connect(
 		project,
 		&gpr::api::Project::mrDiscussionUpdated,
-		[this, project](auto mr, auto const &discussion) { Q_EMIT projectMrDiscussionUpdated(project, mr, discussion); });
+		[this, project](auto mr, auto discussion) { Q_EMIT projectMrDiscussionUpdated(project, mr, discussion); });
 	connect(
 		project,
 		&gpr::api::Project::mrDiscussionRemoved,
-		[this, project](auto mr, auto const &discussion) { Q_EMIT projectMrDiscussionRemoved(project, mr, discussion); });
+		[this, project](auto mr, auto discussion) { Q_EMIT projectMrDiscussionRemoved(project, mr, discussion); });
 
 	connect(
 		project,
 		&gpr::api::Project::mrDiscussionNoteAdded,
-		[this, project](auto mr, auto const &discussion, auto const &note)
+		[this, project](auto mr, auto discussion, auto note)
 		{ Q_EMIT projectMrDiscussionNoteAdded(project, mr, discussion, note); });
 	connect(
 		project,
 		&gpr::api::Project::mrDiscussionNoteUpdated,
-		[this, project](auto mr, auto const &discussion, auto const &note)
+		[this, project](auto mr, auto discussion, auto note)
 		{ Q_EMIT projectMrDiscussionNoteUpdated(project, mr, discussion, note); });
 	connect(
 		project,
 		&gpr::api::Project::mrDiscussionNoteRemoved,
-		[this, project](auto mr, auto const &discussion, auto const &note)
+		[this, project](auto mr, auto discussion, auto note)
 		{ Q_EMIT projectMrDiscussionNoteRemoved(project, mr, discussion, note); });
 }

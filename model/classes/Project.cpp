@@ -4,12 +4,14 @@
 #include "model/classes/Pipeline.h"
 #include "model/classes/Project.h"
 #include "model/classes/MR.h"
+#include "GPManager.h"
 
 namespace gpr::api
 {
-	Project::Project(Data data, QObject *parent)
+	Project::Project(GPManager &manager, Data data, QObject *parent)
 		: QObject(parent)
 		, m_data{std::move(data)}
+		, m_manager{manager}
 	{}
 
 	int Project::id() const
@@ -93,7 +95,7 @@ namespace gpr::api
 			}
 			else
 			{
-				auto newMr = new MR(std::move(mrData), this);
+				auto newMr = new MR(m_manager, std::move(mrData), this);
 				m_openMRs.push_back(newMr);
 				connectMR(newMr);
 
@@ -180,21 +182,21 @@ namespace gpr::api
 
 	void Project::connectMR(QPointer<MR> mr)
 	{
-		connect(mr, &MR::discussionAdded, [this, mr](Discussion const &discussion) { Q_EMIT mrDiscussionAdded(mr, discussion); });
-		connect(mr, &MR::discussionUpdated, [this, mr](Discussion const &discussion) { Q_EMIT mrDiscussionUpdated(mr, discussion); });
-		connect(mr, &MR::discussionRemoved, [this, mr](Discussion const &discussion) { Q_EMIT mrDiscussionRemoved(mr, discussion); });
+		connect(mr, &MR::discussionAdded, [this, mr](auto discussion) { Q_EMIT mrDiscussionAdded(mr, discussion); });
+		connect(mr, &MR::discussionUpdated, [this, mr](auto discussion) { Q_EMIT mrDiscussionUpdated(mr, discussion); });
+		connect(mr, &MR::discussionRemoved, [this, mr](auto discussion) { Q_EMIT mrDiscussionRemoved(mr, discussion); });
 
 		connect(
 			mr,
 			&MR::discussionNoteAdded,
-			[this, mr](Discussion const &discussion, Note const &note) { Q_EMIT mrDiscussionNoteAdded(mr, discussion, note); });
+			[this, mr](auto discussion, auto note) { Q_EMIT mrDiscussionNoteAdded(mr, discussion, note); });
 		connect(
 			mr,
 			&MR::discussionNoteUpdated,
-			[this, mr](Discussion const &discussion, Note const &note) { Q_EMIT mrDiscussionNoteUpdated(mr, discussion, note); });
+			[this, mr](auto discussion, auto note) { Q_EMIT mrDiscussionNoteUpdated(mr, discussion, note); });
 		connect(
 			mr,
 			&MR::discussionNoteRemoved,
-			[this, mr](Discussion const &discussion, Note const &note) { Q_EMIT mrDiscussionNoteRemoved(mr, discussion, note); });
+			[this, mr](auto discussion, auto note) { Q_EMIT mrDiscussionNoteRemoved(mr, discussion, note); });
 	}
 } // namespace gpr::api

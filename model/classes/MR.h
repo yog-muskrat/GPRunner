@@ -1,9 +1,13 @@
 ﻿#pragma once
 
 #include <QObject>
+#include <QPointer>
 #include <QDateTime>
 
-#include "GPClasses.h"
+#include "model/classes/GPClasses.h"
+#include "model/classes/Discussion.h"
+
+class GPManager;
 
 namespace gpr::api
 {
@@ -30,7 +34,7 @@ namespace gpr::api
 			bool hasNotes{};
 		};
 
-		MR(Data data, QObject *parent = 0);
+		MR(GPManager &manager, Data data, QObject *parent = nullptr);
 
 		int id() const;
 		int iid() const;
@@ -80,19 +84,14 @@ namespace gpr::api
 		bool isApprovedBy(User const &user) const;
 		bool isApprovedBy(QString const &username) const;
 
-		std::vector<Discussion> const &discussions() const;
-		bool discussionsLoaded() const;
-		/**
-		 * @brief Обновляет дискуссии в MR-е
-		 * @param discussions
-		 * @return идентификаторы обновленных заметок (notes)
-		 */
-		std::vector<int> updateDiscussions(std::vector<Discussion> discussions, std::map<QString, gpr::Emoji> const &emojiDict);
-		void markDiscussionsRead();
-		void markDiscussionRead(QString const &discussionId);
-		QString noteUrl(gpr::Note const &note) const;
+		std::vector<QPointer<Discussion>> const &discussions() const;
 
-		void setNoteReactions(int noteId, std::vector<gpr::EmojiReaction> reactions);
+		bool discussionsLoaded() const;
+		void updateDiscussions(std::vector<std::pair<Discussion::Data, std::vector<Note::Data>>> discussions);
+		QPointer<Discussion> findDiscussion(QString const &id) const;
+
+		void markDiscussionsRead();
+		QString noteUrl(gpr::api::Note const &note) const;
 
 		bool isUserInvolved(QString const &username) const;
 		bool isUserInvolved(User const &user) const;
@@ -102,26 +101,23 @@ namespace gpr::api
 	Q_SIGNALS:
 		void modified();
 
-		void discussionAdded(Discussion const &);
-		void discussionUpdated(Discussion const &);
-		void discussionRemoved(Discussion const &);
+		void discussionAdded(QPointer<Discussion>);
+		void discussionUpdated(QPointer<Discussion>);
+		void discussionRemoved(QPointer<Discussion>);
 
-		void discussionNoteAdded(Discussion const &, Note const &);
-		void discussionNoteUpdated(Discussion const &, Note const &);
-		void discussionNoteRemoved(Discussion const &, Note const &);
+		void discussionNoteAdded(QPointer<Discussion>, QPointer<Note>);
+		void discussionNoteUpdated(QPointer<Discussion>, QPointer<Note>);
+		void discussionNoteRemoved(QPointer<Discussion>, QPointer<Note>);
 
 	private:
-		std::vector<int> updateDiscussionNotes(Discussion &discussion, std::vector<Note> notes, std::map<QString, gpr::Emoji> const &emojiDict);
-
-		Discussion *findDiscussion(QString const &id);
-		Note *findDiscussionNote(int noteId);
-		Note *findDiscussionNote(Discussion &discussion, int noteId) const;
+		void connectDiscussion(QPointer<Discussion> discussion);
 
 		Data m_data;
+		GPManager &m_manager;
 
-		// NOTE: Флаг для отличия ситуаций изначальной загрузки дискуссий и создания новых.
+		// NOTE: Флаг первоначальной загрузки дискуссий
 		bool m_discussionsLoaded{false};
-		std::vector<Discussion> m_discussions;
+		std::vector<QPointer<Discussion>> m_discussions;
 		std::vector<QString> m_approvedBy;
 		QString m_pipelineStatus;
 	};

@@ -2,7 +2,7 @@
 
 #include <QAbstractTableModel>
 
-#include "GPClasses.h"
+#include "model/classes/GPClasses.h"
 
 class VariableModel : public QAbstractTableModel
 {

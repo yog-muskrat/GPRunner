@@ -106,7 +106,9 @@
     <ClCompile Include="client\Client.cpp" />
     <ClCompile Include="GPManager.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="model\classes\Discussion.cpp" />
     <ClCompile Include="model\classes\MR.cpp" />
+    <ClCompile Include="model\classes\Note.cpp" />
     <ClCompile Include="model\classes\Parser.cpp" />
     <ClCompile Include="model\classes\Pipeline.cpp" />
     <ClCompile Include="model\classes\Project.cpp" />
@@ -145,8 +147,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="client\Client.h" />
+    <QtMoc Include="model\classes\Discussion.h" />
+    <QtMoc Include="model\classes\Note.h" />
     <ClInclude Include="resource.h" />
-    <QtMoc Include="GPClasses.h" />
+    <QtMoc Include="model\classes\GPClasses.h" />
     <ClInclude Include="ImageProvider.h" />
     <ClInclude Include="model\classes\Parser.h" />
     <QtMoc Include="model\DiscussionModel.h" />
