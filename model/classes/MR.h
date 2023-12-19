@@ -6,6 +6,7 @@
 
 #include "model/classes/GPClasses.h"
 #include "model/classes/Discussion.h"
+#include "model/classes/Pipeline.h"
 
 class GPManager;
 
@@ -76,8 +77,8 @@ namespace gpr::api
 
 		bool hasNewNotes() const;
 
-		QString pipelineStatus() const;
-		void setPipelineStatus(QString status);
+		Pipeline::Data const pipeline() const;
+		void setPipeline(Pipeline::Data data);
 
 		std::vector<QString> const &approvedBy() const;
 		void setApprovedBy(std::vector<QString> list);
@@ -119,6 +120,6 @@ namespace gpr::api
 		bool m_discussionsLoaded{false};
 		std::vector<QPointer<Discussion>> m_discussions;
 		std::vector<QString> m_approvedBy;
-		QString m_pipelineStatus;
+		Pipeline::Data m_pipeline;
 	};
 } // namespace gpr::api

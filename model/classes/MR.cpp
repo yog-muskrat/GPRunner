@@ -159,9 +159,17 @@ namespace gpr::api
 		Q_EMIT modified();
 	}
 
-	QString MR::pipelineStatus() const
+	Pipeline::Data const MR::pipeline() const
 	{
-		return m_pipelineStatus;
+		return m_pipeline;
+	}
+
+	void MR::setPipeline(Pipeline::Data data)
+	{
+		if(m_pipeline == data) return;
+
+		m_pipeline = std::move(data);
+		Q_EMIT modified();
 	}
 
 	bool MR::hasNewNotes() const
@@ -173,12 +181,6 @@ namespace gpr::api
 	bool MR::discussionsLoaded() const
 	{
 		return m_discussionsLoaded;
-	}
-
-	void MR::setPipelineStatus(QString status)
-	{
-		m_pipelineStatus = std::move(status);
-		Q_EMIT modified();
 	}
 
 	std::vector<QString> const &MR::approvedBy() const

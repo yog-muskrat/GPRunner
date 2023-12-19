@@ -26,6 +26,14 @@ Rectangle {
             url: model.url
         }
 
+        TextLinkButton {
+            leftPadding: 5
+            text: model.display
+            visible: model.pipelineUrl ? true : false
+            url: model.pipelineUrl
+            toolTip: model.edit
+        }
+
         Image {
             visible: model.user ? true : false
             Layout.maximumHeight: 28
@@ -37,6 +45,7 @@ Rectangle {
         Label {
             padding: 5
 
+            visible: model.pipelineUrl ? false : true
             text: model.display
             font.bold: model.user ? (model.user.username == gpm.currentUser.username) : false
             color: mrs.currentRow ? palette.highlightedText : palette.text

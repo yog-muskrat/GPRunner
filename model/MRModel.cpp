@@ -135,6 +135,11 @@ QVariant MRModel::data(QModelIndex const &index, int role) const
 		if(column == Column::Iid) return mr.url();
 		return QString{};
 	}
+	if (role == Role::PipelineUrl)
+	{
+		if(column == Column::Pipeline) return mr.pipeline().url;
+		return QString{};
+	}
 	if (role == Role::MrId)           return mr.id();
 	if (role == Role::MrIid)          return mr.iid();
 	if (role == Role::HasUnreadNotes) return column == Column::Discussions && mr.isUserInvolved(m_manager.getCurrentUser()) && mr.hasNewNotes();
@@ -202,6 +207,7 @@ QHash<int, QByteArray> MRModel::roleNames() const
 	auto names = QAbstractTableModel::roleNames();
 	names.emplace(Qt::FontRole, "font");
 	names.emplace(Role::Url, "url");
+	names.emplace(Role::PipelineUrl, "pipelineUrl");
 	names.emplace(Role::MrId, "id");
 	names.emplace(Role::MrIid, "iid");
 	names.emplace(Role::User, "user");
@@ -236,7 +242,7 @@ QVariant MRModel::editRole(gpr::api::MR const &mr, Column column) const
 		case Column::SourceBranch:
 		case Column::TargetBranch: return displayRole(mr, column);
 		case Column::Status:       return mr.mergeStatus();
-		case Column::Pipeline:     return mr.pipelineStatus();
+		case Column::Pipeline:     return mr.pipeline().status;
 		case Column::Created:      return mr.createdAt();
 		case Column::Updated:      return mr.updatedAt();
 		default: break;
@@ -251,7 +257,7 @@ QVariant MRModel::displayRole(gpr::api::MR const &mr, Column column) const
 		case Column::Iid:           return mr.iid();
 		case Column::Title:        return mr.title();
 		case Column::Status:       return getStatusInfo(mr.mergeStatus()).shortInfo;
-		case Column::Pipeline:     return getPipelineStatusIcon(mr.pipelineStatus());
+		case Column::Pipeline:     return getPipelineStatusIcon(mr.pipeline().status);
 		case Column::Author:       return mr.author().username;
 		case Column::Discussions:  return getDiscussionsString(mr);
 		case Column::Assignee:     return mr.assignee().username;
@@ -285,7 +291,7 @@ QVariant MRModel::toolTipRole(gpr::api::MR const &mr, Column column) const
 	switch (column)
 	{
 		case Column::Status:   return getStatusInfo(mr.mergeStatus()).fullInfo;
-		case Column::Pipeline: return mr.pipelineStatus();
+		case Column::Pipeline: return mr.pipeline().status;
 		default: break;
 	}
 	return QString{""};

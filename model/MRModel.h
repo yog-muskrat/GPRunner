@@ -30,6 +30,7 @@ public:
 	enum Role
 	{
 		Url = Qt::UserRole,
+		PipelineUrl,
 		MrId,
 		MrIid,
 		User,

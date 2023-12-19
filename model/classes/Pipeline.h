@@ -23,6 +23,8 @@ namespace gpr::api
 			QString url;
 			QDateTime created;
 			QDateTime updated;
+
+			friend bool operator==(Data const &, Data const &) = default;
 		};
 
 		Pipeline(Data data, QObject *parent);

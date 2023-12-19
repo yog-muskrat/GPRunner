@@ -483,7 +483,7 @@ void GPManager::parseMRDetails(int projectId, int mrId, QJsonDocument const &doc
 		return;
 	}
 
-	mr->setPipelineStatus(gpr::api::parseMRDetails(doc.object()));
+	mr->setPipeline(gpr::api::parseMRDetails(doc.object()));
 }
 
 void GPManager::parseMRDiscussions(int projectId, int mrId, QJsonDocument const &doc)
