@@ -14,9 +14,13 @@ Dialog {
     title: "Note"
     standardButtons: Dialog.Ok | Dialog.Cancel
 
-    contentItem: TextArea {
-        id: note
-        wrapMode: TextEdit.WordWrap
+    contentItem:
+    ScrollView {
+        TextArea {
+            id: note
+            anchors.fill: parent
+            wrapMode: TextEdit.WordWrap
+        }
     }
 
     onNoteTextChanged: {

@@ -70,7 +70,7 @@ Item {
                     currentMrIid: discussions.currentMrIid
 
                     width: Math.max(parent.width / 2, 500)
-                    height: Math.max(parent.height / 2, 250)
+                    height: Math.max(parent.height / 2, 350)
 
                     anchors.centerIn: parent
                 }
