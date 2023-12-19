@@ -18,18 +18,22 @@ Window {
     onClosing: (close) => {
         if(!forceQuit) {
             close.accepted = false
+            saveState()
             hide()
         }
     }
 
-    Component.onCompleted: {
-        pipelines.restoreState(settings.value("ui/pipelines"))
-        mergeRequests.restoreState(settings.value("ui/mrs"))
-    }
+    Component.onCompleted: restoreState
+    Component.onDestruction: saveState
 
-    Component.onDestruction: {
+    function saveState() {
         settings.setValue("ui/pipelines", pipelines.saveState())
         settings.setValue("ui/mrs", mergeRequests.saveState())
+    }
+
+    function restoreState() {
+        pipelines.restoreState(settings.value("ui/pipelines"))
+        mergeRequests.restoreState(settings.value("ui/mrs"))
     }
 
     Settings {
@@ -37,6 +41,7 @@ Window {
         property alias y: mainWindow.y
         property alias width: mainWindow.width
         property alias height: mainWindow.height
+        property alias visibility: mainWindow.visibility
 
         id: settings
 
@@ -50,10 +55,17 @@ Window {
         visible: true
         icon.source: gpm.hasNewNotes ? "qrc:/icons/gitlab-green-notification.png" : "qrc:/icons/gitlab-green.png"
 
-        onActivated: {
-            mainWindow.show()
-            mainWindow.raise()
-            mainWindow.requestActivate()
+        onActivated: function (reason) {
+            if(reason != SystemTrayIcon.Trigger) return
+
+            if(mainWindow.visible) {
+                mainWindow.hide()
+            } 
+            else {
+                mainWindow.show()
+                mainWindow.raise()
+                mainWindow.requestActivate()
+            }
         }
 
         menu: Menu {
