@@ -14,6 +14,7 @@ public:
 		Ref,
 		User,
 		Status,
+		Jobs,
 		Source,
 		Created,
 		Updated,

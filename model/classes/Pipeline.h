@@ -4,6 +4,9 @@
 #include <QDateTime>
 
 #include "model/classes/GPClasses.h"
+#include "model/classes/Job.h"
+
+class GPManager;
 
 namespace gpr::api
 {
@@ -27,7 +30,7 @@ namespace gpr::api
 			friend bool operator==(Data const &, Data const &) = default;
 		};
 
-		Pipeline(Data data, QObject *parent);
+		Pipeline(GPManager &manager, Data data, QObject *parent);
 
 		int id() const;
 
@@ -54,12 +57,20 @@ namespace gpr::api
 		QDateTime updatedAt() const;
 		void setUpdatedAt(QDateTime updated);
 
-		friend auto operator<=>(Pipeline const &, Pipeline const &) = default;
+		std::vector<QPointer<Job>> const &jobs() const;
+		void updateJobs(std::vector<Job::Data> data);
+
+		//friend auto operator<=>(Pipeline const &, Pipeline const &) = default;
 
 	Q_SIGNALS:
 		void modified();
+		void jobAdded(QPointer<Job>);
+		void jobUpdated(QPointer<Job>);
+		void jobRemoved(QPointer<Job>);
 
 	private:
 		Data m_data;
+		GPManager &m_manager;
+		std::vector<QPointer<Job>> m_jobs;
 	};
 } // namespace gpr::api

@@ -46,6 +46,22 @@ namespace gpr::api
 		return data;
 	}
 
+	Job::Data parseJobInfo(QJsonObject const &json)
+	{
+		return {
+			.id = json["id"].toInt(),
+			.name = json["name"].toString(),
+			.stage = json["stage"].toString(),
+			.status = json["status"].toString(),
+			.url = json["web_url"].toString(),
+			.duration = json["duration"].toDouble(),
+			.created = toDateTime(json["created_at"]),
+			.started = toDateTime(json["started_at"]),
+			.finished = toDateTime(json["finished_at"]),
+			.user = parseUser(json["user"].toObject()),
+		};
+	}
+
 	MR::Data parseMR(QJsonObject const &json)
 	{
 		return {

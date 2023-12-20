@@ -18,22 +18,18 @@ Window {
     onClosing: (close) => {
         if(!forceQuit) {
             close.accepted = false
-            saveState()
             hide()
         }
     }
 
-    Component.onCompleted: restoreState
-    Component.onDestruction: saveState
-
-    function saveState() {
-        settings.setValue("ui/pipelines", pipelines.saveState())
-        settings.setValue("ui/mrs", mergeRequests.saveState())
-    }
-
-    function restoreState() {
+    Component.onCompleted: {
         pipelines.restoreState(settings.value("ui/pipelines"))
         mergeRequests.restoreState(settings.value("ui/mrs"))
+    }
+
+    Component.onDestruction: {
+        settings.setValue("ui/pipelines", pipelines.saveState())
+        settings.setValue("ui/mrs", mergeRequests.saveState())
     }
 
     Settings {
@@ -55,7 +51,7 @@ Window {
         visible: true
         icon.source: gpm.hasNewNotes ? "qrc:/icons/gitlab-green-notification.png" : "qrc:/icons/gitlab-green.png"
 
-        onActivated: function (reason) {
+        onActivated: (reason) => {
             if(reason != SystemTrayIcon.Trigger) return
 
             if(mainWindow.visible) {

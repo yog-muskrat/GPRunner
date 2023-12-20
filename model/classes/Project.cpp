@@ -155,7 +155,7 @@ namespace gpr::api
 			}
 			else
 			{
-				auto newPipeline = new Pipeline(std::move(pipelineData), this);
+				auto newPipeline = new Pipeline(m_manager, std::move(pipelineData), this);
 				m_pipelines.push_back(newPipeline);
 				Q_EMIT pipelineAdded(newPipeline);
 			}

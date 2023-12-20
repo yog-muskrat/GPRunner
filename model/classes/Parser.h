@@ -2,6 +2,7 @@
 
 #include "model/classes/Project.h"
 #include "model/classes/Pipeline.h"
+#include "model/classes/Job.h"
 #include "model/classes/MR.h"
 
 class QJsonObject;
@@ -15,6 +16,7 @@ namespace gpr::api
 	*/
 	Pipeline::Data parseProjectPipeline(QJsonObject const &json);
 	Pipeline::Data parsePipelineInfo(QJsonObject const &json);
+	Job::Data parseJobInfo(QJsonObject const &json);
 	MR::Data parseMR(QJsonObject const &json);
 	Pipeline::Data parseMRDetails(QJsonObject const &json);
 	std::pair<Discussion::Data, std::vector<Note::Data>> parseDiscussion(QJsonObject const &json);

@@ -74,6 +74,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories);$(Qt_INCLUDEPATH_)</AdditionalIncludeDirectories>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <DiagnosticsFormat>Caret</DiagnosticsFormat>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
@@ -93,13 +94,13 @@
     <ClCompile>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <DebugInformationFormat>None</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -107,6 +108,7 @@
     <ClCompile Include="GPManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="model\classes\Discussion.cpp" />
+    <ClCompile Include="model\classes\Job.cpp" />
     <ClCompile Include="model\classes\MR.cpp" />
     <ClCompile Include="model\classes\Note.cpp" />
     <ClCompile Include="model\classes\Parser.cpp" />
@@ -149,6 +151,7 @@
     <ClInclude Include="client\Client.h" />
     <QtMoc Include="model\classes\Discussion.h" />
     <QtMoc Include="model\classes\Note.h" />
+    <QtMoc Include="model\classes\Job.h" />
     <ClInclude Include="resource.h" />
     <QtMoc Include="model\classes\GPClasses.h" />
     <ClInclude Include="ImageProvider.h" />

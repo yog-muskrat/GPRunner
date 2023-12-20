@@ -68,6 +68,9 @@
     <ClCompile Include="model\classes\Note.cpp">
       <Filter>model\classes</Filter>
     </ClCompile>
+    <ClCompile Include="model\classes\Job.cpp">
+      <Filter>model\classes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="model\VariableModel.h">
@@ -102,6 +105,9 @@
       <Filter>model\classes</Filter>
     </QtMoc>
     <QtMoc Include="model\classes\Note.h">
+      <Filter>model\classes</Filter>
+    </QtMoc>
+    <QtMoc Include="model\classes\Job.h">
       <Filter>model\classes</Filter>
     </QtMoc>
   </ItemGroup>

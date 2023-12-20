@@ -24,6 +24,7 @@ namespace gpr
 			QString const Projects{"/projects"};
 			QString const ProjectPipelines{"/projects/%1/pipelines"};
 			QString const ProjectPipelineInfo{"/projects/%1/pipelines/%2"};
+			QString const ProjectPipelineJobs{"/projects/%1/pipelines/%2/jobs"};
 			QString const ProjectBranches{"/projects/%1/repository/branches"};
 			QString const ProjectFile{"/projects/%1/repository/files/%3?ref=%2"};
 
@@ -104,6 +105,11 @@ namespace gpr
 	void Client::requestPipelineInfo(int projectId, int pipelineId, Callback callback)
 	{
 		makeGetRequest(prepareRequest(endpoint::ProjectPipelineInfo, projectId, pipelineId), std::move(callback));
+	}
+
+	void Client::requestPipelineJobs(int projectId, int pipelineId, Callback callback)
+	{
+		makeGetRequest(prepareRequest(endpoint::ProjectPipelineJobs, projectId, pipelineId), std::move(callback));
 	}
 
 	void Client::requestPipelineVariables(int projectId, QString const &ref, Callback callback)

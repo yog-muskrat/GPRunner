@@ -102,6 +102,7 @@ private:
 	void parseProjects(QJsonDocument const &doc);
 	void parsePipelines(int projectId, QJsonDocument const &doc);
 	void parsePipelineInfo(int projectId, int pipelineId, QJsonDocument const &doc);
+	void parsePipelineJobs(int projectId, int pipelineId, QJsonDocument const &doc);
 	void parseMRs(int projectId, QJsonDocument const &doc);
 	void parseMRDetails(int projectId, int mrId, QJsonDocument const &doc);
 	void parseMRDiscussions(int projectId, int mrId, QJsonDocument const &doc);
@@ -122,6 +123,7 @@ private:
 	void loadProjectMRs(int projectId);
 	void loadProjectMRInfo(int projectId);
 	void loadPipelineInfo(int projectId, int pipelineId);
+	void loadPipelineJobs(int projectId, int pipelineId);
 	void loadCurrentUser();
 	void loadActiveUsers();
 

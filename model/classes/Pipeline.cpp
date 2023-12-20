@@ -1,12 +1,16 @@
+#include <ranges>
+
 #include "model/classes/Pipeline.h"
-#include "Pipeline.h"
+#include "GPManager.h"
 
 namespace gpr::api
 {
-	Pipeline::Pipeline(Data data, QObject *parent)
+	Pipeline::Pipeline(GPManager &manager, Data data, QObject *parent)
 		: QObject(parent)
 		, m_data{std::move(data)}
+		, m_manager{manager}
 	{}
+
 	int Pipeline::id() const
 	{
 		return m_data.id;
@@ -100,4 +104,51 @@ namespace gpr::api
 		m_data.updated = updated;
 		Q_EMIT modified();
 	}
+
+	std::vector<QPointer<Job>> const &Pipeline::jobs() const
+	{
+		return m_jobs;
+	}
+
+	void Pipeline::updateJobs(std::vector<Job::Data> data)
+	{
+		auto const removed = m_jobs
+			| std::views::filter([&data](auto const &job){ return !std::ranges::contains(data, job->id(), &Job::Data::id); })
+			| std::ranges::to<std::vector>();
+
+		bool wasModified{false};
+
+		for(auto job : data)
+		{
+			if(auto pos = std::ranges::find(m_jobs, job.id, &Job::id); pos != m_jobs.cend())
+			{
+				if(job.duration > (*pos)->duration())
+				{
+					(*pos)->update(std::move(job));
+					Q_EMIT jobUpdated(*pos);
+					wasModified = true;
+				}
+			}
+			else
+			{
+				auto newJob = m_jobs.emplace_back(new Job(m_manager, std::move(job), this));
+				Q_EMIT jobAdded(newJob);
+				wasModified = true;
+			}
+		}
+
+		for(auto const &job: removed)
+		{
+			Q_EMIT jobRemoved(job);
+			std::erase(m_jobs, job);
+			job->deleteLater();
+			wasModified = true;
+		}
+
+		if(wasModified)
+		{
+			Q_EMIT modified();
+		}
+	}
+
 } // namespace gpr::api
