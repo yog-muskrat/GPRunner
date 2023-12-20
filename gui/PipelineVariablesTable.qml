@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
+import Qt.labs.qmlmodels
 import "Utility.js" as Utility
 
 Item {
@@ -45,8 +46,10 @@ Item {
                     color: row == variables.currentRow ? palette.highlight : ((row % 2) == 0 ? palette.alternateBase : palette.base)
                     border.width: current ? 1 : 0
 
-                    TableView.editDelegate: {
-                        return (typeof (model.edit) == "boolean") ? checkDelegate : textDelegate;
+                    TableView.editDelegate: DelegateChooser {
+                        DelegateChoice { column: 0; TextField { text: model.edit; TableView.onCommit: model.edit = text } }
+                        DelegateChoice { column: 1; TextField { text: model.edit; TableView.onCommit: model.edit = text } }
+                        DelegateChoice { column: 2; CheckBox  { checked: model.edit; onToggled: model.edit = checked }}
                     }
 
                     Label {
@@ -58,30 +61,6 @@ Item {
                         color: variables.currentRow ? palette.highlightedText : palette.text
 
                         wrapMode: Text.WordWrap
-                    }
-
-                    Component {
-                        id: textDelegate
-
-                        TextField {
-                            anchors.fill: parent
-                            text: model.edit
-                            TableView.onCommit: model.edit = text
-                            Component.onCompleted: selectAll()
-                            wrapMode: TextInput.WordWrap
-                            font.pointSize: 9
-                            padding: 5
-                        }
-                    }
-
-                    Component {
-                        id: checkDelegate
-
-                        CheckBox {
-                            anchors.centerIn: parent
-                            checked: model.edit
-                            onToggled: model.edit = checked
-                        }
                     }
                 }
             }
