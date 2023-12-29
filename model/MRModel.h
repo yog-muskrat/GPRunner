@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QAbstractTableModel>
+#include <QQmlEngine>
 
 #include "model/classes/Project.h"
 
@@ -9,6 +10,7 @@ class GPManager;
 class MRModel : public QAbstractTableModel
 {
 	Q_OBJECT
+	QML_ELEMENT
 public:
 	enum Column
 	{
@@ -26,6 +28,7 @@ public:
 		Created,
 		Count,
 	};
+	Q_ENUM(Column)
 
 	enum Role
 	{
@@ -42,6 +45,7 @@ public:
 	};
 
 	MRModel(GPManager &manager);
+	~MRModel() override = default;
 
 	void clear();
 	void setProject(QPointer<gpr::api::Project> project);

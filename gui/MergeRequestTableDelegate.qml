@@ -2,6 +2,8 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 
+import mudbay.gprunner.mrmodel 1.0
+
 Rectangle {
     required property int currentProject
     property int mrIid: 0
@@ -22,14 +24,14 @@ Rectangle {
 
         TextLinkButton {
             leftPadding: 5
-            visible: model.url ? true : false
+            visible: column == MRModel.Iid
             url: model.url
         }
 
         TextLinkButton {
             leftPadding: 5
             text: model.display
-            visible: model.pipelineUrl ? true : false
+            visible: column == MRModel.Pipeline
             url: model.pipelineUrl
             toolTip: model.edit
         }

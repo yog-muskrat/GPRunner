@@ -7,6 +7,8 @@
 #include "GPManager.h"
 #include "ImageProvider.h"
 
+#include "model/MRModel.h"
+
 int main(int argc, char *argv[])
 {
 	QGuiApplication app(argc, argv);
@@ -19,6 +21,8 @@ int main(int argc, char *argv[])
 	auto imageProvider = new ImageProvider();
 
 	GPManager manager(*imageProvider);
+
+	qmlRegisterType<MRModel>("mudbay.gprunner.mrmodel", 1, 0, "MRModel");
 
 	QQmlApplicationEngine engine;
 	engine.addImageProvider("gpr", imageProvider);
