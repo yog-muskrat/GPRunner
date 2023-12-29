@@ -43,6 +43,9 @@ public:
 	QHash<int, QByteArray> roleNames() const override;
 
 private:
+	QString getJobsDisplayRole(gpr::api::Pipeline const &pipeline) const;
+	QString getPipelineStatusDisplayRole(gpr::api::Pipeline const &pipeline) const;
+
 	void connectProject(QPointer<gpr::api::Project> project);
 	void disconnectProject(QPointer<gpr::api::Project> project);
 	void connectPipeline(QPointer<gpr::api::Pipeline> pipeline);

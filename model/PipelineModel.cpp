@@ -60,10 +60,10 @@ QVariant PipelineModel::data(QModelIndex const &index, int role) const
 
 	if (role == Qt::DisplayRole)
 	{
-		if (index.column() == Column::Id) return pipeline->id();
-		if (index.column() == Column::Ref) return pipeline->ref();
-		if (index.column() == Column::User) return pipeline->user().username;
-		if (index.column() == Column::Jobs) return QString("[%1]").arg(pipeline->jobs().size());
+		if (index.column() == Column::Id)     return pipeline->id();
+		if (index.column() == Column::Ref)    return pipeline->ref();
+		if (index.column() == Column::User)   return pipeline->user().username;
+		if (index.column() == Column::Jobs)   return getJobsDisplayRole(*pipeline);
 		if (index.column() == Column::Status) return pipeline->status();
 		if (index.column() == Column::Source) return pipeline->source();
 		if (index.column() == Column::Created)
@@ -115,6 +115,43 @@ QHash<int, QByteArray> PipelineModel::roleNames() const
 	names.insert(Role::PipelineUserRole, "pipelineUser");
 
 	return names;
+}
+
+QString PipelineModel::getJobsDisplayRole(gpr::api::Pipeline const &pipeline) const
+{
+	QStringList const finishedStates{
+		"failed",
+		"warning",
+		"canceled",
+		"skipped",
+		"success",
+	};
+
+	QStringList const activeStates{
+		"pending",
+		"running",
+		"manual",
+		"scheduled",
+		"created",
+	};
+
+	auto const total = pipeline.jobs().size();
+	auto const finished = std::ranges::count_if(
+		pipeline.jobs(),
+		[&finishedStates](auto const &state) { return finishedStates.contains(state); },
+		&gpr::api::Job::status);
+
+	return QString("[%1/%2]").arg(finished).arg(total);	
+}
+
+QString PipelineModel::getPipelineStatusDisplayRole(gpr::api::Pipeline const &pipeline) const
+{
+	if(pipeline.status() == "success" && std::ranges::any_of(pipeline.jobs(), [](auto const &st){ return st == "warning"; }, &gpr::api::Job::status))
+	{
+		return "warning";
+	}
+
+	return pipeline.status();
 }
 
 void PipelineModel::connectProject(QPointer<gpr::api::Project> project)
