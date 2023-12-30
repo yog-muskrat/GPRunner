@@ -7,11 +7,11 @@
     if(this.width > total) stretched = this.width - total;
   }
 
-  let ew = this.explicitColumnWidth(column);
-  if (ew > 0) return ew;
-
-  let min = 15
   let iw = this.implicitColumnWidth(column);
   let hw = header.implicitColumnWidth(column);
+  let ew = this.explicitColumnWidth(column);
+  if (ew > iw && ew > hw) return ew;
+
+  let min = 15
   return Math.max(min, stretched, ew, iw, hw);
 }

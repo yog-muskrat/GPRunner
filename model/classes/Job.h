@@ -19,13 +19,13 @@ namespace gpr::api
 			QString stage;
 			QString status;
 			QString url;
+			QString runner;
+			QStringList tags;
 			double duration{};
 			QDateTime created;
 			QDateTime started;
 			QDateTime finished;
 			User user;
-			//TODO: tags
-			//TODO: runner
 		};
 
 		Job(GPManager &manager, Data data, QObject *parent = nullptr);
@@ -38,6 +38,8 @@ namespace gpr::api
 		QString stage() const;
 		QString status() const;
 		QString url() const;
+		QString runner() const;
+		QStringList tags() const;
 		double duration() const;
 		QDateTime created() const;
 		QDateTime started() const;

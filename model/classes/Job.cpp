@@ -45,6 +45,16 @@ namespace gpr::api
 		return m_data.url;
 	}
 
+	QString Job::runner() const
+	{
+		return m_data.runner;
+	}
+
+	QStringList Job::tags() const
+	{
+		return m_data.tags;
+	}
+
 	double Job::duration() const
 	{
 		return m_data.duration;

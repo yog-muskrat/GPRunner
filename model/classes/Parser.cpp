@@ -54,6 +54,8 @@ namespace gpr::api
 			.stage = json["stage"].toString(),
 			.status = json["status"].toString(),
 			.url = json["web_url"].toString(),
+			.runner = json["runner"]["ip_address"].toString(),
+			.tags = json["tag_list"].toArray() | std::views::transform([](auto const &v){ return v.toString(); }) | std::ranges::to<QStringList>(),
 			.duration = json["duration"].toDouble(),
 			.created = toDateTime(json["created_at"]),
 			.started = toDateTime(json["started_at"]),

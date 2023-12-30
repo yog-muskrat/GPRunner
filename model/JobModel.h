@@ -23,6 +23,7 @@ public:
 		Stage,
 		Name,
 		Runner,
+		Tags,
 		Duration,
 		Started,
 		Finished,

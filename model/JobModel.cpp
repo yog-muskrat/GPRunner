@@ -47,14 +47,15 @@ QVariant JobModel::headerData(int section, Qt::Orientation orientation, int role
 
 	switch(section)
 	{
-		case Column::Id: return      QString{"Id"};
-		case Column::Stage:return    QString{"Stage"};
-		case Column::Name:return     QString{"Name"};
-		case Column::Runner:return   QString{"Runner"};
-		case Column::Status:return   QString{"Status"};
-		case Column::Duration:return QString{"Duration"};
-		case Column::Started:return  QString{"Started"};
-		case Column::Finished:return QString{"Finished"};
+		case Column::Id:       return QString{"Id"};
+		case Column::Stage:    return QString{"Stage"};
+		case Column::Name:     return QString{"Name"};
+		case Column::Runner:   return QString{"Runner"};
+		case Column::Tags:     return QString{"Tags"};
+		case Column::Status:   return QString{"Status"};
+		case Column::Duration: return QString{"Duration"};
+		case Column::Started:  return QString{"Started"};
+		case Column::Finished: return QString{"Finished"};
 		default: break;
 	}
 
@@ -74,7 +75,8 @@ QVariant JobModel::data(const QModelIndex &index, int role) const
 			case Column::Id:       return job->id();
 			case Column::Stage:    return job->stage();
 			case Column::Name:     return job->name();
-			case Column::Runner:   return QString{"<TODO>"};
+			case Column::Runner:   return job->runner();
+			case Column::Tags:     return job->tags().join(", ");
 			case Column::Status:   return job->status();
 			case Column::Duration: return toTimeString(job->duration());
 			case Column::Started:  return toDateTimeString(job->started());
@@ -91,7 +93,8 @@ QVariant JobModel::data(const QModelIndex &index, int role) const
 			case Column::Id:       return job->id();
 			case Column::Stage:    return job->stage();
 			case Column::Name:     return job->name();
-			case Column::Runner:   return QString{"<TODO>"};
+			case Column::Runner:   return job->runner();
+			case Column::Tags:     return job->tags();
 			case Column::Status:   return job->status();
 			case Column::Duration: return job->duration();
 			case Column::Started:  return job->started();

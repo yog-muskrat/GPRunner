@@ -52,12 +52,10 @@ private:
 
 	void connectProject(QPointer<gpr::api::Project> project);
 	void disconnectProject(QPointer<gpr::api::Project> project);
-	void connectPipeline(QPointer<gpr::api::Pipeline> pipeline);
-	void disconnectPipeline(QPointer<gpr::api::Pipeline> pipeline);
 
 	void onPipelineAdded(QPointer<gpr::api::Pipeline> pipeline);
 	void onPipelineRemoved(QPointer<gpr::api::Pipeline> pipeline);
-	void onPipelineUpdated();
+	void onPipelineUpdated(QPointer<gpr::api::Pipeline> pipeline);
 
 	int getPipelineIndex(QPointer<gpr::api::Pipeline> pipeline);
 

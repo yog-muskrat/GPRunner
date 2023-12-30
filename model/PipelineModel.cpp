@@ -10,11 +10,9 @@ void PipelineModel::clear()
 void PipelineModel::setProject(QPointer<gpr::api::Project> project)
 {
 	beginResetModel();
-	if (m_project) disconnectProject(m_project);
-
+	disconnectProject(m_project);
 	m_project = project;
-
-	if (m_project) connectProject(m_project);
+	connectProject(m_project);
 	endResetModel();
 }
 
@@ -163,28 +161,20 @@ QString PipelineModel::getPipelineStatusDisplayRole(gpr::api::Pipeline const &pi
 
 void PipelineModel::connectProject(QPointer<gpr::api::Project> project)
 {
+	if(!project) return;
+
 	connect(project, &gpr::api::Project::pipelineAdded, this, &PipelineModel::onPipelineAdded);
 	connect(project, &gpr::api::Project::pipelineRemoved, this, &PipelineModel::onPipelineRemoved);
-
-	for (auto const &pipeline : project->pipelines()) connectPipeline(pipeline);
+	connect(project, &gpr::api::Project::pipelineUpdated, this, &PipelineModel::onPipelineUpdated);
 }
 
 void PipelineModel::disconnectProject(QPointer<gpr::api::Project> project)
 {
+	if(!project) return;
+
 	disconnect(project, &gpr::api::Project::pipelineAdded, this, &PipelineModel::onPipelineAdded);
 	disconnect(project, &gpr::api::Project::pipelineRemoved, this, &PipelineModel::onPipelineRemoved);
-
-	for (auto const &pipeline : project->pipelines()) disconnectPipeline(pipeline);
-}
-
-void PipelineModel::connectPipeline(QPointer<gpr::api::Pipeline> pipeline)
-{
-	connect(pipeline, &gpr::api::Pipeline::modified, this, &PipelineModel::onPipelineUpdated);
-}
-
-void PipelineModel::disconnectPipeline(QPointer<gpr::api::Pipeline> pipeline)
-{
-	disconnect(pipeline, &gpr::api::Pipeline::modified, this, &PipelineModel::onPipelineUpdated);
+	disconnect(project, &gpr::api::Project::pipelineUpdated, this, &PipelineModel::onPipelineUpdated);
 }
 
 void PipelineModel::onPipelineAdded(QPointer<gpr::api::Pipeline> pipeline)
@@ -192,7 +182,6 @@ void PipelineModel::onPipelineAdded(QPointer<gpr::api::Pipeline> pipeline)
 	auto const idx = getPipelineIndex(pipeline);
 
 	beginInsertRows({}, idx, idx);
-	connectPipeline(pipeline);
 	endInsertRows();
 }
 
@@ -201,15 +190,11 @@ void PipelineModel::onPipelineRemoved(QPointer<gpr::api::Pipeline> pipeline)
 	auto const idx = getPipelineIndex(pipeline);
 
 	beginRemoveRows({}, idx, idx);
-	disconnectPipeline(pipeline);
 	endRemoveRows();
 }
 
-void PipelineModel::onPipelineUpdated()
+void PipelineModel::onPipelineUpdated(QPointer<gpr::api::Pipeline> pipeline)
 {
-	auto pipeline = qobject_cast<gpr::api::Pipeline*>(sender());
-	if (!pipeline) return;
-
 	auto const idx = getPipelineIndex(pipeline);
 
 	Q_EMIT dataChanged(index(idx, 0), index(idx, Column::Count - 1));
