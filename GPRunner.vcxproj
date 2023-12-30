@@ -115,6 +115,7 @@
     <ClCompile Include="model\classes\Pipeline.cpp" />
     <ClCompile Include="model\classes\Project.cpp" />
     <ClCompile Include="model\DiscussionModel.cpp" />
+    <ClCompile Include="model\JobModel.cpp" />
     <ClCompile Include="model\MRModel.cpp" />
     <ClCompile Include="model\PipelineModel.cpp" />
     <ClCompile Include="model\ProjectModel.cpp" />
@@ -152,6 +153,7 @@
     <QtMoc Include="model\classes\Discussion.h" />
     <QtMoc Include="model\classes\Note.h" />
     <QtMoc Include="model\classes\Job.h" />
+    <QtMoc Include="model\JobModel.h" />
     <ClInclude Include="resource.h" />
     <QtMoc Include="model\classes\GPClasses.h" />
     <ClInclude Include="ImageProvider.h" />

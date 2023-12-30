@@ -8,6 +8,7 @@
 #include "ImageProvider.h"
 
 #include "model/MRModel.h"
+#include "model/JobModel.h"
 
 int main(int argc, char *argv[])
 {
@@ -22,7 +23,8 @@ int main(int argc, char *argv[])
 
 	GPManager manager(*imageProvider);
 
-	qmlRegisterType<MRModel>("mudbay.gprunner.mrmodel", 1, 0, "MRModel");
+	qmlRegisterType<MRModel>("mudbay.gprunner.models", 1, 0, "MRModel");
+	qmlRegisterType<MRModel>("mudbay.gprunner.models", 1, 0, "JobModel");
 
 	QQmlApplicationEngine engine;
 	engine.addImageProvider("gpr", imageProvider);

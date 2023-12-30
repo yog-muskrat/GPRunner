@@ -2,6 +2,7 @@
 
 #include <QObject>
 #include <QDateTime>
+#include <QQmlEngine>
 
 #include "model/classes/GPClasses.h"
 #include "model/classes/Job.h"
@@ -13,7 +14,7 @@ namespace gpr::api
 	class Pipeline : public QObject
 	{
 		Q_OBJECT
-
+		QML_ELEMENT
 	public:
 		struct Data
 		{

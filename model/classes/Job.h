@@ -24,6 +24,8 @@ namespace gpr::api
 			QDateTime started;
 			QDateTime finished;
 			User user;
+			//TODO: tags
+			//TODO: runner
 		};
 
 		Job(GPManager &manager, Data data, QObject *parent = nullptr);
