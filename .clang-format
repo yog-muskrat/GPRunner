@@ -43,12 +43,12 @@ BinPackParameters: false
 
 AlignConsecutiveAssignments: false
 AlignConsecutiveMacros: AcrossEmptyLinesAndComments
-# Clang-format 13
-# AlignArrayOfStructures: Left
+AlignArrayOfStructures: Left
 AlignTrailingComments: true
 AlignEscapedNewlines: Left
 AlignOperands: AlignAfterOperator
 AlignAfterOpenBracket: AlwaysBreak
+QualifierAlignment: Right
 
 BreakBeforeBraces: Custom
 BraceWrapping:
