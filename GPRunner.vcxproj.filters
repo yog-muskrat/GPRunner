@@ -183,6 +183,12 @@
     <None Include="gui\EmojiButton.qml">
       <Filter>gui</Filter>
     </None>
+    <None Include="gui\PipelineJobs.qml">
+      <Filter>gui\pipelines</Filter>
+    </None>
+    <None Include="gui\PipelineDialog.qml">
+      <Filter>gui</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="gui\qml.qrc">

@@ -5,7 +5,7 @@
 #include "model/classes/Pipeline.h"
 #include "model/classes/Job.h"
 
-JobModel::JobModel(GPManager &manager) : QAbstractTableModel(&manager), m_manager{manager}
+JobModel::JobModel(QObject *parent) : QAbstractTableModel(parent)
 {
 
 }
@@ -38,6 +38,29 @@ int JobModel::columnCount(const QModelIndex &) const
 	return Column::Count;
 }
 
+QVariant JobModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+	if(orientation != Qt::Horizontal || role != Qt::DisplayRole)
+	{
+		return QAbstractTableModel::headerData(section, orientation, role);
+	}
+
+	switch(section)
+	{
+		case Column::Id: return      QString{"Id"};
+		case Column::Stage:return    QString{"Stage"};
+		case Column::Name:return     QString{"Name"};
+		case Column::Runner:return   QString{"Runner"};
+		case Column::Status:return   QString{"Status"};
+		case Column::Duration:return QString{"Duration"};
+		case Column::Started:return  QString{"Started"};
+		case Column::Finished:return QString{"Finished"};
+		default: break;
+	}
+
+	return QVariant();
+}
+
 QVariant JobModel::data(const QModelIndex &index, int role) const
 {
 	if(index.row() < 0 || index.row() >= rowCount() || index.column() < 0 || index.column() >= columnCount()) return {};
@@ -45,6 +68,23 @@ QVariant JobModel::data(const QModelIndex &index, int role) const
 	auto const &job = m_pipeline->jobs().at(index.row());
 
 	if(role == Qt::DisplayRole)
+	{
+		switch(index.column())
+		{
+			case Column::Id:       return job->id();
+			case Column::Stage:    return job->stage();
+			case Column::Name:     return job->name();
+			case Column::Runner:   return QString{"<TODO>"};
+			case Column::Status:   return job->status();
+			case Column::Duration: return toTimeString(job->duration());
+			case Column::Started:  return toDateTimeString(job->started());
+			case Column::Finished: return toDateTimeString(job->finished());
+			default:
+				assert(false && "Unknown column");
+				break;
+		}
+	}
+	if(role == Qt::EditRole)
 	{
 		switch(index.column())
 		{
@@ -64,6 +104,7 @@ QVariant JobModel::data(const QModelIndex &index, int role) const
 	else if(role == Role::UrlRole)
 	{
 		if(index.column() == Column::Id) return job->url();
+		return QString{};
 	}
 
 	return {};
@@ -74,6 +115,19 @@ QHash<int, QByteArray> JobModel::roleNames() const
 	auto names = QAbstractTableModel::roleNames();
 	names.emplace(Role::UrlRole, "url");
 	return names;
+}
+
+QString JobModel::toDateTimeString(QDateTime const &dt) const
+{
+	if(!dt.isValid()) return {};
+
+	auto const format = dt.date() == QDate::currentDate() ? "hh:mm" : "dd.MM.yyyy hh:mm";
+	return dt.toLocalTime().toString(format);
+}
+
+QString JobModel::toTimeString(double secs) const
+{
+	return QTime{0, 0}.addSecs(static_cast<int>(secs)).toString("mm:ss");
 }
 
 void JobModel::disconnectPipeline(QPointer<gpr::api::Pipeline> pipeline)

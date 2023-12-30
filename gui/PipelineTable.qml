@@ -5,6 +5,7 @@ import "Utility.js" as Utility
 
 Item {
     required property int currentProject
+    property var currentPipeline
 
     clip: true
 
@@ -40,6 +41,14 @@ Item {
                     implicitHeight: delegateLayout.implicitHeight
 
                     color: row == pipelines.currentRow ? palette.highlight : palette.base
+
+                    TapHandler {
+                        onTapped: {
+                            var proxyIdx = pipelines.model.index(row, 0)
+                            var srcIdx = pipelines.model.mapToSource(proxyIdx)
+                            currentPipeline = pipelines.model.sourceModel.pipelineAtIndex(srcIdx)
+                        }
+                    }
 
                     RowLayout {
                         id: delegateLayout

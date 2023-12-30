@@ -19,10 +19,10 @@ public:
 	enum Column
 	{
 		Id,
+		Status,
 		Stage,
 		Name,
 		Runner,
-		Status,
 		Duration,
 		Started,
 		Finished,
@@ -35,7 +35,7 @@ public:
 		UrlRole = Qt::UserRole,
 	};
 
-	JobModel(GPManager &manager);
+	JobModel(QObject *parent = nullptr);
 	~JobModel() override = default;
 
 	Q_INVOKABLE void setPipeline(QPointer<gpr::api::Pipeline> pipeline);
@@ -45,8 +45,12 @@ private:
 	// Inherited via QAbstractTableModel
 	int rowCount(QModelIndex const & = {}) const override;
 	int columnCount(QModelIndex const & = {}) const override;
+	QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
 	QVariant data(QModelIndex const &index, int role) const override;
 	QHash<int, QByteArray> roleNames() const override;
+
+	QString toDateTimeString(QDateTime const &dt) const;
+	QString toTimeString(double secs) const;
 
 	void disconnectPipeline(QPointer<gpr::api::Pipeline> pipeline);
 	void connectPipeline(QPointer<gpr::api::Pipeline> pipeline);
@@ -57,6 +61,5 @@ private:
 
 	int getJobRow(QPointer<gpr::api::Job> job) const;
 
-	GPManager &m_manager;
 	QPointer<gpr::api::Pipeline> m_pipeline;
 };

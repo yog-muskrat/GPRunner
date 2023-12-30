@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 
-import mudbay.gprunner.mrmodel 1.0
+import mudbay.gprunner.models
 
 Rectangle {
     required property int currentProject

@@ -18,6 +18,13 @@ void PipelineModel::setProject(QPointer<gpr::api::Project> project)
 	endResetModel();
 }
 
+QPointer<gpr::api::Pipeline> PipelineModel::pipelineAtIndex(QModelIndex const &index) const
+{
+	if(index.row() < 0 || index.row() >= rowCount()) return nullptr;
+
+	return m_project->pipelines().at(index.row());
+}
+
 int PipelineModel::rowCount(QModelIndex const &) const
 {
 	if (!m_project) return 0;

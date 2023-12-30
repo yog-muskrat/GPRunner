@@ -1,21 +1,23 @@
 #pragma once
 
 #include <QAbstractTableModel>
+#include <QQmlEngine>
 
 #include "model/classes/Project.h"
 
 class PipelineModel : public QAbstractTableModel
 {
 	Q_OBJECT
+	QML_ELEMENT
 public:
 	enum Column
 	{
 		Id,
-		Ref,
-		User,
-		Status,
 		Jobs,
+		Status,
+		User,
 		Source,
+		Ref,
 		Created,
 		Updated,
 		Count
@@ -35,6 +37,8 @@ public:
 
 	void clear();
 	void setProject(QPointer<gpr::api::Project> project);
+
+	Q_INVOKABLE QPointer<gpr::api::Pipeline> pipelineAtIndex(QModelIndex const &index) const;
 
 	int rowCount(QModelIndex const & = {}) const override;
 	int columnCount(QModelIndex const & = {}) const override;
