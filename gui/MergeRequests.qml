@@ -17,10 +17,7 @@ SplitView {
     }
 
     MergeRequestDiscussions {
-        id: discussions
-
         currentProject: mergeRequests.currentProject
-        currentMrId: mrList.currentMrId
-        currentMrIid: mrList.currentMrIid
+        currentMR: mrList.currentMR
     }
 }

@@ -15,6 +15,9 @@ namespace gpr::api
 	class MR : public QObject
 	{
 		Q_OBJECT
+		Q_PROPERTY(int id READ id)
+		Q_PROPERTY(int iid READ iid)
+
 	public:
 		struct Data
 		{

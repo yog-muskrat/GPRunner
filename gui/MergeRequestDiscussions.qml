@@ -2,14 +2,19 @@
 import QtQuick.Layouts
 import QtQuick.Controls
 
+import mudbay.gprunner.models
+
 Item {
     required property int currentProject
-    required property int currentMrId
-    required property int currentMrIid
+
+    property var currentMR: null
 
     id: discussions
 
-    onCurrentMrIdChanged: gpm.setCurrentMR(currentProject, currentMrId)
+    onCurrentMRChanged: {
+        if(currentMR) discussionModel.setMR(currentMR)
+        else discussionModel.clear()
+    }
 
     function expandCollapseIf(pred, expand) {
         for(let row = 0; row < mrs.rows; row++) {
@@ -22,6 +27,11 @@ Item {
     // TODO: Получать роль по имени
     function isResolved(idx)   { return mrs.model.data(idx, 261) == true }
     function isUnresolved(idx) { return mrs.model.data(idx, 261) != true }
+
+    DiscussionModel {
+        id: discussionModel
+        manager: gpm
+    }
 
     ColumnLayout
     {
@@ -37,12 +47,12 @@ Item {
 
                 clip: true
 
-                model: gpm.discussionModel
+                model: discussionModel
                 columnWidthProvider: function (column) { return width }
 
                 delegate: DiscussionDelegate {
                     projectId: discussions.currentProject
-                    mrIid: discussions.currentMrIid
+                    mr: discussions.currentMR
 
                     onAddNoteRequested: function(discussionId) {
                         dialog.discussionId = discussionId
@@ -56,18 +66,18 @@ Item {
                         dialog.open()
                     }
 
-                    onRemoveNoteRequested: function(discussionId, noteId) { gpm.removeMRDiscussionNote(currentProject, currentMrIid, discussionId, noteId) }
+                    onRemoveNoteRequested: function(discussionId, noteId) { gpm.removeMRDiscussionNote(currentProject, currentMR.iid, discussionId, noteId) }
 
-                    onResolveRequested: function(discussionId) { gpm.resolveMRDiscussion(currentProject, currentMrIid, discussionId) }
+                    onResolveRequested: function(discussionId) { gpm.resolveMRDiscussion(currentProject, currentMR.iid, discussionId) }
 
-                    onUnresolveRequested: function(discussionId) { gpm.unresolveMRDiscussion(currentProject, currentMrIid, discussionId) }
+                    onUnresolveRequested: function(discussionId) { gpm.unresolveMRDiscussion(currentProject, currentMR.iid, discussionId) }
                 }
 
                 DiscussionNoteDialog {
                     id: dialog
 
                     currentProject: discussions.currentProject
-                    currentMrIid: discussions.currentMrIid
+                    currentMR: discussions.currentMR
 
                     width: Math.max(parent.width / 2, 500)
                     height: Math.max(parent.height / 2, 350)
@@ -78,7 +88,7 @@ Item {
         }
 
         RowLayout {
-                visible: currentMrIid > 0
+                visible: currentMR != null
 
             Button {
                 text: "🗨"

@@ -123,7 +123,7 @@ QVariant MRModel::data(QModelIndex const &index, int role) const
 		return {};
 	}
 
-	auto const &mr = *m_project->openMRs().at(index.row());
+	auto &mr = *m_project->openMRs().at(index.row());
 	auto const column = static_cast<Column>(index.column());
 
 	if (role == Qt::DisplayRole)      return displayRole(mr, column);
@@ -140,8 +140,7 @@ QVariant MRModel::data(QModelIndex const &index, int role) const
 		if(column == Column::Pipeline) return mr.pipeline().url;
 		return QString{};
 	}
-	if (role == Role::MrId)           return mr.id();
-	if (role == Role::MrIid)          return mr.iid();
+	if (role == Role::MR)             return QVariant::fromValue(&mr);
 	if (role == Role::HasUnreadNotes) return column == Column::Discussions && mr.isUserInvolved(m_manager.getCurrentUser()) && mr.hasNewNotes();
 	if (role == Role::IsApproved)
 	{
@@ -208,8 +207,7 @@ QHash<int, QByteArray> MRModel::roleNames() const
 	names.emplace(Qt::FontRole, "font");
 	names.emplace(Role::Url, "url");
 	names.emplace(Role::PipelineUrl, "pipelineUrl");
-	names.emplace(Role::MrId, "id");
-	names.emplace(Role::MrIid, "iid");
+	names.emplace(Role::MR, "mr");
 	names.emplace(Role::User, "user");
 	names.emplace(Role::HasUnreadNotes, "hasUnreadNotes");
 	names.emplace(Role::IsApproved, "isApproved");
@@ -254,7 +252,7 @@ QVariant MRModel::displayRole(gpr::api::MR const &mr, Column column) const
 {
 	switch (column)
 	{
-		case Column::Iid:           return mr.iid();
+		case Column::Iid:          return mr.iid();
 		case Column::Title:        return mr.title();
 		case Column::Status:       return getStatusInfo(mr.mergeStatus()).shortInfo;
 		case Column::Pipeline:     return getPipelineStatusIcon(mr.pipeline().status);

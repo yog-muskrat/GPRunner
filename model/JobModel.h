@@ -39,7 +39,7 @@ public:
 	JobModel(QObject *parent = nullptr);
 	~JobModel() override = default;
 
-	Q_INVOKABLE void setPipeline(QPointer<gpr::api::Pipeline> pipeline);
+	Q_INVOKABLE void setPipeline(gpr::api::Pipeline *pipeline);
 	Q_INVOKABLE void clear();
 
 private:

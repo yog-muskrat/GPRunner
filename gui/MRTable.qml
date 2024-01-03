@@ -6,16 +6,14 @@ import "Utility.js" as Utility
 Item {
     required property int currentProject
 
-    property int currentMrId: 0
-    property int currentMrIid: 0
+    property var currentMR: null
 
     id: mrTable
 
     clip: true
 
     onCurrentProjectChanged: {
-        currentMrId = 0
-        currentMrIid = 0
+        currentMR = null
     }
 
     ColumnLayout {
@@ -49,9 +47,8 @@ Item {
                 delegate: MergeRequestTableDelegate {
                     currentProject: mrTable.currentProject
 
-                    onMrSelected: function(id, iid){ 
-                        mrTable.currentMrId = id
-                        mrTable.currentMrIid = iid
+                    onMrSelected: function(mr){ 
+                        mrTable.currentMR = mr
                     }
                 }
             }

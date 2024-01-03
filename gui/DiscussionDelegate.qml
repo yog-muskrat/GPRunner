@@ -4,7 +4,7 @@ import QtQuick.Controls
 
 Item {
     required property int projectId
-    required property int mrIid
+    required property var mr
 
     signal addNoteRequested(discussionId: string)
     signal addDiscussionRequested()
@@ -115,7 +115,7 @@ Item {
 
             UnreadMarker {
                 projectId: treeDelegate.projectId
-                mrIid: treeDelegate.mrIid
+                mr: treeDelegate.mr
                 discussionId: model.discussionId
 
                 id: unreadIndicatorLabel

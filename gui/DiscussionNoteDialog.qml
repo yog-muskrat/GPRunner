@@ -3,7 +3,7 @@ import QtQuick.Controls
 
 Dialog {
     required property int currentProject
-    required property int currentMrIid
+    required property var currentMR
 
     property string discussionId: ""
     property int noteId: 0
@@ -29,13 +29,13 @@ Dialog {
 
     onAccepted: {
         if(discussionId && noteId > 0) {
-            gpm.editMRDiscussionNote(currentProject, currentMrIid, discussionId, noteId, note.text)
+            gpm.editMRDiscussionNote(currentProject, currentMR.iid, discussionId, noteId, note.text)
         }
         else if(discussionId) {
-            gpm.addMRDiscussionNote(currentProject, currentMrIid, discussionId, note.text)
+            gpm.addMRDiscussionNote(currentProject, currentMR.iid, discussionId, note.text)
         }
         else {
-            gpm.addMRDiscussion(currentProject, currentMrIid, note.text)
+            gpm.addMRDiscussion(currentProject, currentMR.iid, note.text)
         }
         reset();
     }

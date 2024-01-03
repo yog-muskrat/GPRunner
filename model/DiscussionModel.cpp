@@ -3,11 +3,8 @@
 #include "model/DiscussionModel.h"
 #include "model/classes/MR.h"
 
-#include "GPManager.h"
-
-DiscussionModel::DiscussionModel(GPManager &manager)
-	: QAbstractItemModel(&manager)
-	, m_manager{manager}
+DiscussionModel::DiscussionModel(QObject *parent)
+	: QAbstractItemModel(parent)
 {}
 
 void DiscussionModel::clear()
@@ -22,6 +19,11 @@ void DiscussionModel::setMR(QPointer<gpr::api::MR> mr)
 	m_mr = mr;
 	connectMR(m_mr);
 	endResetModel();
+}
+
+void DiscussionModel::setGPManager(GPManager * manager)
+{
+	m_manager = manager;
 }
 
 int DiscussionModel::columnCount(QModelIndex const &) const
@@ -124,7 +126,7 @@ QVariant DiscussionModel::discussionData(QPointer<gpr::api::Discussion> discussi
 	}
 	if (role == Role::HasUnreadNotes)
 	{
-		return m_mr->isUserInvolved(m_manager.getCurrentUser())
+		return m_mr->isUserInvolved(m_manager->getCurrentUser())
 		    && std::ranges::any_of(discussion->notes(), std::not_fn(&gpr::api::Note::isRead));
 	}
 	if (role == Role::NoteCount)                             return discussion->notes().size();
@@ -137,12 +139,12 @@ QVariant DiscussionModel::discussionData(QPointer<gpr::api::Discussion> discussi
 	if (role == Role::CanEdit)                               return false;
 	if (role == Role::CanResolve)
 	{
-		return !discussion->isEmpty() && discussion->notes().front()->author() == m_manager.getCurrentUser() && discussion->isResolvable()
+		return !discussion->isEmpty() && discussion->notes().front()->author() == m_manager->getCurrentUser() && discussion->isResolvable()
 		    && !discussion->isResolved();
 	}
 	if (role == Role::CanUnresolve)
 	{
-		return !discussion->isEmpty() && discussion->notes().front()->author() == m_manager.getCurrentUser() && discussion->isResolved();
+		return !discussion->isEmpty() && discussion->notes().front()->author() == m_manager->getCurrentUser() && discussion->isResolved();
 	}
 
 	return QVariant{};
@@ -160,9 +162,9 @@ QVariant DiscussionModel::noteData(QPointer<gpr::api::Discussion> discussion, QP
 	if (role == Role::CreatedDate)    return note->created();
 	if (role == Role::Resolvable)     return note->isResolvable();
 	if (role == Role::Resolved)       return note->isResolved();
-	if (role == Role::CanResolve)     return note->author() == m_manager.getCurrentUser() && note->isResolvable() && !note->isResolved();
-	if (role == Role::CanUnresolve)   return note->author() == m_manager.getCurrentUser() && note->isResolvable() && note->isResolved();
-	if (role == Role::CanEdit)        return note->author() == m_manager.getCurrentUser();
+	if (role == Role::CanResolve)     return note->author() == m_manager->getCurrentUser() && note->isResolvable() && !note->isResolved();
+	if (role == Role::CanUnresolve)   return note->author() == m_manager->getCurrentUser() && note->isResolvable() && note->isResolved();
+	if (role == Role::CanEdit)        return note->author() == m_manager->getCurrentUser();
 	if (role == Role::NoteCount)      return 0;
 	if (role == Role::HasUnreadNotes) return false;
 	if (role == Role::DiscussionId)   return discussion->id();
@@ -181,6 +183,8 @@ void DiscussionModel::connectMR(QPointer<gpr::api::MR> mr)
 {
 	if(!mr) return;
 
+	connect(mr, &QObject::destroyed, this, &DiscussionModel::onMRRemoved);
+
 	connect(mr, &gpr::api::MR::discussionAdded, this, &DiscussionModel::onDiscussionAdded);
 	connect(mr, &gpr::api::MR::discussionUpdated, this, &DiscussionModel::onDiscussionUpdated);
 	connect(mr, &gpr::api::MR::discussionRemoved, this, &DiscussionModel::onDiscussionRemoved);
@@ -194,6 +198,8 @@ void DiscussionModel::disconnectMR(QPointer<gpr::api::MR> mr)
 {
 	if(!mr) return;
 
+	disconnect(mr, &QObject::destroyed, this, &DiscussionModel::onMRRemoved);
+
 	disconnect(mr, &gpr::api::MR::discussionAdded, this, &DiscussionModel::onDiscussionAdded);
 	disconnect(mr, &gpr::api::MR::discussionUpdated, this, &DiscussionModel::onDiscussionUpdated);
 	disconnect(mr, &gpr::api::MR::discussionRemoved, this, &DiscussionModel::onDiscussionRemoved);
@@ -201,6 +207,11 @@ void DiscussionModel::disconnectMR(QPointer<gpr::api::MR> mr)
 	disconnect(mr, &gpr::api::MR::discussionNoteAdded, this, &DiscussionModel::onDiscussionNoteAdded);
 	disconnect(mr, &gpr::api::MR::discussionNoteUpdated, this, &DiscussionModel::onDiscussionNoteUpdated);
 	disconnect(mr, &gpr::api::MR::discussionNoteRemoved, this, &DiscussionModel::onDiscussionNoteRemoved);
+}
+
+void DiscussionModel::onMRRemoved()
+{
+	clear();
 }
 
 void DiscussionModel::onDiscussionAdded(QPointer<gpr::api::Discussion> discussion)

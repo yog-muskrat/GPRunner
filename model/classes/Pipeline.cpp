@@ -28,6 +28,25 @@ namespace gpr::api
 		Q_EMIT modified();
 	}
 
+	Pipeline::State Pipeline::state() const
+	{
+		if(auto const st = m_data.status.toLower();
+			st == "failed")                   return State::Failed;
+		else if(st == "warning")              return State::Warning;
+		else if(st == "canceled")             return State::Canceled;
+		else if(st == "skipped")              return State::Skipped;
+		else if(st == "success")              return State::Success;
+		else if(st == "pending")              return State::Pending;
+		else if(st == "running")              return State::Running;
+		else if(st == "manual")               return State::Manual;
+		else if(st == "scheduled")            return State::Scheduled;
+		else if(st == "created")              return State::Created;
+		else if(st == "preparing")            return State::Preparing;
+		else if(st == "waiting_for_resource") return State::WaitingForResource;
+
+		return State::Unknown;
+	}
+
 	QString Pipeline::status() const
 	{
 		return m_data.status;

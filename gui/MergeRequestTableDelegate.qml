@@ -6,8 +6,7 @@ import mudbay.gprunner.models
 
 Rectangle {
     required property int currentProject
-    property int mrIid: 0
-    signal mrSelected(id: int, iid: int)
+    signal mrSelected(mr: var)
 
     id: mrDelegate
 
@@ -57,8 +56,8 @@ Rectangle {
             }
             TapHandler {
                 onTapped: {
-                    mrIid = model.iid
-                    mrDelegate.mrSelected(model.id, model.iid)
+                    console.log("MR:", model.mr)
+                    mrDelegate.mrSelected(model.mr)
                 }
             }
         }
@@ -82,13 +81,13 @@ Rectangle {
 
             TapHandler {
                 enabled: model.canApprove || model.canUnapprove
-                onTapped: model.canApprove ? gpm.approveMR(currentProject, model.iid) : gpm.unapproveMR(currentProject, model.iid)
+                onTapped: model.canApprove ? gpm.approveMR(currentProject, model.mr.iid) : gpm.unapproveMR(currentProject, model.mr.iid)
             }
         }
 
         UnreadMarker {
             projectId: currentProject
-            mrIid: model.iid
+            mr: model.mr
 
             visible: model.hasUnreadNotes
             rightPadding: 5

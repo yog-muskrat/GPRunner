@@ -26,7 +26,6 @@ GPManager::GPManager(ImageProvider &imageProvider, QObject *parent)
 	, m_imageProvider{imageProvider}
 	, m_projectModel{*this}
 	, m_mrModel{*this}
-	, m_discussionModel{*this}
 {
 	initModels();
 	initUpdateTimer();
@@ -46,12 +45,9 @@ void GPManager::setCurrentProject(int projectId)
 {
 	if (projectId != m_currentProject)
 	{
-		m_currentMR = 0;
-		
 		m_pipelineModel.clear();
 		m_mrModel.clear();
 		m_variableModel.clear();
-		m_discussionModel.clear();
 	}
 
 	m_currentProject = projectId;
@@ -68,9 +64,6 @@ void GPManager::setCurrentMR(int projectId, int mrId)
 	assert(project);
 
 	auto mr = project->findMRById(mrId);
-
-	m_currentMR = mrId;
-	m_discussionModel.setMR(mr);
 }
 
 void GPManager::loadProjects()
@@ -194,10 +187,8 @@ void GPManager::onDiscussionNoteUpdated(
 
 void GPManager::onMergeRequestRemoved(QPointer<gpr::api::Project> project, QPointer<gpr::api::MR> mr)
 {
-	if(project->id() == m_currentProject && mr->id() == m_currentMR)
+	if(project->id() == m_currentProject)
 	{
-		m_currentMR = -1;
-		m_discussionModel.clear();
 		m_pipelineModel.clear();
 	}
 }
@@ -313,11 +304,6 @@ QAbstractItemModel *GPManager::getVariableModel()
 	return &m_variableProxyModel;
 }
 
-QAbstractItemModel *GPManager::getDiscussionModel()
-{
-	return &m_discussionProxyModel;
-}
-
 QVariantList GPManager::getActiveUsers() const
 {
 	QVariantList result;
@@ -372,8 +358,6 @@ void GPManager::initModels()
 
 	m_variableProxyModel.setSourceModel(&m_variableModel);
 
-	m_discussionProxyModel.setSourceModel(&m_discussionModel);
-
 	QObject::connect(&m_projectModel, &ProjectModel::projectMergeRequestRemoved, this, &GPManager::onMergeRequestRemoved);
 	QObject::connect(&m_projectModel, &ProjectModel::projectMrDiscussionAdded, this, &GPManager::onDiscussionAdded);
 	QObject::connect(&m_projectModel, &ProjectModel::projectMrDiscussionNoteAdded, this, &GPManager::onDiscussionNoteAdded);
@@ -384,7 +368,6 @@ void GPManager::initModels()
 	new QAbstractItemModelTester(&m_pipelineModel, this);
 	new QAbstractItemModelTester(&m_mrModel, this);
 	new QAbstractItemModelTester(&m_variableModel, this);
-	new QAbstractItemModelTester(&m_discussionModel, this);
 #endif
 }
 

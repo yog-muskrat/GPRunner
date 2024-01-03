@@ -15,7 +15,28 @@ namespace gpr::api
 	{
 		Q_OBJECT
 		QML_ELEMENT
+		Q_PROPERTY(State state READ state NOTIFY modified)
+		Q_PROPERTY(QString url READ url NOTIFY modified)
+		Q_PROPERTY(User user READ user NOTIFY modified)
 	public:
+		enum State 
+		{
+			Unknown,
+			Failed,
+			Warning,
+			Canceled,
+			Skipped,
+			Success,
+			Pending,
+			Running,
+			Manual,
+			Scheduled,
+			Created,
+			Preparing,
+			WaitingForResource,
+		};
+		Q_ENUMS(State)
+
 		struct Data
 		{
 			int id {-1};
@@ -36,6 +57,8 @@ namespace gpr::api
 		int id() const;
 
 		void update(Data data);
+
+		State state() const;
 
 		QString status() const;
 		void setStatus(QString status);

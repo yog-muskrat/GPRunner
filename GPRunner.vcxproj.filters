@@ -180,14 +180,14 @@
     <None Include="gui\emojis.json">
       <Filter>gui</Filter>
     </None>
-    <None Include="gui\EmojiButton.qml">
-      <Filter>gui</Filter>
-    </None>
     <None Include="gui\PipelineJobs.qml">
       <Filter>gui\pipelines</Filter>
     </None>
     <None Include="gui\PipelineDialog.qml">
       <Filter>gui\pipelines</Filter>
+    </None>
+    <None Include="gui\EmojiButton.qml">
+      <Filter>gui\common</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

@@ -3,7 +3,7 @@ import QtQuick.Controls
 
 Label {
 	property int projectId
-	property int mrIid
+	property var mr
 	property string discussionId
 
 	text: "●"
@@ -13,9 +13,9 @@ Label {
 
 	TapHandler {
 		onTapped: {
-			if(projectId > 0 && mrIid > 0 && discussionId) gpm.markDiscussionsRead(projectId, mrIid, discussionId)
-			else if(projectId > 0 && mrIid > 0)            gpm.markDiscussionsRead(projectId, mrIid)
-			else if(projectId > 0)                         gpm.markDiscussionsRead(projectId)
+			if(projectId > 0 && mr && discussionId) gpm.markDiscussionsRead(projectId, mr.iid, discussionId)
+			else if(projectId > 0 && mr)            gpm.markDiscussionsRead(projectId, mr.iid)
+			else if(projectId > 0)                  gpm.markDiscussionsRead(projectId)
 		}
 	}
 }

@@ -10,7 +10,7 @@ JobModel::JobModel(QObject *parent) : QAbstractTableModel(parent)
 
 }
 
-void JobModel::setPipeline(QPointer<gpr::api::Pipeline> pipeline)
+void JobModel::setPipeline(gpr::api::Pipeline *pipeline)
 {
 	beginResetModel();
 

@@ -3,7 +3,7 @@
 #include <QtCore/QPointer>
 #include <QtCore/QAbstractItemModel>
 
-class GPManager;
+#include "GPManager.h"
 
 namespace gpr
 {
@@ -21,6 +21,9 @@ namespace gpr
 class DiscussionModel : public QAbstractItemModel
 {
 	Q_OBJECT
+
+	Q_PROPERTY(GPManager* manager WRITE setGPManager READ gpManager)
+
 public:
 	enum Column
 	{
@@ -45,10 +48,13 @@ public:
 		Reactions,
 	};
 
-	DiscussionModel(GPManager &manager);
+	DiscussionModel(QObject *parent = nullptr);
 
-	void clear();
-	void setMR(QPointer<gpr::api::MR> mr);
+	Q_INVOKABLE void clear();
+	Q_INVOKABLE void setMR(QPointer<gpr::api::MR> mr);
+	
+	void setGPManager(GPManager *manager);
+	GPManager *gpManager() const { return m_manager; }
 
 	int columnCount(QModelIndex const &parent = {}) const override;
 	int rowCount(QModelIndex const &parent = {}) const override;
@@ -64,6 +70,8 @@ private:
 	void connectMR(QPointer<gpr::api::MR> mr);
 	void disconnectMR(QPointer<gpr::api::MR> mr);
 
+	void onMRRemoved();
+
 	void onDiscussionAdded(QPointer<gpr::api::Discussion> discussion);
 	void onDiscussionUpdated(QPointer<gpr::api::Discussion> discussion);
 	void onDiscussionRemoved(QPointer<gpr::api::Discussion> discussion);
@@ -75,7 +83,7 @@ private:
 	int getRow(QPointer<gpr::api::Discussion> discussion) const;
 	int getRow(QPointer<gpr::api::Discussion> discussion, QPointer<gpr::api::Note> note) const;
 
-	GPManager &m_manager;
+	GPManager *m_manager;
 
 	QPointer<gpr::api::MR> m_mr;
 };

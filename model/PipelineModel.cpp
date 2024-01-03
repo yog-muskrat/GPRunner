@@ -16,13 +16,6 @@ void PipelineModel::setProject(QPointer<gpr::api::Project> project)
 	endResetModel();
 }
 
-QPointer<gpr::api::Pipeline> PipelineModel::pipelineAtIndex(QModelIndex const &index) const
-{
-	if(index.row() < 0 || index.row() >= rowCount()) return nullptr;
-
-	return m_project->pipelines().at(index.row());
-}
-
 int PipelineModel::rowCount(QModelIndex const &) const
 {
 	if (!m_project) return 0;
@@ -93,20 +86,7 @@ QVariant PipelineModel::data(QModelIndex const &index, int role) const
 		if (index.column() == Column::Created) return pipeline->createdAt();
 		if (index.column() == Column::Updated) return pipeline->updatedAt();
 	}
-
-	if (role == Role::PipelineIdRole) return pipeline->id();
-	if (role == Role::PipelineStatusRole)
-	{
-		return index.column() == Column::Status ? pipeline->status() : QString{};
-	}
-	if(role == Role::PipelineUrlRole)
-	{
-		return index.column() == Column::Id ? pipeline->url() : QString{};
-	}
-	if(role == Role::PipelineUserRole && index.column() == Column::User)
-	{
-		return QVariant::fromValue(pipeline->user());
-	}
+	else if (role == Role::PipelineRole) return QVariant::fromValue(pipeline.get());
 
 	return QVariant();
 }
@@ -114,10 +94,7 @@ QVariant PipelineModel::data(QModelIndex const &index, int role) const
 QHash<int, QByteArray> PipelineModel::roleNames() const
 {
 	auto names = QAbstractTableModel::roleNames();
-	names.insert(Role::PipelineIdRole, "pipelineId");
-	names.insert(Role::PipelineStatusRole, "pipelineStatus");
-	names.insert(Role::PipelineUrlRole, "pipelineUrl");
-	names.insert(Role::PipelineUserRole, "pipelineUser");
+	names.insert(Role::PipelineRole, "pipeline");
 
 	return names;
 }
@@ -132,26 +109,18 @@ QString PipelineModel::getJobsDisplayRole(gpr::api::Pipeline const &pipeline) co
 		"success",
 	};
 
-	QStringList const activeStates{
-		"pending",
-		"running",
-		"manual",
-		"scheduled",
-		"created",
-	};
-
 	auto const total = pipeline.jobs().size();
 	auto const finished = std::ranges::count_if(
 		pipeline.jobs(),
 		[&finishedStates](auto const &state) { return finishedStates.contains(state); },
 		&gpr::api::Job::status);
 
-	return QString("[%1/%2]").arg(finished).arg(total);	
+	return QString("[%1/%2]").arg(finished).arg(total);
 }
 
 QString PipelineModel::getPipelineStatusDisplayRole(gpr::api::Pipeline const &pipeline) const
 {
-	if(pipeline.status() == "success" && std::ranges::any_of(pipeline.jobs(), [](auto const &st){ return st == "warning"; }, &gpr::api::Job::status))
+	if(pipeline.state() == gpr::api::Pipeline::Success && std::ranges::any_of(pipeline.jobs(), [](auto const &st){ return st == "warning"; }, &gpr::api::Job::status))
 	{
 		return "warning";
 	}

@@ -11,7 +11,6 @@
 #include "model/PipelineModel.h"
 #include "model/VariableModel.h"
 #include "model/MRModel.h"
-#include "model/DiscussionModel.h"
 
 class QJsonDocument;
 class QJsonArray;
@@ -25,7 +24,6 @@ class GPManager : public QObject
 	Q_PROPERTY(QObject *pipelineModel READ getPipelineModel NOTIFY pipelineModelChanged)
 	Q_PROPERTY(QObject *mrModel READ getMRModel NOTIFY mrModelChanged)
 	Q_PROPERTY(QObject *variableModel READ getVariableModel NOTIFY variableModelChanged)
-	Q_PROPERTY(QObject *discussionModel READ getDiscussionModel NOTIFY discussionModelChanged)
 	Q_PROPERTY(gpr::User currentUser READ getCurrentUser NOTIFY currentUserChanged)
 	Q_PROPERTY(QVariantList activeUsers READ getActiveUsers NOTIFY activeUsersChanged)
 	Q_PROPERTY(bool hasNewNotes READ hasNewNotes NOTIFY newNotesReceived)
@@ -73,7 +71,6 @@ public:
 	QAbstractItemModel *getPipelineModel();
 	QAbstractItemModel *getMRModel();
 	QAbstractItemModel *getVariableModel();
-	QAbstractItemModel *getDiscussionModel();
 
 	gpr::User getCurrentUser() const { return m_currentUser; }
 	QVariantList getActiveUsers() const;
@@ -89,7 +86,6 @@ Q_SIGNALS:
 	void mrModelChanged();
 	void projectModelChanged();
 	void variableModelChanged();
-	void discussionModelChanged();
 	void currentUserChanged(gpr::User const &);
 	void activeUsersChanged(QVariantList const &);
 	void newNotesReceived() const;
@@ -160,9 +156,6 @@ private:
 	VariableModel m_variableModel;
 	QSortFilterProxyModel m_variableProxyModel;
 
-	DiscussionModel m_discussionModel;
-	QSortFilterProxyModel m_discussionProxyModel;
-
 	gpr::Client m_client;
 
 	QTimer m_updateTimer;
@@ -176,5 +169,4 @@ private:
 	std::map<QString, gpr::Emoji> m_emojis;
 
 	int m_currentProject{-1};
-	int m_currentMR {-1};
 };

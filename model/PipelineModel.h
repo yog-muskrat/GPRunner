@@ -22,13 +22,11 @@ public:
 		Updated,
 		Count
 	};
+	Q_ENUMS(Column)
 
 	enum Role
 	{
-		PipelineIdRole = Qt::ItemDataRole::UserRole + 1,
-		PipelineStatusRole,
-		PipelineUrlRole,
-		PipelineUserRole,
+		PipelineRole = Qt::ItemDataRole::UserRole + 1,
 	};
 
 	PipelineModel(QObject *parent = nullptr)
@@ -37,8 +35,6 @@ public:
 
 	void clear();
 	void setProject(QPointer<gpr::api::Project> project);
-
-	Q_INVOKABLE QPointer<gpr::api::Pipeline> pipelineAtIndex(QModelIndex const &index) const;
 
 	int rowCount(QModelIndex const & = {}) const override;
 	int columnCount(QModelIndex const & = {}) const override;

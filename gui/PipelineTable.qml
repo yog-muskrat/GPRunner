@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
+import mudbay.gprunner.models
 import "Utility.js" as Utility
 
 Item {
@@ -43,11 +44,7 @@ Item {
                     color: row == pipelines.currentRow ? palette.highlight : palette.base
 
                     TapHandler {
-                        onTapped: {
-                            var proxyIdx = pipelines.model.index(row, 0)
-                            var srcIdx = pipelines.model.mapToSource(proxyIdx)
-                            currentPipeline = pipelines.model.sourceModel.pipelineAtIndex(srcIdx)
-                        }
+                        onTapped: { currentPipeline = pipeline }
                     }
 
                     RowLayout {
@@ -58,28 +55,28 @@ Item {
 
 
                         TextLinkButton {
-                            visible: model.pipelineUrl
+                            visible: column == PipelineModel.Id
                             leftPadding: 5
-                            url: model.pipelineUrl
+                            url: model.pipeline.url
                         }
 
                         Label {
-                            visible: getActionButtonVisible(model.pipelineStatus)
+                            visible: getActionButtonVisible(column, pipeline.state)
 
                             leftPadding: 5
 
-                            text: getButtonText(pipelineStatus)
+                            text: getButtonText(pipeline.state)
                             color: pipelines.currentRow ? palette.highlightedText : palette.text
 
                             HoverHandler { cursorShape: Qt.PointingHandCursor }
-                            TapHandler { onTapped: pipelineAction(pipelineStatus) }
+                            TapHandler { onTapped: pipelineAction(pipeline.state) }
                         }
 
                         Image {
-                            visible: model.pipelineUser ? true : false
+                            visible: column == PipelineModel.User
                             Layout.maximumHeight: 28
                             Layout.maximumWidth: Layout.maximumHeight
-                            source: model.pipelineUser ? model.pipelineUser.avatarUrl : ""
+                            source: pipeline.user ? pipeline.user.avatarUrl : ""
                             fillMode: Image.PreserveAspectFit
                         }
 
@@ -87,35 +84,35 @@ Item {
                             padding: 5
 
                             text: model.display
-                            color: getTextColor(pipelineStatus)
+                            color: getTextColor(pipeline.state)
                         }
 
                         HorizontalSpacer {}
                     }
 
-                    function getTextColor(status) {
-                        if (status == "success")  return "#429942";
-                        if (status == "canceled") return "#999942";
-                        if (status == "failed")   return "#FE4242";
-                        if (status == "running")  return "#4242FE";
+                    function getTextColor(state) {
+                        if (state == Pipeline.Success)   return "#429942";
+                        if (state == Pipeline.Canceled) return "#999942";
+                        if (state == Pipeline.Failed)    return "#FE4242";
+                        if (state == Pipeline.Running)   return "#4242FE";
                         // TODO: created, waiting_for_resource, preparing, pending, skipped, manual, scheduled
                         return pipelines.currentRow ? palette.highlightedText : palette.text;
                     }
 
-                    function getActionButtonVisible(status) {
-                        return status && status != "success" && status != "skipped";
+                    function getActionButtonVisible(column, state) {
+                        return column == PipelineModel.Status && state != Pipeline.Success && state != Pipeline.Skipped;
                     }
 
-                    function getButtonText(status) {
-                        if (status == "running" || status == "pending")
+                    function getButtonText(state) {
+                        if (state == Pipeline.Running || state == Pipeline.Pending)
                             return "⏹";
-                        if (status == "failed" || status == "canceled")
+                        if (state == Pipeline.Failed || state == Pipeline.Canceled)
                             return "↺";
                         return "";
                     }
 
-                    function pipelineAction(status) {
-                        if (status == "running" || status == "pending")
+                    function pipelineAction(state) {
+                        if (state == Pipeline.Running || state == Pipeline.Pending)
                             gpm.cancelPipeline(pipelineId);
                         else
                             gpm.retryPipeline(pipelineId);
