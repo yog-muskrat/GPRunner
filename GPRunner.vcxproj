@@ -132,7 +132,7 @@
     <None Include="gui\MergeRequests.qml" />
     <None Include="gui\MergeRequestTableDelegate.qml" />
     <None Include="gui\MRTable.qml" />
-    <None Include="gui\PipelineDialog.qml" />
+    <None Include="gui\StartPipeline.qml" />
     <None Include="gui\PipelineJobs.qml" />
     <None Include="gui\PipelineStatistics.qml" />
     <None Include="gui\PipelineTable.qml" />

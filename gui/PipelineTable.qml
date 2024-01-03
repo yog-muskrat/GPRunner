@@ -84,18 +84,20 @@ Item {
                             padding: 5
 
                             text: model.display
-                            color: getTextColor(pipeline.state)
+                            color: getTextColor(column, pipeline.state)
                         }
 
                         HorizontalSpacer {}
                     }
 
-                    function getTextColor(state) {
-                        if (state == Pipeline.Success)   return "#429942";
-                        if (state == Pipeline.Canceled) return "#999942";
-                        if (state == Pipeline.Failed)    return "#FE4242";
-                        if (state == Pipeline.Running)   return "#4242FE";
-                        // TODO: created, waiting_for_resource, preparing, pending, skipped, manual, scheduled
+                    function getTextColor(column, state) {
+                        if (column == PipelineModel.Status) {
+                            if (state == Pipeline.Success)   return "#429942";
+                            if (state == Pipeline.Canceled)  return "#999942";
+                            if (state == Pipeline.Failed)    return "#FE4242";
+                            if (state == Pipeline.Running)   return "#4242FE";
+                            // TODO: created, waiting_for_resource, preparing, pending, skipped, manual, scheduled
+                        }
                         return pipelines.currentRow ? palette.highlightedText : palette.text;
                     }
 

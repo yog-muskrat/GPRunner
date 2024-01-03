@@ -1,11 +1,16 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Layouts
 
-Dialog {
+Item {
+    required property int currentProject
 
-    contentItem: ColumnLayout {
+    ColumnLayout {
+        anchors.fill: parent
+
         PipelineVariablesTable {
-            currentProject: pipelines.currentProject
+            id: variables
+            currentProject: currentProject
 
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -22,7 +27,7 @@ Dialog {
                 implicitContentWidthPolicy: ComboBox.WidestText
             }
             Button {
-                text: "Get vars"
+                text: "Update vars"
                 enabled: currentProject > 0
                 onClicked: gpm.loadPipelineVariables(currentProject, ref.currentText)
             }

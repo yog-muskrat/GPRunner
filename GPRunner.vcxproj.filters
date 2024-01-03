@@ -183,7 +183,7 @@
     <None Include="gui\PipelineJobs.qml">
       <Filter>gui\pipelines</Filter>
     </None>
-    <None Include="gui\PipelineDialog.qml">
+    <None Include="gui\StartPipeline.qml">
       <Filter>gui\pipelines</Filter>
     </None>
     <None Include="gui\EmojiButton.qml">

@@ -21,6 +21,7 @@
         <file>MergeRequestTableDelegate.qml</file>
         <file>EmojiButton.qml</file>
         <file>PipelineJobs.qml</file>
+        <file>StartPipeline.qml</file>
     </qresource>
     <qresource prefix="/icons">
         <file alias="gitlab.png">icons/gitlab.png</file>
