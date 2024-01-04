@@ -260,17 +260,6 @@ void GPManager::markDiscussionsRead(int projectId)
 	std::ranges::for_each(prj->openMRs(), &gpr::api::MR::markDiscussionsRead);
 }
 
-void GPManager::markDiscussionsRead(int projectId, int mrIid)
-{
-	auto const prj = m_projectModel.findProject(projectId);
-	assert(prj);
-
-	auto const mr = prj->findMRByIid(mrIid);
-	assert(mr);
-
-	mr->markDiscussionsRead();
-}
-
 void GPManager::markDiscussionsRead(int projectId, int mrIid, QString const &discussionId)
 {
 	auto const prj = m_projectModel.findProject(projectId);

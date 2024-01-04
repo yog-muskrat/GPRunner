@@ -95,7 +95,7 @@ namespace gpr::api
 			}
 			else
 			{
-				auto newMr = new MR(m_manager, std::move(mrData), this);
+				auto newMr = new MR(m_manager, std::move(mrData), *this);
 				m_openMRs.push_back(newMr);
 				connectMR(newMr);
 

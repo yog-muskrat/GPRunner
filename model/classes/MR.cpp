@@ -2,13 +2,15 @@
 #include <ranges>
 
 #include "model/classes/MR.h"
+#include "model/classes/Project.h"
 
 namespace gpr::api
 {
-	MR::MR(GPManager &manager, Data data, QObject *parent)
-		: QObject(parent)
+	MR::MR(GPManager &manager, Data data, Project &project)
+		: QObject(&project)
 		, m_data{std::move(data)}
 		, m_manager{manager}
+		, m_project{project}
 	{}
 
 	int MR::id() const
@@ -19,11 +21,6 @@ namespace gpr::api
 	int MR::iid() const
 	{
 		return m_data.iid;
-	}
-
-	QDateTime MR::createdAt() const
-	{
-		return m_data.created;
 	}
 
 	void MR::update(Data data)
@@ -38,10 +35,25 @@ namespace gpr::api
 		Q_EMIT modified();
 	}
 
+	Project &MR::project()
+	{
+		return m_project;
+	}
+
+	Project const &MR::project() const
+	{
+		return m_project;
+	}
+
 	void MR::setCreatedAt(QDateTime time)
 	{
 		m_data.created = time;
 		Q_EMIT modified();
+	}
+
+	QDateTime MR::createdAt() const
+	{
+		return m_data.created;
 	}
 
 	QDateTime MR::updatedAt() const

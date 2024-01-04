@@ -64,7 +64,6 @@ public:
 	Q_INVOKABLE void removeMRDiscussionNote(int projectId, int mrIid, QString const &discussionId, int noteId);
 
 	Q_INVOKABLE void markDiscussionsRead(int projectId);
-	Q_INVOKABLE void markDiscussionsRead(int projectId, int mrIid);
 	Q_INVOKABLE void markDiscussionsRead(int projectId, int mrIid, QString const &discussionId);
 
 	QAbstractItemModel *getProjectModel();

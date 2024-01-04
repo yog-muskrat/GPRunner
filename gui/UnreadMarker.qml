@@ -14,7 +14,7 @@ Label {
 	TapHandler {
 		onTapped: {
 			if(projectId > 0 && mr && discussionId) gpm.markDiscussionsRead(projectId, mr.iid, discussionId)
-			else if(projectId > 0 && mr)            gpm.markDiscussionsRead(projectId, mr.iid)
+			else if(mr)                             mr.markDiscussionsRead()
 			else if(projectId > 0)                  gpm.markDiscussionsRead(projectId)
 		}
 	}

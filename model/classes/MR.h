@@ -12,6 +12,8 @@ class GPManager;
 
 namespace gpr::api
 {
+	class Project;
+
 	class MR : public QObject
 	{
 		Q_OBJECT
@@ -38,12 +40,15 @@ namespace gpr::api
 			bool hasNotes{};
 		};
 
-		MR(GPManager &manager, Data data, QObject *parent = nullptr);
+		MR(GPManager &manager, Data data, Project &project);
 
 		int id() const;
 		int iid() const;
 
 		void update(Data data);
+
+		Project &project();
+		Project const &project() const;
 
 		QDateTime createdAt() const;
 		void setCreatedAt(QDateTime time);
@@ -94,7 +99,7 @@ namespace gpr::api
 		void updateDiscussions(std::vector<std::pair<Discussion::Data, std::vector<Note::Data>>> discussions);
 		QPointer<Discussion> findDiscussion(QString const &id) const;
 
-		void markDiscussionsRead();
+		Q_INVOKABLE void markDiscussionsRead();
 		QString noteUrl(gpr::api::Note const &note) const;
 
 		bool isUserInvolved(QString const &username) const;
@@ -118,6 +123,7 @@ namespace gpr::api
 
 		Data m_data;
 		GPManager &m_manager;
+		Project &m_project;
 
 		// NOTE: Флаг первоначальной загрузки дискуссий
 		bool m_discussionsLoaded{false};
