@@ -123,56 +123,14 @@ QVariant MRModel::data(QModelIndex const &index, int role) const
 		return {};
 	}
 
-	auto &mr = *m_project->openMRs().at(index.row());
+	auto mr = m_project->openMRs().at(index.row());
 	auto const column = static_cast<Column>(index.column());
 
-	if (role == Qt::DisplayRole)      return displayRole(mr, column);
-	if (role == Qt::EditRole)         return editRole(mr, column);
-	if (role == Qt::ToolTipRole)      return toolTipRole(mr, column);
-	if (role == Qt::FontRole)         return fontRole(mr, column);
-	if (role == Role::Url)
-	{
-		if(column == Column::Iid) return mr.url();
-		return QString{};
-	}
-	if (role == Role::PipelineUrl)
-	{
-		if(column == Column::Pipeline) return mr.pipeline().url;
-		return QString{};
-	}
-	if (role == Role::MR)             return QVariant::fromValue(&mr);
-	if (role == Role::HasUnreadNotes) return column == Column::Discussions && mr.isUserInvolved(m_manager.getCurrentUser()) && mr.hasNewNotes();
-	if (role == Role::IsApproved)
-	{
-		if (column == Column::Author)   return mr.isApprovedBy(mr.author());
-		if (column == Column::Reviewer) return mr.isApprovedBy(mr.reviewer());
-		if (column == Column::Assignee) return mr.isApprovedBy(mr.assignee());
-		return false;
-	}
-	if (role == Role::CanApprove)
-	{
-		if (column == Column::Reviewer) return mr.reviewer() == m_manager.getCurrentUser() && !mr.isApprovedBy(m_manager.getCurrentUser());
-		if (column == Column::Assignee) return mr.assignee() == m_manager.getCurrentUser() && !mr.isApprovedBy(m_manager.getCurrentUser());
-		return false;
-	}
-	if (role == Role::CanUnapprove)
-	{
-		if (column == Column::Reviewer) return mr.reviewer() == m_manager.getCurrentUser() && mr.isApprovedBy(m_manager.getCurrentUser());
-		if (column == Column::Assignee) return mr.assignee() == m_manager.getCurrentUser() && mr.isApprovedBy(m_manager.getCurrentUser());
-		return false;
-	}
-	if (role == Role::CanEdit)
-	{
-		if (column == Column::Reviewer || column == Column::Assignee) return mr.author() == m_manager.getCurrentUser();
-		return false;
-	}
-	if (role == Role::User)
-	{
-		if (column == Column::Author)   return QVariant::fromValue(mr.author());
-		if (column == Column::Reviewer) return QVariant::fromValue(mr.reviewer());
-		if (column == Column::Assignee) return QVariant::fromValue(mr.assignee());
-		return false;
-	}
+	if (role == Qt::DisplayRole)      return displayRole(*mr, column);
+	if (role == Qt::EditRole)         return editRole(*mr, column);
+	if (role == Qt::ToolTipRole)      return toolTipRole(*mr, column);
+	if (role == Qt::FontRole)         return fontRole(*mr, column);
+	if (role == Role::MrRole)         return QVariant::fromValue(mr.get());
 
 	return QVariant();
 }
@@ -190,11 +148,11 @@ bool MRModel::setData(QModelIndex const &index, QVariant const &value, int role)
 	{
 		if (index.column() == Column::Reviewer)
 		{
-			m_manager.setMRReviewer(m_project->id(), mr->iid(), value.toInt());
+			m_manager.setMRReviewer(mr, value.toInt());
 		}
 		else if (index.column() == Column::Assignee)
 		{
-			m_manager.setMRAssignee(m_project->id(), mr->iid(), value.toInt());
+			m_manager.setMRAssignee(mr, value.toInt());
 		}
 	}
 
@@ -204,23 +162,16 @@ bool MRModel::setData(QModelIndex const &index, QVariant const &value, int role)
 QHash<int, QByteArray> MRModel::roleNames() const
 {
 	auto names = QAbstractTableModel::roleNames();
-	names.emplace(Qt::FontRole, "font");
-	names.emplace(Role::Url, "url");
-	names.emplace(Role::PipelineUrl, "pipelineUrl");
-	names.emplace(Role::MR, "mr");
-	names.emplace(Role::User, "user");
-	names.emplace(Role::HasUnreadNotes, "hasUnreadNotes");
-	names.emplace(Role::IsApproved, "isApproved");
-	names.emplace(Role::CanApprove, "canApprove");
-	names.emplace(Role::CanUnapprove, "canUnapprove");
+	names.emplace(Role::MrRole, "mr");
 
 	return names;
 }
 
 Qt::ItemFlags MRModel::flags(QModelIndex const &index) const
 {
+	auto &mr = *m_project->openMRs().at(index.row());
 	auto flags = Qt::ItemIsSelectable | Qt::ItemIsEnabled;
-	if(data(index, Role::CanEdit).toBool())
+	if((index.column() == Column::Reviewer || index.column() == Column::Assignee) && mr.author() == m_manager.getCurrentUser())
 	{
 		flags |= Qt::ItemIsEditable;
 	}
@@ -240,7 +191,7 @@ QVariant MRModel::editRole(gpr::api::MR const &mr, Column column) const
 		case Column::SourceBranch:
 		case Column::TargetBranch: return displayRole(mr, column);
 		case Column::Status:       return mr.mergeStatus();
-		case Column::Pipeline:     return mr.pipeline().status;
+		case Column::Pipeline:     return mr.pipeline() ? mr.pipeline()->status() : QString{""};
 		case Column::Created:      return mr.createdAt();
 		case Column::Updated:      return mr.updatedAt();
 		default: break;
@@ -255,7 +206,7 @@ QVariant MRModel::displayRole(gpr::api::MR const &mr, Column column) const
 		case Column::Iid:          return mr.iid();
 		case Column::Title:        return mr.title();
 		case Column::Status:       return getStatusInfo(mr.mergeStatus()).shortInfo;
-		case Column::Pipeline:     return getPipelineStatusIcon(mr.pipeline().status);
+		case Column::Pipeline:     return getPipelineStatusIcon(mr.pipeline() ? mr.pipeline()->status() : QString{""});
 		case Column::Author:       return mr.author().username;
 		case Column::Discussions:  return getDiscussionsString(mr);
 		case Column::Assignee:     return mr.assignee().username;
@@ -289,7 +240,7 @@ QVariant MRModel::toolTipRole(gpr::api::MR const &mr, Column column) const
 	switch (column)
 	{
 		case Column::Status:   return getStatusInfo(mr.mergeStatus()).fullInfo;
-		case Column::Pipeline: return mr.pipeline().status;
+		case Column::Pipeline: return mr.pipeline() ? mr.pipeline()->status() : QString{""};
 		default: break;
 	}
 	return QString{""};

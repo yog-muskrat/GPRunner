@@ -45,12 +45,6 @@ namespace gpr::api
 		return m_project;
 	}
 
-	void MR::setCreatedAt(QDateTime time)
-	{
-		m_data.created = time;
-		Q_EMIT modified();
-	}
-
 	QDateTime MR::createdAt() const
 	{
 		return m_data.created;
@@ -61,32 +55,14 @@ namespace gpr::api
 		return m_data.updated;
 	}
 
-	void MR::setUpdatedAt(QDateTime time)
-	{
-		m_data.updated = time;
-		Q_EMIT modified();
-	}
-
 	QString MR::title() const
 	{
 		return m_data.title;
 	}
 
-	void MR::setTitle(QString title)
-	{
-		m_data.title = std::move(title);
-		Q_EMIT modified();
-	}
-
 	User const &MR::author() const
 	{
 		return m_data.author;
-	}
-
-	void MR::setAuthor(User author)
-	{
-		m_data.author = std::move(author);
-		Q_EMIT modified();
 	}
 
 	User const &MR::assignee() const
@@ -116,21 +92,9 @@ namespace gpr::api
 		return m_data.sourceBranch;
 	}
 
-	void MR::setSourceBranch(QString sourceBranch)
-	{
-		m_data.sourceBranch = std::move(sourceBranch);
-		Q_EMIT modified();
-	}
-
 	QString MR::targetBranch() const
 	{
 		return m_data.targetBranch;
-	}
-
-	void MR::setTargetBranch(QString targetBranch)
-	{
-		m_data.targetBranch = std::move(targetBranch);
-		Q_EMIT modified();
 	}
 
 	std::vector<QPointer<Discussion>> const &MR::discussions() const
@@ -143,21 +107,9 @@ namespace gpr::api
 		return m_data.url;
 	}
 
-	void MR::setUrl(QString url)
-	{
-		m_data.url = std::move(url);
-		Q_EMIT modified();
-	}
-
 	QString MR::mergeStatus() const
 	{
 		return m_data.mergeStatus;
-	}
-
-	void MR::setMergeStatus(QString mergeStatus)
-	{
-		m_data.mergeStatus = std::move(mergeStatus);
-		Q_EMIT modified();
 	}
 
 	bool MR::hasNotes() const
@@ -165,26 +117,24 @@ namespace gpr::api
 		return m_data.hasNotes;
 	}
 
-	void MR::setHasNotes(bool hasNotes)
-	{
-		m_data.hasNotes = hasNotes;
-		Q_EMIT modified();
-	}
-
-	Pipeline::Data const MR::pipeline() const
+	QPointer<Pipeline> MR::pipeline() const
 	{
 		return m_pipeline;
 	}
 
-	void MR::setPipeline(Pipeline::Data data)
+	void MR::setPipeline(int id)
 	{
-		if(m_pipeline == data) return;
+		m_pipeline = nullptr;
 
-		m_pipeline = std::move(data);
+		if(auto const pos = std::ranges::find(m_project.pipelines(), id, &Pipeline::id); pos != m_project.pipelines().cend())
+		{
+			m_pipeline = *pos;
+		}
+
 		Q_EMIT modified();
 	}
 
-	bool MR::hasNewNotes() const
+	bool MR::hasUnreadNotes() const
 	{
 		auto notes = m_discussions | std::views::transform(&Discussion::notes) | std::views::join;
 		return !std::ranges::all_of(notes, &Note::isRead);
@@ -238,10 +188,9 @@ namespace gpr::api
 			}
 			else
 			{
-				discussion = m_discussions.emplace_back(new Discussion(m_manager, std::move(discussionData), this));
+				discussion = m_discussions.emplace_back(new Discussion(m_manager, std::move(discussionData), *this));
 				connectDiscussion(discussion);
 				Q_EMIT discussionAdded(discussion);
-
 			}
 			discussion->updateNotes(std::move(notes));
 		}
@@ -277,6 +226,16 @@ namespace gpr::api
 	bool MR::isUserInvolved(User const &user) const
 	{
 		return isUserInvolved(user.username);
+	}
+
+	bool MR::userCanApprove(QString const &username) const
+	{
+		return !username.isEmpty() && (m_data.reviewer.username == username || m_data.assignee.username == username);
+	}
+
+	bool MR::userCanApprove(User const &user) const
+	{
+		return userCanApprove(user.username);
 	}
 
 	bool MR::isUserInvolved(QString const &username) const

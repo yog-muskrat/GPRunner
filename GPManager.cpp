@@ -114,12 +114,12 @@ void GPManager::loadProjectMRInfo(int projectId)
 
 	for (auto const &mr : prj->openMRs())
 	{
-		m_client.requestMRDetails(projectId, mr->iid(), std::bind_front(&GPManager::parseMRDetails, this, projectId, mr->id()));
-		m_client.requestMRApprovals(projectId, mr->iid(), std::bind_front(&GPManager::parseMRApprovals, this, projectId, mr->id()));
+		m_client.requestMRDetails(projectId, mr->iid(), std::bind_front(&GPManager::parseMRDetails, this, mr));
+		m_client.requestMRApprovals(projectId, mr->iid(), std::bind_front(&GPManager::parseMRApprovals, this, mr));
 
 		if(mr->hasNotes())
 		{
-			m_client.requestMRDiscussions(projectId, mr->iid(), std::bind_front(&GPManager::parseMRDiscussions, this, projectId, mr->id()));
+			m_client.requestMRDiscussions(projectId, mr->iid(), std::bind_front(&GPManager::parseMRDiscussions, this, mr));
 		}
 	}
 }
@@ -168,7 +168,7 @@ void GPManager::onDiscussionNoteAdded(
 		Q_EMIT newNotesReceived();
 	}
 
-	m_client.requestMRNoteEmojis(project->id(), mr->iid(), note->id(), std::bind_front(&GPManager::parseMRNoteEmojis, this, project->id(), mr->id(), discussion->id(), note->id()));
+	m_client.requestMRNoteEmojis(project->id(), mr->iid(), note->id(), std::bind_front(&GPManager::parseMRNoteEmojis, this, mr, discussion->id(), note->id()));
 }
 
 void GPManager::onDiscussionNoteUpdated(
@@ -182,7 +182,7 @@ void GPManager::onDiscussionNoteUpdated(
 		Q_EMIT newNotesReceived();
 	}
 
-	m_client.requestMRNoteEmojis(project->id(), mr->iid(), note->id(), std::bind_front(&GPManager::parseMRNoteEmojis, this, project->id(), mr->id(), discussion->id(), note->id()));
+	m_client.requestMRNoteEmojis(project->id(), mr->iid(), note->id(), std::bind_front(&GPManager::parseMRNoteEmojis, this, mr, discussion->id(), note->id()));
 }
 
 void GPManager::onMergeRequestRemoved(QPointer<gpr::api::Project> project, QPointer<gpr::api::MR> mr)
@@ -213,14 +213,24 @@ void GPManager::unapproveMR(int projectId, int mrIid)
 	m_client.unapproveMR(projectId, mrIid);
 }
 
-void GPManager::setMRReviewer(int projectId, int mrIid, int userId)
+void GPManager::setMRReviewer(QPointer<gpr::api::MR> mr, int userId)
 {
-	m_client.setMRReviewer(projectId, mrIid, userId);
+	if(!mr)
+	{
+		assert(false && "Invalid MR");
+		return;
+	}
+	m_client.setMRReviewer(mr->project().id(), mr->iid(), userId);
 }
 
-void GPManager::setMRAssignee(int projectId, int mrIid, int userId)
+void GPManager::setMRAssignee(QPointer<gpr::api::MR> mr, int userId)
 {
-	m_client.setMRAssignee(projectId, mrIid, userId);
+	if(!mr)
+	{
+		assert(false && "Invalid MR");
+		return;
+	}
+	m_client.setMRAssignee(mr->project().id(), mr->iid(), userId);
 }
 
 void GPManager::resolveMRDiscussion(int projectId, int mrIid, QString const &discussionId)
@@ -417,11 +427,15 @@ void GPManager::parsePipelineInfo(int projectId, int pipelineId, QJsonDocument c
 		return;
 	}
 
-	auto pipeline = project->findPipeline(pipelineId);
-	if (!pipeline)
+	auto data = gpr::api::parsePipelineInfo(doc.object());
+
+	if (auto pipeline = project->findPipeline(pipelineId))
 	{
-		qDebug() << "Invalid pipeline id: " << pipelineId;
-		return;
+		pipeline->setUser(std::move(data.user));
+	}
+	else
+	{
+		project->updatePipeline(std::move(data));
 	}
 
 	auto data = gpr::api::parsePipelineInfo(doc.object());
@@ -467,38 +481,31 @@ void GPManager::parseMRs(int projectId, QJsonDocument const &doc)
 	project->updateMRs(std::move(mrs));
 }
 
-void GPManager::parseMRDetails(int projectId, int mrId, QJsonDocument const &doc)
+void GPManager::parseMRDetails(QPointer<gpr::api::MR> mr, QJsonDocument const &doc)
 {
-	auto project = m_projectModel.findProject(projectId);
-	if (!project)
-	{
-		qDebug() << "Invalid project id: " << projectId;
-		return;
-	}
-
-	auto mr = project->findMRById(mrId);
 	if(!mr)
 	{
-		qDebug() << "Invalid MR id: " << mrId;
+		qDebug() << "Invalid MR";
 		return;
 	}
 
-	mr->setPipeline(gpr::api::parseMRDetails(doc.object()));
+	auto const headPipelineId = gpr::api::parseMRHeadPipeline(doc.object());
+
+	if(auto const pos = std::ranges::find(mr->project().pipelines(), headPipelineId, &gpr::api::Pipeline::id); pos != mr->project().pipelines().cend())
+	{
+		mr->setPipeline(*pos);
+	}
+	else
+	{
+		loadPipelineInfo(mr->project().id(), headPipelineId);
+	}
 }
 
-void GPManager::parseMRDiscussions(int projectId, int mrId, QJsonDocument const &doc)
+void GPManager::parseMRDiscussions(QPointer<gpr::api::MR> mr, QJsonDocument const &doc)
 {
-	auto project = m_projectModel.findProject(projectId);
-	if (!project)
-	{
-		qDebug() << "Invalid project id: " << projectId;
-		return;
-	}
-
-	auto mr = project->findMRById(mrId);
 	if(!mr)
 	{
-		qDebug() << "Invalid MR id: " << mrId;
+		qDebug() << "Invalid MR";
 		return;
 	}
 
@@ -511,19 +518,11 @@ void GPManager::parseMRDiscussions(int projectId, int mrId, QJsonDocument const 
 	mr->updateDiscussions(std::move(discussions));
 }
 
-void GPManager::parseMRNoteEmojis(int projectId, int mrId, QString const &discussionId, int noteId, QJsonDocument const &doc)
+void GPManager::parseMRNoteEmojis(QPointer<gpr::api::MR> mr, QString const &discussionId, int noteId, QJsonDocument const &doc)
 {
-	auto project = m_projectModel.findProject(projectId);
-	if (!project)
-	{
-		qDebug() << "Invalid project id: " << projectId;
-		return;
-	}
-
-	auto mr = project->findMRById(mrId);
 	if(!mr)
 	{
-		qDebug() << "Invalid MR id: " << mrId;
+		qDebug() << "Invalid MR";
 		return;
 	}
 
@@ -544,19 +543,11 @@ void GPManager::parseMRNoteEmojis(int projectId, int mrId, QString const &discus
 	note->setReactions(gpr::api::parseNoteEmojis(doc, m_emojis));
 }
 
-void GPManager::parseMRApprovals(int projectId, int mrId, QJsonDocument const &doc)
+void GPManager::parseMRApprovals(QPointer<gpr::api::MR> mr, QJsonDocument const &doc)
 {
-	auto project = m_projectModel.findProject(projectId);
-	if (!project)
-	{
-		qDebug() << "Invalid project id: " << projectId;
-		return;
-	}
-
-	auto mr = project->findMRById(mrId);
 	if(!mr)
 	{
-		qDebug() << "Invalid MR id: " << mrId;
+		qDebug() << "Invalid MR";
 		return;
 	}
 

@@ -32,15 +32,7 @@ public:
 
 	enum Role
 	{
-		Url = Qt::UserRole,
-		PipelineUrl,
-		MR,
-		User,
-		HasUnreadNotes,
-		IsApproved,
-		CanApprove,
-		CanUnapprove,
-		CanEdit,
+		MrRole = Qt::UserRole,
 	};
 
 	MRModel(GPManager &manager);

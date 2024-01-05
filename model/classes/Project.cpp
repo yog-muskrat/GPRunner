@@ -138,37 +138,31 @@ namespace gpr::api
 
 	void Project::updatePipelines(std::vector<Pipeline::Data> pipelines)
 	{
-		std::vector<QPointer<Pipeline>> const removed = m_pipelines
-			| std::views::filter([&pipelines](auto const &pipeline) { return !std::ranges::contains(pipelines, pipeline->id(), &Pipeline::Data::id); })
-			| std::ranges::to<std::vector>();
-
 		for (auto &pipelineData : pipelines)
 		{
-			if (auto pipeline = findPipeline(pipelineData.id))
-			{
-				// NOTE: Имя пользователя получается отдельно, поэтому, чтобы оно не обнулилось, нужно сохранить его вручную.
-				auto user = pipeline->user();
-				pipeline->update(std::move(pipelineData));
-				pipeline->setUser(std::move(user));
-
-				Q_EMIT pipelineUpdated(pipeline);
-			}
-			else
-			{
-				auto newPipeline = new Pipeline(m_manager, std::move(pipelineData), this);
-				m_pipelines.push_back(newPipeline);
-				Q_EMIT pipelineAdded(newPipeline);
-			}
+			updatePipeline(std::move(pipelineData));
 		}
 
-		for (auto const &pipeline : removed)
-		{
-			Q_EMIT pipelineRemoved(pipeline);
-			std::erase(m_pipelines, pipeline);
-			pipeline->deleteLater();
-		}
+		// TODO: Проверять удаленные пайплайны
 
 		Q_EMIT modified();
+	}
+
+	void Project::updatePipeline(Pipeline::Data data)
+	{
+		if(auto pipeline = findPipeline(data.id))
+		{
+			// NOTE: Имя пользователя получается отдельно, поэтому, чтобы оно не обнулилось, нужно сохранить его вручную.
+			auto user = pipeline->user();
+			pipeline->update(std::move(data));
+			pipeline->setUser(std::move(user));
+		}
+		else
+		{
+			auto newPipeline = new Pipeline(m_manager, std::move(data), this);
+			m_pipelines.push_back(newPipeline);
+			Q_EMIT pipelineAdded(newPipeline);
+		}
 	}
 
 	QPointer<Pipeline> Project::findPipeline(int pipelineId) const

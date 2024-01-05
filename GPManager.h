@@ -53,8 +53,8 @@ public:
 
 	Q_INVOKABLE void approveMR(int projectId, int mrIid);
 	Q_INVOKABLE void unapproveMR(int projectId, int mrIid);
-	Q_INVOKABLE void setMRReviewer(int projectId, int mrIid, int userId);
-	Q_INVOKABLE void setMRAssignee(int projectId, int mrIid, int userId);
+	void setMRReviewer(QPointer<gpr::api::MR> mr, int userId);
+	void setMRAssignee(QPointer<gpr::api::MR> mr, int userId);
 
 	Q_INVOKABLE void resolveMRDiscussion(int projectId, int mrIid, QString const &discussionId);
 	Q_INVOKABLE void unresolveMRDiscussion(int projectId, int mrIid, QString const &discussionId);
@@ -99,10 +99,10 @@ private:
 	void parsePipelineInfo(int projectId, int pipelineId, QJsonDocument const &doc);
 	void parsePipelineJobs(int projectId, int pipelineId, QJsonDocument const &doc);
 	void parseMRs(int projectId, QJsonDocument const &doc);
-	void parseMRDetails(int projectId, int mrId, QJsonDocument const &doc);
-	void parseMRDiscussions(int projectId, int mrId, QJsonDocument const &doc);
-	void parseMRNoteEmojis(int projectId, int mrId, QString const &discussionId, int noteId, QJsonDocument const &doc);
-	void parseMRApprovals(int projectId, int mrId, QJsonDocument const &doc);
+	void parseMRDetails(QPointer<gpr::api::MR> mr, QJsonDocument const &doc);
+	void parseMRDiscussions(QPointer<gpr::api::MR> mr, QJsonDocument const &doc);
+	void parseMRNoteEmojis(QPointer<gpr::api::MR> mr, QString const &discussionId, int noteId, QJsonDocument const &doc);
+	void parseMRApprovals(QPointer<gpr::api::MR> mr, QJsonDocument const &doc);
 	void parseVariables(QJsonDocument const &doc);
 	void parseBranches(int projectId, QJsonDocument const &doc);
 	void parseCurrentUser(QJsonDocument const &doc);

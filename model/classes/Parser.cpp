@@ -83,9 +83,9 @@ namespace gpr::api
 			.hasNotes = json.value("user_notes_count").toInt() > 0};
 	}
 
-	Pipeline::Data parseMRDetails(QJsonObject const &json)
+	int parseMRHeadPipeline(QJsonObject const &json)
 	{
-		return parsePipelineInfo(json["head_pipeline"].toObject());
+		return json["head_pipeline"]["id"].toInt();
 	}
 
 	std::pair<Discussion::Data, std::vector<Note::Data>> parseDiscussion(QJsonObject const &json)

@@ -16,6 +16,9 @@ Item {
         else discussionModel.clear()
     }
 
+    function isResolved(idx)   { return mrs.model.data(idx, DiscussionModel.Discussion).isResolved }
+    function isUnresolved(idx) { return !mrs.model.data(idx, DiscussionModel.Discussion).isResolved }
+
     function expandCollapseIf(pred, expand) {
         for(let row = 0; row < mrs.rows; row++) {
             let idx = mrs.index(row, 0)
@@ -23,10 +26,6 @@ Item {
             if(pred(idx)) expand ? mrs.expand(row) : mrs.collapse(row)
         }
     }
-
-    // TODO: Получать роль по имени
-    function isResolved(idx)   { return mrs.model.data(idx, 261) == true }
-    function isUnresolved(idx) { return mrs.model.data(idx, 261) != true }
 
     DiscussionModel {
         id: discussionModel

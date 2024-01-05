@@ -100,7 +100,7 @@ QVariant ProjectModel::data(QModelIndex const &index, int role) const
 			prj->openMRs(), 
 			[this](QPointer<gpr::api::MR> const &mr)
 			{
-				return mr->isUserInvolved(m_manager.getCurrentUser()) && mr->hasNewNotes();
+				return mr->isUserInvolved(m_manager.getCurrentUser()) && mr->hasUnreadNotes();
 			});
 	}
 	else if (role == Role::HasCurrentUserMRsRole)

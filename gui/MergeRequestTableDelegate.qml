@@ -15,6 +15,33 @@ Rectangle {
 
     color: row == mrs.currentRow ? palette.highlight : palette.base
 
+    function isApproved(mr, column) {
+        if(column == MRModel.Assignee) return mr.isApprovedBy(mr.assignee)
+        if(column == MRModel.Reviewer) return mr.isApprovedBy(mr.reviewer)
+        return false;
+    }
+
+    function canApprove(mr, column) {
+        return (column == MRModel.Assignee && mr.assignee == gpm.currentUser)
+        || (column == MRModel.Reviewer && mr.reviewer == gpm.currentUser);
+    }
+
+    function avatarUrl(mr, column) {
+        if(column == MRModel.Author) return mr.author.avatarUrl
+        if(column == MRModel.Assignee) return mr.assignee.avatarUrl
+        if(column == MRModel.Reviewer) return mr.reviewer.avatarUrl
+        return ""
+    }
+
+    function isCurrentUser(mr, column) {
+        if(column == MRModel.Author) return mr.author == gpm.currentUser;
+        if(column == MRModel.Assignee) return mr.assignee== gpm.currentUser;
+        if(column == MRModel.Reviewer) return mr.reviewer == gpm.currentUser;
+        return false
+    }
+
+    function isUserColumn(column) { return column == MRModel.Author || column == MRModel.Assignee || column == MRModel.Reviewer }
+
     RowLayout {
         id: delegateLayout
 
@@ -24,31 +51,31 @@ Rectangle {
         TextLinkButton {
             leftPadding: 5
             visible: column == MRModel.Iid
-            url: model.url
+            url: mr.url
         }
 
         TextLinkButton {
             leftPadding: 5
             text: model.display
             visible: column == MRModel.Pipeline
-            url: model.pipelineUrl
+            url: mr.pipeline ? mr.pipeline.url : ""
             toolTip: model.edit
         }
 
         Image {
-            visible: model.user ? true : false
+            visible: isUserColumn(column)
             Layout.maximumHeight: 28
             Layout.maximumWidth: Layout.maximumHeight
-            source: model.user ? model.user.avatarUrl : ""
+            source: avatarUrl(mr, column)
             fillMode: Image.PreserveAspectFit
         }
 
         Label {
             padding: 5
 
-            visible: model.pipelineUrl ? false : true
+            visible: column != MRModel.Pipeline
             text: model.display
-            font.bold: model.user ? (model.user.username == gpm.currentUser.username) : false
+            font.bold: isCurrentUser(mr, column)
             color: mrs.currentRow ? palette.highlightedText : palette.text
 
             DefaultToolTip {
@@ -56,32 +83,36 @@ Rectangle {
             }
             TapHandler {
                 onTapped: {
-                    console.log("MR:", model.mr)
                     mrDelegate.mrSelected(model.mr)
                 }
             }
         }
 
         Label {
-            visible: model.canApprove || model.canUnapprove || model.isApproved
+            id: approveCheckbox
+
+            visible: {
+                if(column != MRModel.Assignee && column != MRModel.Reviewer) return false
+                return isApproved(mr, column) || canApprove(mr, column)
+            }
 
             rightPadding: 5
 
-            text: isApproved ? "☑" : canApprove ? "☐" : ""
-            color: canApprove ? "yellow" : canUnapprove ? "green" : palette.text
+            text: isApproved(mr, column) ? "☑" : canApprove(mr, column) ? "☐" : ""
+            color: canApprove(mr, column) ? (isApproved(mr, column) ? "green" : "yellow") : palette.text
 
             DefaultToolTip {
-                toolTipText: canApprove ? "Approve" : canUnapprove ? "Unapprove" : ""
+                toolTipText: canApprove(mr, column) ? (isApproved(mr, column) ? "Unapprove" : "Approve") : ""
             }
 
             HoverHandler {
-                enabled: model.canApprove || model.canUnapprove
+                enabled: canApprove(mr, column)
                 cursorShape: Qt.PointingHandCursor
             }
 
             TapHandler {
-                enabled: model.canApprove || model.canUnapprove
-                onTapped: model.canApprove ? gpm.approveMR(currentProject, model.mr.iid) : gpm.unapproveMR(currentProject, model.mr.iid)
+                enabled: canApprove(mr, column)
+                onTapped: isApproved(mr, column) ? gpm.unapproveMR(currentProject, mr.iid) : gpm.approveMR(currentProject, mr.iid)
             }
         }
 
@@ -89,7 +120,7 @@ Rectangle {
             projectId: currentProject
             mr: model.mr
 
-            visible: model.hasUnreadNotes
+            visible: column == MRModel.Discussions && model.mr.hasUnreadNotes
             rightPadding: 5
         }
 

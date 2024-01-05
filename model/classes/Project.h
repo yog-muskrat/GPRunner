@@ -49,6 +49,7 @@ namespace gpr::api
 
 		std::vector<QPointer<Pipeline>> const &pipelines() const;
 		void updatePipelines(std::vector<Pipeline::Data> pipelines);
+		void updatePipeline(Pipeline::Data data);
 		QPointer<Pipeline> findPipeline(int pipelineId) const;
 
 		friend auto operator<=>(Project const &, Project const &) = default;

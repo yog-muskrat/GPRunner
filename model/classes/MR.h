@@ -13,12 +13,20 @@ class GPManager;
 namespace gpr::api
 {
 	class Project;
+	class Pipeline;
 
 	class MR : public QObject
 	{
 		Q_OBJECT
 		Q_PROPERTY(int id READ id)
 		Q_PROPERTY(int iid READ iid)
+		Q_PROPERTY(QString url READ url NOTIFY modified)
+		Q_PROPERTY(User author READ author NOTIFY modified)
+		Q_PROPERTY(User assignee READ assignee NOTIFY modified)
+		Q_PROPERTY(User reviewer READ reviewer NOTIFY modified)
+		Q_PROPERTY(Pipeline * pipeline READ pipeline NOTIFY modified)
+		Q_PROPERTY(bool hasUnreadNotes READ hasUnreadNotes NOTIFY modified)
+		
 
 	public:
 		struct Data
@@ -50,17 +58,20 @@ namespace gpr::api
 		Project &project();
 		Project const &project() const;
 
-		QDateTime createdAt() const;
-		void setCreatedAt(QDateTime time);
+		Q_INVOKABLE void markDiscussionsRead();
+		Q_INVOKABLE bool isApprovedBy(User const &user) const;
+		Q_INVOKABLE bool isApprovedBy(QString const &username) const;
+		Q_INVOKABLE bool isUserInvolved(QString const &username) const;
+		Q_INVOKABLE bool isUserInvolved(User const &user) const;
+		Q_INVOKABLE bool userCanApprove(QString const &username) const;
+		Q_INVOKABLE bool userCanApprove(User const &user) const;
 
+		QDateTime createdAt() const;
 		QDateTime updatedAt() const;
-		void setUpdatedAt(QDateTime time);
 
 		QString title() const;
-		void setTitle(QString title);
 
 		User const &author() const;
-		void setAuthor(User author);
 
 		User const &assignee() const;
 		void setAssignee(User assignee);
@@ -69,29 +80,21 @@ namespace gpr::api
 		void setReviewer(User reviewer);
 
 		QString sourceBranch() const;
-		void setSourceBranch(QString sourceBranch);
 
 		QString targetBranch() const;
-		void setTargetBranch(QString targetBranch);
 
 		QString url() const;
-		void setUrl(QString url);
 
 		QString mergeStatus() const;
-		void setMergeStatus(QString mergeStatus);
 
 		bool hasNotes() const;
-		void setHasNotes(bool hasNotes);
+		bool hasUnreadNotes() const;
 
-		bool hasNewNotes() const;
-
-		Pipeline::Data const pipeline() const;
-		void setPipeline(Pipeline::Data data);
+		QPointer<Pipeline> pipeline() const;
+		void setPipeline(int id);
 
 		std::vector<QString> const &approvedBy() const;
 		void setApprovedBy(std::vector<QString> list);
-		bool isApprovedBy(User const &user) const;
-		bool isApprovedBy(QString const &username) const;
 
 		std::vector<QPointer<Discussion>> const &discussions() const;
 
@@ -99,11 +102,7 @@ namespace gpr::api
 		void updateDiscussions(std::vector<std::pair<Discussion::Data, std::vector<Note::Data>>> discussions);
 		QPointer<Discussion> findDiscussion(QString const &id) const;
 
-		Q_INVOKABLE void markDiscussionsRead();
 		QString noteUrl(gpr::api::Note const &note) const;
-
-		bool isUserInvolved(QString const &username) const;
-		bool isUserInvolved(User const &user) const;
 
 		friend auto operator<=>(MR const &, MR const &) = default;
 
@@ -129,6 +128,6 @@ namespace gpr::api
 		bool m_discussionsLoaded{false};
 		std::vector<QPointer<Discussion>> m_discussions;
 		std::vector<QString> m_approvedBy;
-		Pipeline::Data m_pipeline;
+		QPointer<Pipeline> m_pipeline;
 	};
 } // namespace gpr::api
