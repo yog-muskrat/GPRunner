@@ -4,7 +4,7 @@ import QtQuick.Controls
 Label {
 	property int projectId
 	property var mr
-	property string discussionId
+	property var discussion
 
 	text: "●"
 	color: "#B21818"
@@ -13,9 +13,9 @@ Label {
 
 	TapHandler {
 		onTapped: {
-			if(projectId > 0 && mr && discussionId) gpm.markDiscussionsRead(projectId, mr.iid, discussionId)
-			else if(mr)                             mr.markDiscussionsRead()
-			else if(projectId > 0)                  gpm.markDiscussionsRead(projectId)
+			if(discussion)         discussion.markRead()
+			else if(mr)            mr.markDiscussionsRead()
+			else if(projectId > 0) gpm.markDiscussionsRead(projectId)
 		}
 	}
 }

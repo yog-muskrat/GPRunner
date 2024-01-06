@@ -270,19 +270,6 @@ void GPManager::markDiscussionsRead(int projectId)
 	std::ranges::for_each(prj->openMRs(), &gpr::api::MR::markDiscussionsRead);
 }
 
-void GPManager::markDiscussionsRead(int projectId, int mrIid, QString const &discussionId)
-{
-	auto const prj = m_projectModel.findProject(projectId);
-	assert(prj);
-
-	auto const mr = prj->findMRByIid(mrIid);
-	assert(mr);
-
-	auto const discussion = mr->findDiscussion(discussionId);
-	assert(discussion);
-	discussion->markRead();
-}
-
 QAbstractItemModel *GPManager::getProjectModel()
 {
 	return &m_projectProxyModel;
@@ -437,9 +424,6 @@ void GPManager::parsePipelineInfo(int projectId, int pipelineId, QJsonDocument c
 	{
 		project->updatePipeline(std::move(data));
 	}
-
-	auto data = gpr::api::parsePipelineInfo(doc.object());
-	pipeline->setUser(std::move(data.user));
 }
 
 void GPManager::parsePipelineJobs(int projectId, int pipelineId, QJsonDocument const &doc)

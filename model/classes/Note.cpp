@@ -1,8 +1,9 @@
 ﻿#include <QtCore/QRegularExpression>
 #include <cassert>
 
-#include "model/classes/Note.h"
 #include "GPManager.h"
+#include "model/classes/Note.h"
+#include "model/classes/Discussion.h"
 
 namespace gpr::api
 {
@@ -28,11 +29,17 @@ namespace gpr::api
 			}
 		}
 
-	Note::Note(GPManager &manager, Data data, QObject *parent)
-		: QObject(parent)
+	Note::Note(GPManager &manager, Data data, Discussion &discussion)
+		: QObject(&discussion)
 		, m_data{std::move(data)}
 		, m_manager{manager}
+		, m_discussion{discussion}
 	{}
+
+	int Note::id() const
+	{
+		return m_data.id;
+	}
 
 	void Note::update(Data data)
 	{
@@ -46,9 +53,14 @@ namespace gpr::api
 		}
 	}
 
-	int Note::id() const
+	Discussion &Note::discussion()
 	{
-		return m_data.id;
+		return m_discussion;
+	}
+
+	Discussion const &Note::discussion() const
+	{
+		return m_discussion;
 	}
 
 	User const &Note::author() const
@@ -59,6 +71,11 @@ namespace gpr::api
 	QString const &Note::body() const
 	{
 		return m_data.body;
+	}
+
+	QString Note::url() const
+	{
+		return m_discussion.mr().noteUrl(*this);
 	}
 
 	QDateTime Note::created() const
@@ -81,12 +98,12 @@ namespace gpr::api
 		return m_data.resolved;
 	}
 
-	std::vector<EmojiReaction> const &Note::reactions() const
+	QList<EmojiReaction> const &Note::reactions() const
 	{
 		return m_reactions;
 	}
 
-	void Note::setReactions(std::vector<EmojiReaction> reactions)
+	void Note::setReactions(QList<EmojiReaction> reactions)
 	{
 		//TODO: сранивать умнее
 		if(!std::ranges::equal(reactions, m_reactions))

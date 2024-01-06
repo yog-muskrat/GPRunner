@@ -31,13 +31,22 @@ Item {
         return index.row == (index.model.rowCount(index.parent) - 1)
     }
 
+    function canResolve(discussion) {
+        return discussion && discussion.isResolvable && discussion.author == gpm.currentUser
+    }
+
+    function canEdit(note) { 
+        if(!note) return false
+        return note.author == gpm.currentUser
+    }
+
     id: treeDelegate
 
-    implicitWidth:  isNote ? note.implicitWidth : discussion.implicitWidth
-    implicitHeight: isNote ? note.implicitHeight : discussion.implicitHeight
+    implicitWidth:  isNote ? note.implicitWidth : discussionItem.implicitWidth
+    implicitHeight: isNote ? note.implicitHeight : discussionItem.implicitHeight
 
     Item {
-        id: discussion
+        id: discussionItem
         visible: isDiscussion
 
         implicitWidth: discussionHeader.implicitWidth + discussionNotes.implicitWidth + unreadIndicator.implicitWidth + discussionStatus.implicitWidth
@@ -109,14 +118,14 @@ Item {
             anchors.right: discussionStatus.left
             anchors.verticalCenter: discussionHeader.verticalCenter
 
-            visible: model.hasUnreadNotes
+            visible: model.discussion && model.discussion.hasUnreadNotes()
             implicitWidth: visible ? unreadIndicatorLabel.implicitWidth : 0
             implicitHeight: visible ? unreadIndicatorLabel.implicitHeight : 0
 
             UnreadMarker {
                 projectId: treeDelegate.projectId
                 mr: treeDelegate.mr
-                discussionId: model.discussionId
+                discussion: model.discussion
 
                 id: unreadIndicatorLabel
 
@@ -131,21 +140,21 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             anchors.rightMargin: treeDelegate.padding * 2
 
-            visible: model.resolvable
+            visible: model.discussion.isResolvable
 
-            text: model.canResolve ? "[Resolve] ☐" : model.canUnresolve ? "[Unresolve] ☑" : model.resolved ? "☑" : "☐"
-            color: model.canResolve ? "yellow" : model.canUnresolve ? "green" : palette.text
+            text: canResolve(model.discussion) ? (model.discussion.isResolved ? "[Unresolve] ☑" : "[Resolve] ☐") : model.discussion.isResolved ? "☑" : "☐"
+            color: canResolve(model.discussion) ? (model.discussion.isResolved ? "green" : "yellow") : palette.text
 
             HoverHandler {
-                enabled: model.canResolve || model.canUnresolve
+                enabled: canResolve(discussion)
                 cursorShape: Qt.PointingHandCursor
             }
 
             TapHandler {
-                enabled: model.canResolve || model.canUnresolve
+                enabled: canResolve(discussion)
                 onTapped: {
-                    if(model.canResolve) treeDelegate.resolveRequested(model.discussionId)
-                    else if(model.canUnresolve) treeDelegate.unresolveRequested(model.discussionId)
+                    if(discussion.isResolved) treeDelegate.unresolveRequested(model.discussionId)
+                    else treeDelegate.resolveRequested(model.discussionId)
                 }
             }
         }
@@ -186,49 +195,49 @@ Item {
                     Layout.maximumHeight: imgSize
                     Layout.maximumWidth: imgSize
 
-                    source: model.author.avatarUrl
+                    source: model.note ? model.note.author.avatarUrl : ""
                     fillMode: Image.PreserveAspectFit
                 }
 
                 Label {
                     Layout.alignment: Qt.AlignTop
                 
-                    text: model.author.username + "\n" + new Date(model.created).toLocaleString(Qt.locale("ru_RU"), Locale.ShortFormat)
+                    text: model.note ? (model.note.author.username + "\n" + new Date(model.note.created).toLocaleString(Qt.locale("ru_RU"), Locale.ShortFormat)) : ""
                     leftPadding: treeDelegate.padding
                 }
 
                 TextLinkButton {
                     Layout.alignment: Qt.AlignTop
-                    visible: model.noteUrl ? true : false
-                    url: model.noteUrl
+                    visible: model.note && model.note.url ? true : false
+                    url: model.note ? model.note.url : ""
                 }
 
                 TextLinkButton {
                     Layout.alignment: Qt.AlignTop
 
-                    visible: model.canEdit
+                    visible: canEdit(model.note)
                     text: "✎"
 
                     DefaultToolTip { toolTipText: "Edit" }
                     HoverHandler { cursorShape: Qt.PointingHandCursor }
-                    TapHandler { onTapped: treeDelegate.editNoteRequested(model.discussionId, model.noteId, model.display) }
+                    TapHandler { onTapped: treeDelegate.editNoteRequested(model.discussion.id, model.note.id, model.display) }
                 }
 
                 Label {
                     Layout.alignment: Qt.AlignTop
 
-                    visible: model.canEdit
+                    visible: canEdit(model.note)
                     text: "🗑"
 
                     DefaultToolTip { toolTipText: "Remove" }
                     HoverHandler { cursorShape: Qt.PointingHandCursor }
-                    TapHandler { onTapped: treeDelegate.removeNoteRequested(model.discussionId, model.noteId) }
+                    TapHandler { onTapped: treeDelegate.removeNoteRequested(model.discussion.id, model.note.id) }
                 }
 
                 Item { Layout.minimumWidth: 25 }
 
                 Repeater {
-                    model: reactions
+                    model: note.reactions
 
                     EmojiButton {
                         Layout.alignment: Qt.AlignTop
@@ -271,19 +280,19 @@ Item {
 
                 Button {
                     text: "Add reply"
-                    onClicked: treeDelegate.addNoteRequested(model.discussionId)
+                    onClicked: treeDelegate.addNoteRequested(model.discussion.id)
                 }
 
                 Button {
-                    visible: model.canResolve
+                    visible: canResolve(model.discussion) && !model.discussion.isResolved
                     text: "Resolve"
-                    onClicked: treeDelegate.resolveRequested(model.discussionId)
+                    onClicked: treeDelegate.resolveRequested(model.discussion.id)
                 }
 
                 Button {
-                    visible: model.canUnresolve
+                    visible: canResolve(model.discussion) && model.discussion.isResolved
                     text: "Unresolve"
-                    onClicked: treeDelegate.unresolveRequested(model.discussionId)
+                    onClicked: treeDelegate.unresolveRequested(model.discussion.id)
                 }
             }
         }

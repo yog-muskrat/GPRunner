@@ -4,13 +4,15 @@
 
 #include "GPManager.h"
 #include "model/classes/GPClasses.h"
+#include "model/classes/MR.h"
 
 namespace gpr::api
 {
-	Discussion::Discussion(GPManager &manager, Data data, QObject *parent)
-		: QObject(parent)
+	Discussion::Discussion(GPManager &manager, Data data, MR &mr)
+		: QObject(&mr)
 		, m_data{std::move(data)}
 		, m_manager{manager}
+		, m_mr{mr}
 	{}
 
 	QString const &Discussion::id() const
@@ -24,6 +26,16 @@ namespace gpr::api
 
 		m_data = std::move(data);
 		Q_EMIT modified();
+	}
+
+	MR &Discussion::mr()
+	{
+		return m_mr;
+	}
+
+	MR const &Discussion::mr() const
+	{
+		return m_mr;
 	}
 
 	std::vector<QPointer<Note>> const &Discussion::notes() const
@@ -56,7 +68,7 @@ namespace gpr::api
 			}
 			else
 			{
-				auto const &newNote = m_notes.emplace_back(new Note(m_manager, std::move(note), this));
+				auto const &newNote = m_notes.emplace_back(new Note(m_manager, std::move(note), *this));
 				if(!m_loaded) newNote->markRead();
 				connectNote(newNote);
 				Q_EMIT noteAdded(newNote);
@@ -100,6 +112,16 @@ namespace gpr::api
 	void Discussion::markRead()
 	{
 		std::ranges::for_each(m_notes, &Note::markRead);
+	}
+
+	bool Discussion::hasUnreadNotes() const
+	{
+		return std::ranges::any_of(notes(), std::not_fn(&gpr::api::Note::isRead));
+	}
+
+	bool Discussion::userCanResolve(User const &user) const
+	{
+		return isResolvable() && author() == user;
 	}
 
 	void Discussion::setLoadFinished()

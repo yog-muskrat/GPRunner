@@ -91,7 +91,7 @@ namespace gpr::api
 		bool hasUnreadNotes() const;
 
 		QPointer<Pipeline> pipeline() const;
-		void setPipeline(int id);
+		void setPipeline(QPointer<Pipeline> pipeline);
 
 		std::vector<QString> const &approvedBy() const;
 		void setApprovedBy(std::vector<QString> list);

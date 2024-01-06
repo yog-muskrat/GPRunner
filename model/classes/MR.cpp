@@ -122,16 +122,13 @@ namespace gpr::api
 		return m_pipeline;
 	}
 
-	void MR::setPipeline(int id)
+	void MR::setPipeline(QPointer<Pipeline> pipeline)
 	{
-		m_pipeline = nullptr;
-
-		if(auto const pos = std::ranges::find(m_project.pipelines(), id, &Pipeline::id); pos != m_project.pipelines().cend())
+		if(m_pipeline != pipeline)
 		{
-			m_pipeline = *pos;
+			m_pipeline = pipeline;
+			Q_EMIT modified();
 		}
-
-		Q_EMIT modified();
 	}
 
 	bool MR::hasUnreadNotes() const

@@ -8,9 +8,16 @@ class GPManager;
 
 namespace gpr::api
 {
+	class MR;
+
 	class Discussion : public QObject
 	{
 		Q_OBJECT
+		Q_PROPERTY (QString id READ id)
+		Q_PROPERTY (bool isResolved READ isResolved NOTIFY modified)
+		Q_PROPERTY (bool isResolvable READ isResolvable NOTIFY modified)
+		Q_PROPERTY (User author READ author NOTIFY modified)
+
 	public:
 
 		struct Data
@@ -20,11 +27,18 @@ namespace gpr::api
 			friend auto operator<(Data const &l, Data const &r) { return l.id < r.id; }
 		};
 
-		Discussion(GPManager &manager, Data data, QObject *parent = nullptr);
+		Discussion(GPManager &manager, Data data, MR &mr);
 
 		QString const &id() const;
 
 		void update(Data data);
+
+		MR &mr();
+		MR const &mr() const;
+
+		Q_INVOKABLE void markRead();
+		Q_INVOKABLE bool hasUnreadNotes() const;
+		Q_INVOKABLE bool userCanResolve(User const &user) const;
 
 		std::vector<QPointer<Note>> const &notes() const;
 		QPointer<Note> findNote(int id) const;
@@ -35,8 +49,6 @@ namespace gpr::api
 		bool isResolved() const;
 
 		User const &author() const;
-
-		void markRead();
 
 		void setLoadFinished();
 
@@ -51,6 +63,7 @@ namespace gpr::api
 
 		Data m_data;
 		GPManager &m_manager;
+		MR &m_mr;
 
 		bool m_loaded{false};
 

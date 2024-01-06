@@ -7,9 +7,16 @@ class GPManager;
 
 namespace gpr::api
 {
+	class Discussion;
+
 	class Note : public QObject
 	{
 		Q_OBJECT
+		Q_PROPERTY(int id READ id)
+		Q_PROPERTY(User author READ author NOTIFY modified)
+		Q_PROPERTY(QDateTime created READ created NOTIFY modified)
+		Q_PROPERTY(QString url READ url NOTIFY modified)
+		Q_PROPERTY(QList<EmojiReaction> reactions READ reactions NOTIFY modified)
 
 	public:
 		struct Data
@@ -24,16 +31,21 @@ namespace gpr::api
 			bool resolved{};
 		};
 
-		Note(GPManager &manager, Data data, QObject *parent = nullptr);
+		Note(GPManager &manager, Data data, Discussion &discussion);
+
+		int id() const;
 
 		void update(Data data);
 
-		int id() const;
+		Discussion &discussion();
+		Discussion const &discussion() const;
 
 		User const &author() const;
 
 		QString const &body() const;
 
+		QString url() const;
+		
 		QDateTime created() const;
 
 		QDateTime updated() const;
@@ -42,8 +54,8 @@ namespace gpr::api
 
 		bool isResolved() const;
 
-		std::vector<EmojiReaction> const &reactions() const;
-		void setReactions(std::vector<EmojiReaction> reactions);
+		QList<EmojiReaction> const &reactions() const;
+		void setReactions(QList<EmojiReaction> reactions);
 
 		bool isRead() const;
 		void markRead();
@@ -54,7 +66,8 @@ namespace gpr::api
 	private:
 		Data m_data;
 		GPManager &m_manager;
-		std::vector<EmojiReaction> m_reactions;
+		Discussion &m_discussion;
+		QList<EmojiReaction> m_reactions;
 		bool m_wasRead{false};
 	};
 } // namespace gpr::api

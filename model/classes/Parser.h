@@ -24,7 +24,7 @@ namespace gpr::api
 	std::vector<Variable> parseVariables(QJsonDocument const &doc);
 	QStringList parseBranches(QJsonDocument const &doc);
 	gpr::User parseUser(QJsonObject const &json);
-	std::vector<gpr::EmojiReaction> parseNoteEmojis(QJsonDocument const &doc, std::map<QString, gpr::Emoji> const &emojiDictionary);
+	QList<gpr::EmojiReaction> parseNoteEmojis(QJsonDocument const &doc, std::map<QString, gpr::Emoji> const &emojiDictionary);
 
 	std::map<QString, gpr::Emoji> parseEmojis(QJsonDocument const &doc);
 } // namespace gpr::api

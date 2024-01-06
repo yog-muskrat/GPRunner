@@ -12,7 +12,7 @@ void DiscussionModel::clear()
 	setMR(nullptr);
 }
 
-void DiscussionModel::setMR(QPointer<gpr::api::MR> mr)
+void DiscussionModel::setMR(gpr::api::MR* mr)
 {
 	beginResetModel();
 	disconnectMR(m_mr);
@@ -89,20 +89,8 @@ QModelIndex DiscussionModel::parent(QModelIndex const &index) const
 QHash<int, QByteArray> DiscussionModel::roleNames() const
 {
 	auto names = QAbstractItemModel::roleNames();
-	names.insert(Qt::FontRole,         "font");
-	names.insert(Role::Author,         "author");
-	names.insert(Role::CreatedDate,    "created");
-	names.insert(Role::Resolvable,     "resolvable");
-	names.insert(Role::Resolved,       "resolved");
-	names.insert(Role::CanResolve,     "canResolve");
-	names.insert(Role::CanUnresolve,   "canUnresolve");
-	names.insert(Role::CanEdit,        "canEdit");
-	names.insert(Role::DiscussionId,   "discussionId");
-	names.insert(Role::NoteId,         "noteId");
-	names.insert(Role::NoteCount,      "noteCount");
-	names.insert(Role::NoteUrl,        "noteUrl");
-	names.insert(Role::HasUnreadNotes, "hasUnreadNotes");
-	names.insert(Role::Reactions,      "reactions");
+	names.insert(Role::DiscussionRole,   "discussion");
+	names.insert(Role::NoteRole,         "note");
 	return names;
 }
 
@@ -124,28 +112,8 @@ QVariant DiscussionModel::discussionData(QPointer<gpr::api::Discussion> discussi
 			return QString("Дискуссия [%1/%2] от %3").arg(row + 1).arg(count).arg(discussion->notes().front()->author().username);
 		}
 	}
-	if (role == Role::HasUnreadNotes)
-	{
-		return m_mr->isUserInvolved(m_manager->getCurrentUser())
-		    && std::ranges::any_of(discussion->notes(), std::not_fn(&gpr::api::Note::isRead));
-	}
-	if (role == Role::NoteCount)                             return discussion->notes().size();
-	if (role == Role::NoteUrl)                               return m_mr->noteUrl(*(discussion->notes().front()));
-	if (role == Role::Author && !discussion->isEmpty())      return QVariant::fromValue(discussion->notes().front()->author());
-	if (role == Role::CreatedDate && !discussion->isEmpty()) return discussion->notes().front()->created();
-	if (role == Role::Resolvable)                            return discussion->isResolvable();
-	if (role == Role::Resolved)                              return discussion->isResolved();
-	if (role == Role::DiscussionId)                          return discussion->id();
-	if (role == Role::CanEdit)                               return false;
-	if (role == Role::CanResolve)
-	{
-		return !discussion->isEmpty() && discussion->notes().front()->author() == m_manager->getCurrentUser() && discussion->isResolvable()
-		    && !discussion->isResolved();
-	}
-	if (role == Role::CanUnresolve)
-	{
-		return !discussion->isEmpty() && discussion->notes().front()->author() == m_manager->getCurrentUser() && discussion->isResolved();
-	}
+	if (role == Role::DiscussionRole)                          return QVariant::fromValue(discussion.get());
+	if (role == Role::NoteRole)                                return QVariant{};
 
 	return QVariant{};
 }
@@ -158,24 +126,9 @@ QVariant DiscussionModel::noteData(QPointer<gpr::api::Discussion> discussion, QP
 		note->markRead();
 		return note->body();
 	}
-	if (role == Role::Author)         return QVariant::fromValue(note->author());
-	if (role == Role::CreatedDate)    return note->created();
-	if (role == Role::Resolvable)     return note->isResolvable();
-	if (role == Role::Resolved)       return note->isResolved();
-	if (role == Role::CanResolve)     return note->author() == m_manager->getCurrentUser() && note->isResolvable() && !note->isResolved();
-	if (role == Role::CanUnresolve)   return note->author() == m_manager->getCurrentUser() && note->isResolvable() && note->isResolved();
-	if (role == Role::CanEdit)        return note->author() == m_manager->getCurrentUser();
-	if (role == Role::NoteCount)      return 0;
-	if (role == Role::HasUnreadNotes) return false;
-	if (role == Role::DiscussionId)   return discussion->id();
-	if (role == Role::NoteId)         return note->id();
-	if (role == Role::NoteUrl)        return m_mr->noteUrl(*note);
-	if (role == Role::Reactions)
-	{
-		QVariantList reactions;
-		for(auto const &reaction: note->reactions()) reactions.push_back(QVariant::fromValue(reaction));
-		return reactions;
-	}
+	if (role == Role::NoteRole)         return QVariant::fromValue(note.get());
+	if (role == Role::DiscussionRole)   return QVariant::fromValue(discussion.get());
+
 	return QVariant{};
 }
 

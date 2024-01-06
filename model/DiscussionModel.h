@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QQmlEngine>
 #include <QtCore/QPointer>
 #include <QtCore/QAbstractItemModel>
 
@@ -21,7 +22,7 @@ namespace gpr
 class DiscussionModel : public QAbstractItemModel
 {
 	Q_OBJECT
-
+	QML_ELEMENT
 	Q_PROPERTY(GPManager* manager WRITE setGPManager READ gpManager)
 
 public:
@@ -33,25 +34,15 @@ public:
 
 	enum Role
 	{
-		Author = Qt::ItemDataRole::UserRole,
-		DiscussionId,
-		NoteId,
-		CreatedDate,
-		Resolvable,
-		Resolved,
-		CanEdit,
-		CanResolve,
-		CanUnresolve,
-		NoteCount,
-		NoteUrl,
-		HasUnreadNotes,
-		Reactions,
+		DiscussionRole = Qt::ItemDataRole::UserRole,
+		NoteRole,
 	};
+	Q_ENUMS(Role)
 
 	DiscussionModel(QObject *parent = nullptr);
 
 	Q_INVOKABLE void clear();
-	Q_INVOKABLE void setMR(QPointer<gpr::api::MR> mr);
+	Q_INVOKABLE void setMR(gpr::api::MR* mr);
 	
 	void setGPManager(GPManager *manager);
 	GPManager *gpManager() const { return m_manager; }

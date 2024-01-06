@@ -161,9 +161,9 @@ namespace gpr::api
 		return {.id = json["id"].toInt(), .username = json["username"].toString(), .avatarUrl = json["avatar_url"].toString()};
 	}
 
-	std::vector<gpr::EmojiReaction> parseNoteEmojis(QJsonDocument const &doc, std::map<QString, gpr::Emoji> const &emojiDictionary)
+	QList<gpr::EmojiReaction> parseNoteEmojis(QJsonDocument const &doc, std::map<QString, gpr::Emoji> const &emojiDictionary)
 	{
-		std::vector<gpr::EmojiReaction> result;
+		QList<gpr::EmojiReaction> result;
 
 		for (auto const obj : doc.array() | std::views::transform(&QJsonValueRef::toObject))
 		{
