@@ -19,9 +19,7 @@ public:
 
 	enum Role
 	{
-		ProjectIdRole = Qt::ItemDataRole::UserRole,
-		ProjectUrlRole,
-		ProjectAvatarUrlRole,
+		ProjectRole = Qt::ItemDataRole::UserRole,
 		HasUnreadNotesRole,
 		HasCurrentUserMRsRole
 	};

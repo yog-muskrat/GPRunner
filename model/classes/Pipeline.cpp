@@ -1,14 +1,15 @@
 #include <ranges>
 
 #include "model/classes/Pipeline.h"
+#include "model/classes/Project.h"
 #include "GPManager.h"
 
 namespace gpr::api
 {
-	Pipeline::Pipeline(GPManager &manager, Data data, QObject *parent)
-		: QObject(parent)
+	Pipeline::Pipeline(Data data, Project &project)
+		: QObject(&project)
 		, m_data{std::move(data)}
-		, m_manager{manager}
+		, m_project{project}
 	{}
 
 	int Pipeline::id() const
@@ -28,10 +29,30 @@ namespace gpr::api
 		Q_EMIT modified();
 	}
 
+	Project &Pipeline::project()
+	{
+		return m_project;
+	}
+
+	Project const &Pipeline::project() const
+	{
+		return m_project;
+	}
+
+	void Pipeline::cancel()
+	{
+		project().manager().client().cancelPipeline(project().id(), id());
+	}
+
+	void Pipeline::retry()
+	{
+		project().manager().client().retryPipeline(project().id(), id());
+	}
+
 	Pipeline::State Pipeline::state() const
 	{
 		if(auto const st = m_data.status.toLower();
-			st == "failed")                   return State::Failed;
+			    st == "failed")               return State::Failed;
 		else if(st == "warning")              return State::Warning;
 		else if(st == "canceled")             return State::Canceled;
 		else if(st == "skipped")              return State::Skipped;
@@ -150,7 +171,7 @@ namespace gpr::api
 			}
 			else
 			{
-				auto newJob = m_jobs.emplace_back(new Job(m_manager, std::move(job), this));
+				auto newJob = m_jobs.emplace_back(new Job(std::move(job), *this));
 				Q_EMIT jobAdded(newJob);
 				wasModified = true;
 			}

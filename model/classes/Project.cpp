@@ -41,15 +41,14 @@ namespace gpr::api
 		return m_manager;
 	}
 
+	void Project::markDiscussionsRead()
+	{
+		std::ranges::for_each(m_openMRs, &gpr::api::MR::markDiscussionsRead);
+	}
+
 	QString Project::name() const
 	{
 		return m_data.name;
-	}
-
-	void Project::setName(QString name)
-	{
-		m_data.name = std::move(name);
-		Q_EMIT modified();
 	}
 
 	QString Project::url() const
@@ -57,21 +56,9 @@ namespace gpr::api
 		return m_data.url;
 	}
 
-	void Project::setUrl(QString url)
-	{
-		m_data.url= std::move(url);
-		Q_EMIT modified();
-	}
-
 	QString Project::avatarUrl() const
 	{
 		return m_data.avatarUrl;
-	}
-
-	void Project::setAvatarUrl(QString avatarUrl)
-	{
-		m_data.avatarUrl= std::move(avatarUrl);
-		Q_EMIT modified();
 	}
 
 	QStringList const &Project::branches() const
@@ -105,7 +92,7 @@ namespace gpr::api
 			}
 			else
 			{
-				auto newMr = new MR(m_manager, std::move(mrData), *this);
+				auto newMr = new MR(std::move(mrData), *this);
 				m_openMRs.push_back(newMr);
 				connectMR(newMr);
 
@@ -169,7 +156,7 @@ namespace gpr::api
 		}
 		else
 		{
-			auto newPipeline = new Pipeline(m_manager, std::move(data), this);
+			auto newPipeline = new Pipeline(std::move(data), *this);
 			m_pipelines.push_back(newPipeline);
 			Q_EMIT pipelineAdded(newPipeline);
 		}

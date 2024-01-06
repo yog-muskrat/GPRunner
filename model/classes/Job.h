@@ -8,6 +8,8 @@ class GPManager;
 
 namespace gpr::api
 {
+	class Pipeline;
+
 	class Job : public QObject
 	{
 		Q_OBJECT
@@ -28,11 +30,14 @@ namespace gpr::api
 			User user;
 		};
 
-		Job(GPManager &manager, Data data, QObject *parent = nullptr);
+		Job(Data data, Pipeline &pipeline);
 
 		void update(Data data);
 
 		int id() const;
+
+		Pipeline &pipeline();
+		Pipeline const &pipeline() const;
 
 		QString name() const;
 		QString stage() const;
@@ -51,6 +56,6 @@ namespace gpr::api
 
 	private:
 		Data m_data;
-		GPManager &m_manager;
+		Pipeline &m_pipeline;
 	};
 } // namespace gpr::api

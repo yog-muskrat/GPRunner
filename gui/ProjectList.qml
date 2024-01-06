@@ -4,18 +4,18 @@ import QtQuick.Controls
 
 ListView {
     id: projects
-    property int currentProject
+    property var currentProject
 
     focus: true
     clip: true
 
-    model: gpm.projectModel
+    model: gpm.getProjectModel()
 
     delegate: Rectangle {
         width: ListView.view.width
         implicitWidth:  delegateLayout.implicitWidth
         implicitHeight: delegateLayout.implicitHeight
-        color: index == projects.currentIndex ? palette.highlight : "transparent"
+        color: index == projects.currentIndex ? palette.highlight : palette.base
 
         RowLayout {
             id: delegateLayout
@@ -23,8 +23,6 @@ ListView {
             anchors.fill: parent
 
             Label {
-                id: itemText
-
                 padding: 5
                 text: model.display
                 font.bold: model.hasCurrentUserMRs
@@ -32,8 +30,7 @@ ListView {
             }
 
             UnreadMarker {
-                projectId: model.projectId
-
+                project: model.project
                 visible: model.hasUnreadNotes
                 rightPadding: 5
             }
@@ -42,10 +39,10 @@ ListView {
         TapHandler {
             onTapped: {
                 projects.currentIndex = index;
-                projects.currentProject = model.projectId;
-                gpm.setCurrentProject(projectId);
+                projects.currentProject = project;
+                gpm.setCurrentProject(project.id);
             }
-            onDoubleTapped: Qt.openUrlExternally(model.projectUrl)
+            onDoubleTapped: Qt.openUrlExternally(project.url)
         }
     }
 }

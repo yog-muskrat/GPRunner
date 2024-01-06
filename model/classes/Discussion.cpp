@@ -8,10 +8,9 @@
 
 namespace gpr::api
 {
-	Discussion::Discussion(GPManager &manager, Data data, MR &mr)
+	Discussion::Discussion(Data data, MR &mr)
 		: QObject(&mr)
 		, m_data{std::move(data)}
-		, m_manager{manager}
 		, m_mr{mr}
 	{}
 
@@ -83,7 +82,7 @@ namespace gpr::api
 			}
 			else
 			{
-				auto const &newNote = m_notes.emplace_back(new Note(m_manager, std::move(note), *this));
+				auto const &newNote = m_notes.emplace_back(new Note(std::move(note), *this));
 				if(!m_loaded) newNote->markRead();
 				connectNote(newNote);
 				Q_EMIT noteAdded(newNote);

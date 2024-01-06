@@ -4,7 +4,7 @@ import QtQuick.Controls
 
 SplitView {
     id: mergeRequests
-    required property int currentProject
+    required property var currentProject
 
     orientation: Qt.Vertical
 
@@ -17,7 +17,6 @@ SplitView {
     }
 
     MergeRequestDiscussions {
-        currentProject: mergeRequests.currentProject
         currentMR: mrList.currentMR
     }
 }

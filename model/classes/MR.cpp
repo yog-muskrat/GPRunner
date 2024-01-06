@@ -7,10 +7,9 @@
 
 namespace gpr::api
 {
-	MR::MR(GPManager &manager, Data data, Project &project)
+	MR::MR(Data data, Project &project)
 		: QObject(&project)
 		, m_data{std::move(data)}
-		, m_manager{manager}
 		, m_project{project}
 	{}
 
@@ -199,7 +198,7 @@ namespace gpr::api
 			}
 			else
 			{
-				discussion = m_discussions.emplace_back(new Discussion(m_manager, std::move(discussionData), *this));
+				discussion = m_discussions.emplace_back(new Discussion(std::move(discussionData), *this));
 				connectDiscussion(discussion);
 				Q_EMIT discussionAdded(discussion);
 			}

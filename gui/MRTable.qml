@@ -4,7 +4,7 @@ import QtQuick.Controls
 import "Utility.js" as Utility
 
 Item {
-    required property int currentProject
+    required property var currentProject
 
     property var currentMR: null
 
@@ -12,9 +12,7 @@ Item {
 
     clip: true
 
-    onCurrentProjectChanged: {
-        currentMR = null
-    }
+    onCurrentProjectChanged: { currentMR = null }
 
     ColumnLayout {
         anchors.fill: parent
@@ -38,18 +36,14 @@ Item {
                 focus: true
                 clip: true
 
-                model: gpm.mrModel
+                model: gpm.getMRModel()
                 selectionModel: ItemSelectionModel {}
                 editTriggers: TableView.DoubleTapped
 
                 columnWidthProvider: Utility.calcColumnWidth.bind(this, header)
 
                 delegate: MergeRequestTableDelegate {
-                    currentProject: mrTable.currentProject
-
-                    onMrSelected: function(mr){ 
-                        mrTable.currentMR = mr
-                    }
+                    onMrSelected: function(mr) { mrTable.currentMR = mr }
                 }
             }
         }

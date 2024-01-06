@@ -3,12 +3,11 @@ import QtQuick.Layouts
 import QtQuick.Controls
 
 SplitView {
-    required property int currentProject
+    required property var currentProject
 
     orientation: Qt.Vertical
 
     onCurrentProjectChanged: {
-        pipelinesTable.currentProject = currentProject
         startPipeline.currentProject = currentProject
     }
 
@@ -17,7 +16,6 @@ SplitView {
             id: pipelinesTable
             Layout.fillHeight: true
             Layout.fillWidth: true
-            currentProject: currentProject
         }
 
         StartPipeline {

@@ -181,23 +181,6 @@ void GPManager::onMergeRequestRemoved(QPointer<gpr::api::Project> project, QPoin
 	}
 }
 
-void GPManager::cancelPipeline(int pipelineId)
-{
-	m_client.cancelPipeline(m_currentProject, pipelineId);
-}
-
-void GPManager::retryPipeline(int pipelineId)
-{
-	m_client.retryPipeline(m_currentProject, pipelineId);
-}
-
-void GPManager::markDiscussionsRead(int projectId)
-{
-	auto const prj = m_projectModel.findProject(projectId);
-	assert(prj);
-	std::ranges::for_each(prj->openMRs(), &gpr::api::MR::markDiscussionsRead);
-}
-
 QAbstractItemModel *GPManager::getProjectModel()
 {
 	return &m_projectProxyModel;

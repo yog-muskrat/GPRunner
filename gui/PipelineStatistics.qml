@@ -4,7 +4,7 @@ import QtQuick.Layouts
 import QtQuick.Controls
 
 Rectangle {
-    required property int currentProject
+    required property var currentProject
 
     color: palette.window
 

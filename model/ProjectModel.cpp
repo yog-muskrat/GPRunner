@@ -88,17 +88,9 @@ QVariant ProjectModel::data(QModelIndex const &index, int role) const
 			return result;
 		}
 	}
-	else if (role == Role::ProjectIdRole)
+	else if (role == Role::ProjectRole)
 	{
-		return prj->id();
-	}
-	else if (role == Role::ProjectUrlRole)
-	{
-		return prj->url();
-	}
-	else if (role == Role::ProjectAvatarUrlRole)
-	{
-		return prj->avatarUrl();
+		return QVariant::fromValue(prj.get());
 	}
 	else if (role == Role::HasUnreadNotesRole)
 	{
@@ -122,9 +114,7 @@ QVariant ProjectModel::data(QModelIndex const &index, int role) const
 QHash<int, QByteArray> ProjectModel::roleNames() const
 {
 	auto names = QAbstractTableModel::roleNames();
-	names.insert(Role::ProjectIdRole, "projectId");
-	names.insert(Role::ProjectUrlRole, "projectUrl");
-	names.insert(Role::ProjectAvatarUrlRole, "projectAvatarUrl");
+	names.insert(Role::ProjectRole, "project");
 	names.insert(Role::HasUnreadNotesRole, "hasUnreadNotes");
 	names.insert(Role::HasCurrentUserMRsRole, "hasCurrentUserMRs");
 	return names;

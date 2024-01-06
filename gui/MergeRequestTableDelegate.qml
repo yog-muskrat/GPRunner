@@ -5,7 +5,6 @@ import QtQuick.Controls
 import mudbay.gprunner.models
 
 Rectangle {
-    required property int currentProject
     signal mrSelected(mr: var)
 
     id: mrDelegate
@@ -124,9 +123,7 @@ Rectangle {
         }
 
         UnreadMarker {
-            projectId: currentProject
             mr: model.mr
-
             visible: column == MRModel.Discussions && model.mr.hasUnreadNotes
             rightPadding: 5
         }

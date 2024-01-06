@@ -13,17 +13,11 @@
 #include "model/MRModel.h"
 
 class QJsonDocument;
-class QJsonArray;
 class ImageProvider;
 
 class GPManager : public QObject
 {
 	Q_OBJECT
-
-	Q_PROPERTY(QObject *projectModel READ getProjectModel NOTIFY projectModelChanged)
-	Q_PROPERTY(QObject *pipelineModel READ getPipelineModel NOTIFY pipelineModelChanged)
-	Q_PROPERTY(QObject *mrModel READ getMRModel NOTIFY mrModelChanged)
-	Q_PROPERTY(QObject *variableModel READ getVariableModel NOTIFY variableModelChanged)
 	Q_PROPERTY(gpr::User currentUser READ getCurrentUser NOTIFY currentUserChanged)
 	Q_PROPERTY(QVariantList activeUsers READ getActiveUsers NOTIFY activeUsersChanged)
 	Q_PROPERTY(bool hasNewNotes READ hasNewNotes NOTIFY newNotesReceived)
@@ -40,24 +34,10 @@ public:
 	Q_INVOKABLE void loadPipelineVariables(int projectId, QString const &ref);
 	Q_INVOKABLE void loadPipelineStatistics(int projectId, QDateTime const &from, QDateTime const &to);
 
-	/**
-	 * @brief Остановить пайплайн (в проекте m_currentProject)
-	 * @param pipelineId идентификатор пайплайна
-	 */
-	Q_INVOKABLE void cancelPipeline(int pipelineId);
-
-	/**
-	 * @brief Перезапустить джобы пайплайна (в проекте m_currentProject)
-	 * @param pipelineId идентификатор пайплайна
-	 */
-	Q_INVOKABLE void retryPipeline(int pipelineId);
-
-	Q_INVOKABLE void markDiscussionsRead(int projectId);
-
-	QAbstractItemModel *getProjectModel();
-	QAbstractItemModel *getPipelineModel();
-	QAbstractItemModel *getMRModel();
-	QAbstractItemModel *getVariableModel();
+	Q_INVOKABLE QAbstractItemModel *getProjectModel();
+	Q_INVOKABLE QAbstractItemModel *getPipelineModel();
+	Q_INVOKABLE QAbstractItemModel *getMRModel();
+	Q_INVOKABLE QAbstractItemModel *getVariableModel();
 
 	gpr::User getCurrentUser() const { return m_currentUser; }
 	QVariantList getActiveUsers() const;
@@ -71,10 +51,6 @@ public:
 	gpr::Client &client();
 
 Q_SIGNALS:
-	void pipelineModelChanged();
-	void mrModelChanged();
-	void projectModelChanged();
-	void variableModelChanged();
 	void currentUserChanged(gpr::User const &);
 	void activeUsersChanged(QVariantList const &);
 	void newNotesReceived() const;
@@ -150,7 +126,6 @@ private:
 	QTimer m_updateTimer;
 	
 	gpr::User m_currentUser;
-
 	QList<gpr::User> m_activeUsers;
 
 	ImageProvider &m_imageProvider;

@@ -5,7 +5,7 @@ import Qt.labs.qmlmodels
 import "Utility.js" as Utility
 
 Item {
-    required property int currentProject
+    required property var currentProject
 
     clip: true
 
@@ -31,7 +31,7 @@ Item {
                 focus: true
                 clip: true
 
-                model: gpm.variableModel
+                model: gpm.getVariableModel()
                 selectionModel: ItemSelectionModel {
                 }
 
@@ -68,13 +68,13 @@ Item {
 
         RowLayout {
             Button {
-                enabled: currentProject > 0
+                enabled: currentProject != null
                 text: "+"
                 onClicked: gpm.addVariable()
             }
 
             Button {
-                enabled: currentProject > 0 && variables.currentRow >= 0
+                enabled: currentProject != null && variables.currentRow >= 0
                 text: "-"
                 onClicked: gpm.removeVariable(variables.currentRow)
             }

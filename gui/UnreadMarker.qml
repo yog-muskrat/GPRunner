@@ -2,7 +2,7 @@
 import QtQuick.Controls
 
 Label {
-	property int projectId
+	property var project
 	property var mr
 	property var discussion
 
@@ -13,9 +13,9 @@ Label {
 
 	TapHandler {
 		onTapped: {
-			if(discussion)         discussion.markRead()
-			else if(mr)            mr.markDiscussionsRead()
-			else if(projectId > 0) gpm.markDiscussionsRead(projectId)
+			if(discussion)   discussion.markRead()
+			else if(mr)      mr.markDiscussionsRead()
+			else if(project) project.markDiscussionsRead()
 		}
 	}
 }

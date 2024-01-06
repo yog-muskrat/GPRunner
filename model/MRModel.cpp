@@ -135,7 +135,6 @@ QVariant MRModel::data(QModelIndex const &index, int role) const
 	if (role == Qt::DisplayRole)      return displayRole(*mr, column);
 	if (role == Qt::EditRole)         return editRole(*mr, column);
 	if (role == Qt::ToolTipRole)      return toolTipRole(*mr, column);
-	if (role == Qt::FontRole)         return fontRole(*mr, column);
 	if (role == Role::MrRole)         return QVariant::fromValue(mr.get());
 
 	return QVariant();
@@ -228,21 +227,6 @@ QVariant MRModel::displayRole(gpr::api::MR const &mr, Column column) const
 		default: break;
 	}
 	return {};
-}
-
-QVariant MRModel::fontRole(gpr::api::MR const &mr, Column column) const
-{
-	QFont font;
-
-	switch (column)
-	{
-		case Column::Author:   font.setBold(mr.author() == m_manager.getCurrentUser());   break;
-		case Column::Assignee: font.setBold(mr.assignee() == m_manager.getCurrentUser()); break;
-		case Column::Reviewer: font.setBold(mr.reviewer() == m_manager.getCurrentUser()); break;
-		default: break;
-	}
-
-	return font;
 }
 
 QVariant MRModel::toolTipRole(gpr::api::MR const &mr, Column column) const

@@ -5,7 +5,6 @@ import mudbay.gprunner.models
 import "Utility.js" as Utility
 
 Item {
-    required property int currentProject
     property var currentPipeline
 
     clip: true
@@ -32,7 +31,7 @@ Item {
                 focus: true
                 clip: true
 
-                model: gpm.pipelineModel
+                model: gpm.getPipelineModel()
                 selectionModel: ItemSelectionModel { }
 
                 columnWidthProvider: Utility.calcColumnWidth.bind(this, header)
@@ -57,26 +56,26 @@ Item {
                         TextLinkButton {
                             visible: column == PipelineModel.Id
                             leftPadding: 5
-                            url: model.pipeline.url
+                            url: model.pipeline ? model.pipeline.url : ""
                         }
 
                         Label {
-                            visible: getActionButtonVisible(column, pipeline.state)
+                            visible: getActionButtonVisible(column, pipeline)
 
                             leftPadding: 5
 
-                            text: getButtonText(pipeline.state)
+                            text: getButtonText(pipeline)
                             color: pipelines.currentRow ? palette.highlightedText : palette.text
 
                             HoverHandler { cursorShape: Qt.PointingHandCursor }
-                            TapHandler { onTapped: pipelineAction(pipeline.state) }
+                            TapHandler { onTapped: pipelineAction(pipeline) }
                         }
 
                         Image {
                             visible: column == PipelineModel.User
                             Layout.maximumHeight: 28
                             Layout.maximumWidth: Layout.maximumHeight
-                            source: pipeline.user ? pipeline.user.avatarUrl : ""
+                            source: pipeline ? (pipeline.user.avatarUrl) : ""
                             fillMode: Image.PreserveAspectFit
                         }
 
@@ -84,40 +83,47 @@ Item {
                             padding: 5
 
                             text: model.display
-                            color: getTextColor(column, pipeline.state)
+                            color: getTextColor(column, pipeline)
                         }
 
                         HorizontalSpacer {}
                     }
 
-                    function getTextColor(column, state) {
-                        if (column == PipelineModel.Status) {
-                            if (state == Pipeline.Success)   return "#429942";
-                            if (state == Pipeline.Canceled)  return "#999942";
-                            if (state == Pipeline.Failed)    return "#FE4242";
-                            if (state == Pipeline.Running)   return "#4242FE";
+                    function getTextColor(column, pipeline) {
+                        if (pipeline != null && column == PipelineModel.Status) {
+                            if (pipeline.state == Pipeline.Success)   return "#429942";
+                            if (pipeline.state == Pipeline.Canceled)  return "#999942";
+                            if (pipeline.state == Pipeline.Failed)    return "#FE4242";
+                            if (pipeline.state == Pipeline.Running)   return "#4242FE";
                             // TODO: created, waiting_for_resource, preparing, pending, skipped, manual, scheduled
                         }
                         return pipelines.currentRow ? palette.highlightedText : palette.text;
                     }
 
-                    function getActionButtonVisible(column, state) {
-                        return column == PipelineModel.Status && state != Pipeline.Success && state != Pipeline.Skipped;
+                    function getActionButtonVisible(column, pipeline) {
+                        if(pipeline) {
+                            return column == PipelineModel.Status && pipeline.state != Pipeline.Success && pipeline.state != Pipeline.Skipped;
+                        }
+                        return false
                     }
 
-                    function getButtonText(state) {
-                        if (state == Pipeline.Running || state == Pipeline.Pending)
-                            return "⏹";
-                        if (state == Pipeline.Failed || state == Pipeline.Canceled)
-                            return "↺";
+                    function getButtonText(pipeline) {
+                        if (pipeline) {
+                            if (pipeline.state == Pipeline.Running || pipeline.state == Pipeline.Pending)  return "⏹";
+                            if (pipeline.state == Pipeline.Failed  || pipeline.state == Pipeline.Canceled) return "↺";
+                        }
                         return "";
                     }
 
-                    function pipelineAction(state) {
-                        if (state == Pipeline.Running || state == Pipeline.Pending)
-                            gpm.cancelPipeline(pipelineId);
-                        else
-                            gpm.retryPipeline(pipelineId);
+                    function pipelineAction(pipeline) {
+                        if (pipeline) {
+                            if (pipeline.state == Pipeline.Running || pipeline.state == Pipeline.Pending) {
+                                pipeline.cancel()
+                            }
+                            else {
+                                pipeline.retry()
+                            }
+                        }
                     }
                 }
             }

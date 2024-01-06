@@ -32,7 +32,7 @@ namespace gpr::api
 			bool resolved{};
 		};
 
-		Note(GPManager &manager, Data data, Discussion &discussion);
+		Note(Data data, Discussion &discussion);
 
 		int id() const;
 
@@ -69,7 +69,6 @@ namespace gpr::api
 
 	private:
 		Data m_data;
-		GPManager &m_manager;
 		Discussion &m_discussion;
 		QList<EmojiReaction> m_reactions;
 		bool m_wasRead{false};

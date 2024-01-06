@@ -29,10 +29,9 @@ namespace gpr::api
 			}
 		}
 
-	Note::Note(GPManager &manager, Data data, Discussion &discussion)
+	Note::Note(Data data, Discussion &discussion)
 		: QObject(&discussion)
 		, m_data{std::move(data)}
-		, m_manager{manager}
 		, m_discussion{discussion}
 	{}
 
@@ -48,7 +47,7 @@ namespace gpr::api
 		if(data.updated > updated())
 		{
 			m_data = std::move(data);
-			replaceEmojis(m_data.body, m_manager.emojiDict());
+			replaceEmojis(m_data.body, discussion().mr().project().manager().emojiDict());
 			Q_EMIT modified();
 		}
 	}

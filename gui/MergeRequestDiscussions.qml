@@ -5,8 +5,6 @@ import QtQuick.Controls
 import mudbay.gprunner.models
 
 Item {
-    required property int currentProject
-
     property var currentMR: null
 
     id: discussions
@@ -50,9 +48,6 @@ Item {
                 columnWidthProvider: function (column) { return width }
 
                 delegate: DiscussionDelegate {
-                    projectId: discussions.currentProject
-                    mr: discussions.currentMR
-
                     onAddNoteRequested: function(discussion) {
                         dialog.discussion = discussion
                         dialog.open()
@@ -68,7 +63,6 @@ Item {
                 DiscussionNoteDialog {
                     id: dialog
 
-                    currentProject: discussions.currentProject
                     currentMR: discussions.currentMR
 
                     width: Math.max(parent.width / 2, 500)

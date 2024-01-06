@@ -48,7 +48,7 @@ namespace gpr::api
 			bool hasNotes{};
 		};
 
-		MR(GPManager &manager, Data data, Project &project);
+		MR(Data data, Project &project);
 
 		int id() const;
 		int iid() const;
@@ -124,7 +124,6 @@ namespace gpr::api
 		void connectDiscussion(QPointer<Discussion> discussion);
 
 		Data m_data;
-		GPManager &m_manager;
 		Project &m_project;
 
 		// NOTE: Флаг первоначальной загрузки дискуссий

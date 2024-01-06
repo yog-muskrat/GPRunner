@@ -11,6 +11,9 @@ class GPManager;
 
 namespace gpr::api
 {
+	class Job;
+	class Project;
+
 	class Pipeline : public QObject
 	{
 		Q_OBJECT
@@ -52,11 +55,17 @@ namespace gpr::api
 			friend bool operator==(Data const &, Data const &) = default;
 		};
 
-		Pipeline(GPManager &manager, Data data, QObject *parent);
+		Pipeline(Data data, Project &project);
 
 		int id() const;
 
 		void update(Data data);
+
+		Project &project();
+		Project const &project() const;
+
+		Q_INVOKABLE void cancel();
+		Q_INVOKABLE void retry();
 
 		State state() const;
 
@@ -94,7 +103,7 @@ namespace gpr::api
 
 	private:
 		Data m_data;
-		GPManager &m_manager;
+		Project &m_project;
 		std::vector<QPointer<Job>> m_jobs;
 	};
 } // namespace gpr::api

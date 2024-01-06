@@ -2,7 +2,6 @@ import QtQuick
 import QtQuick.Controls
 
 Dialog {
-    required property int currentProject
     required property var currentMR
 
     property var discussion

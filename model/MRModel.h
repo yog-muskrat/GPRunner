@@ -52,7 +52,6 @@ public:
 private:
 	QVariant editRole(gpr::api::MR const &mr, Column column) const;
 	QVariant displayRole(gpr::api::MR const &mr, Column column) const;
-	QVariant fontRole(gpr::api::MR const &mr, Column column) const;
 	QVariant toolTipRole(gpr::api::MR const &mr, Column column) const;
 
 	QString getDiscussionsString(gpr::api::MR const &mr) const;

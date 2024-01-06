@@ -1,11 +1,12 @@
 #include "model/classes/Job.h"
+#include "model/classes/Pipeline.h"
 
 namespace gpr::api
 {
-	Job::Job(GPManager &manager, Data data, QObject *parent)
-		: QObject(parent)
+	Job::Job(Data data, Pipeline &pipeline)
+		: QObject(&pipeline)
 		, m_data{std::move(data)}
-		, m_manager{manager}
+		, m_pipeline{pipeline}
 	{}
 
 	void Job::update(Data data)
@@ -23,6 +24,16 @@ namespace gpr::api
 	int Job::id() const
 	{
 		return m_data.id;
+	}
+
+	Pipeline &Job::pipeline()
+	{
+		return m_pipeline;
+	}
+
+	Pipeline const &Job::pipeline() const
+	{
+		return m_pipeline;
 	}
 
 	QString Job::name() const

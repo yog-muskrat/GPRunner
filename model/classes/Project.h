@@ -13,6 +13,11 @@ namespace gpr::api
 	class Project : public QObject
 	{
 		Q_OBJECT
+		Q_PROPERTY(int id READ id)
+		Q_PROPERTY(QString name READ name)
+		Q_PROPERTY(QString url READ url)
+		Q_PROPERTY(QString avatarUrl READ avatarUrl)
+
 	public:
 		struct Data
 		{
@@ -21,7 +26,6 @@ namespace gpr::api
 			QString name;
 			QString url;
 			QString avatarUrl;
-			// TODO: QPixmap avatar;
 		};
 
 		Project(GPManager &manager, Data data);
@@ -33,14 +37,13 @@ namespace gpr::api
 		GPManager &manager();
 		GPManager const &manager() const;
 
+		Q_INVOKABLE void markDiscussionsRead();
+
 		QString name() const;
-		void setName(QString name);
 
 		QString url() const;
-		void setUrl(QString url);
 
 		QString avatarUrl() const;
-		void setAvatarUrl(QString url);
 
 		QStringList const &branches() const;
 		void setBranches(QStringList branches);

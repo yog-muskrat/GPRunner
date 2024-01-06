@@ -27,7 +27,7 @@ namespace gpr::api
 			friend auto operator<(Data const &l, Data const &r) { return l.id < r.id; }
 		};
 
-		Discussion(GPManager &manager, Data data, MR &mr);
+		Discussion(Data data, MR &mr);
 
 		QString const &id() const;
 
@@ -67,7 +67,6 @@ namespace gpr::api
 		void connectNote(QPointer<Note> note);
 
 		Data m_data;
-		GPManager &m_manager;
 		MR &m_mr;
 
 		bool m_loaded{false};

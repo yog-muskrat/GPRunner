@@ -3,14 +3,16 @@ import QtQuick.Controls
 import QtQuick.Layouts
 
 Item {
-    required property int currentProject
+    required property var currentProject
+
+    id: root
 
     ColumnLayout {
         anchors.fill: parent
 
         PipelineVariablesTable {
             id: variables
-            currentProject: currentProject
+            currentProject: root.currentProject
 
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -28,13 +30,13 @@ Item {
             }
             Button {
                 text: "Update vars"
-                enabled: currentProject > 0
-                onClicked: gpm.loadPipelineVariables(currentProject, ref.currentText)
+                enabled: currentProject != null
+                onClicked: gpm.loadPipelineVariables(currentProject.id, ref.currentText)
             }
             Button {
                 text: "⏵"
-                enabled: currentProject > 0
-                onClicked: gpm.runPipeline(currentProject, ref.currentText)
+                enabled: currentProject != null
+                onClicked: gpm.runPipeline(currentProject.id, ref.currentText)
             }
         }
     }
