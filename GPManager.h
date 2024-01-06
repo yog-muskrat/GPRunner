@@ -52,9 +52,6 @@ public:
 	 */
 	Q_INVOKABLE void retryPipeline(int pipelineId);
 
-	void setMRReviewer(QPointer<gpr::api::MR> mr, int userId);
-	void setMRAssignee(QPointer<gpr::api::MR> mr, int userId);
-
 	Q_INVOKABLE void markDiscussionsRead(int projectId);
 
 	QAbstractItemModel *getProjectModel();

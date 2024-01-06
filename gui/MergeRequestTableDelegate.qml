@@ -27,16 +27,23 @@ Rectangle {
     }
 
     function avatarUrl(mr, column) {
-        if(column == MRModel.Author) return mr.author.avatarUrl
+        if(column == MRModel.Author)   return mr.author.avatarUrl
         if(column == MRModel.Assignee) return mr.assignee.avatarUrl
         if(column == MRModel.Reviewer) return mr.reviewer.avatarUrl
         return ""
     }
 
     function isCurrentUser(mr, column) {
-        if(column == MRModel.Author) return mr.author == gpm.currentUser;
-        if(column == MRModel.Assignee) return mr.assignee== gpm.currentUser;
+        if(column == MRModel.Author)   return mr.author == gpm.currentUser;
+        if(column == MRModel.Assignee) return mr.assignee == gpm.currentUser;
         if(column == MRModel.Reviewer) return mr.reviewer == gpm.currentUser;
+        return false
+    }
+
+    function getUser(column) {
+        if(column == MRModel.Author)   return mr.author
+        if(column == MRModel.Assignee) return mr.assignee
+        if(column == MRModel.Reviewer) return mr.reviewer
         return false
     }
 
@@ -135,13 +142,13 @@ Rectangle {
         model: gpm.activeUsers
         textRole: "username"
 
-        currentIndex: indexOfValue(user)
+        currentIndex: indexOfValue(getUser(column))
 
         implicitContentWidthPolicy: ComboBox.WidestText
-        TableView.onCommit: edit = currentValue.id
+        TableView.onCommit: edit = currentValue
 
         Pane{
-            visible: user.id > 0
+            visible: getUser(column).id > 0
             padding: 0
 
             anchors.left: parent.right

@@ -191,26 +191,6 @@ void GPManager::retryPipeline(int pipelineId)
 	m_client.retryPipeline(m_currentProject, pipelineId);
 }
 
-void GPManager::setMRReviewer(QPointer<gpr::api::MR> mr, int userId)
-{
-	if(!mr)
-	{
-		assert(false && "Invalid MR");
-		return;
-	}
-	m_client.setMRReviewer(mr->project().id(), mr->iid(), userId);
-}
-
-void GPManager::setMRAssignee(QPointer<gpr::api::MR> mr, int userId)
-{
-	if(!mr)
-	{
-		assert(false && "Invalid MR");
-		return;
-	}
-	m_client.setMRAssignee(mr->project().id(), mr->iid(), userId);
-}
-
 void GPManager::markDiscussionsRead(int projectId)
 {
 	auto const prj = m_projectModel.findProject(projectId);

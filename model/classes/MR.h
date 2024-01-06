@@ -22,8 +22,8 @@ namespace gpr::api
 		Q_PROPERTY(int iid READ iid)
 		Q_PROPERTY(QString url READ url NOTIFY modified)
 		Q_PROPERTY(User author READ author NOTIFY modified)
-		Q_PROPERTY(User assignee READ assignee NOTIFY modified)
-		Q_PROPERTY(User reviewer READ reviewer NOTIFY modified)
+		Q_PROPERTY(User assignee READ assignee WRITE setAssignee NOTIFY modified)
+		Q_PROPERTY(User reviewer READ reviewer WRITE setReviewer NOTIFY modified)
 		Q_PROPERTY(Pipeline * pipeline READ pipeline NOTIFY modified)
 		Q_PROPERTY(bool hasUnreadNotes READ hasUnreadNotes NOTIFY modified)
 		

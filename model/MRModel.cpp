@@ -152,13 +152,15 @@ bool MRModel::setData(QModelIndex const &index, QVariant const &value, int role)
 
 	if (role == Qt::EditRole)
 	{
+		auto const user = value.canConvert<gpr::User>() ? value.value<gpr::User>() : gpr::User{.id = 0};
+
 		if (index.column() == Column::Reviewer)
 		{
-			m_manager.setMRReviewer(mr, value.toInt());
+			mr->setReviewer(user);
 		}
 		else if (index.column() == Column::Assignee)
 		{
-			m_manager.setMRAssignee(mr, value.toInt());
+			mr->setAssignee(user);
 		}
 	}
 

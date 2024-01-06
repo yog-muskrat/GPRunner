@@ -88,8 +88,7 @@ namespace gpr::api
 
 	void MR::setAssignee(User assignee)
 	{
-		m_data.assignee = std::move(assignee);
-		Q_EMIT modified();
+		project().manager().client().setMRAssignee(project().id(), iid(), assignee.id);
 	}
 
 	User const &MR::reviewer() const
@@ -99,8 +98,7 @@ namespace gpr::api
 
 	void MR::setReviewer(User reviewer)
 	{
-		m_data.reviewer = std::move(reviewer);
-		Q_EMIT modified();
+		project().manager().client().setMRReviewer(project().id(), iid(), reviewer.id);
 	}
 
 	QString MR::sourceBranch() const
