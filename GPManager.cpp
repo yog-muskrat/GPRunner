@@ -215,36 +215,6 @@ void GPManager::setMRAssignee(QPointer<gpr::api::MR> mr, int userId)
 	m_client.setMRAssignee(mr->project().id(), mr->iid(), userId);
 }
 
-void GPManager::resolveMRDiscussion(int projectId, int mrIid, QString const &discussionId)
-{
-	m_client.resolveDiscussion(projectId, mrIid, discussionId);
-}
-
-void GPManager::unresolveMRDiscussion(int projectId, int mrIid, QString const &discussionId)
-{
-	m_client.unresolveDiscussion(projectId, mrIid, discussionId);
-}
-
-void GPManager::addMRDiscussionNote(int projectId, int mrIid, QString const &discussionId, QString const &note)
-{
-	m_client.addDiscussionNote(projectId, mrIid, discussionId, note);
-}
-
-void GPManager::addMRDiscussion(int projectId, int mrIid, QString const &note)
-{
-	m_client.addDiscussion(projectId, mrIid, note);
-}
-
-void GPManager::editMRDiscussionNote(int projectId, int mrIid, QString const &discussionId, int noteId, QString const &note)
-{
-	m_client.editDiscussionNote(projectId, mrIid, discussionId, noteId, note);
-}
-
-void GPManager::removeMRDiscussionNote(int projectId, int mrIid, QString const &discussionId, int noteId)
-{
-	m_client.removeDiscussionNote(projectId, mrIid, discussionId, noteId);
-}
-
 void GPManager::markDiscussionsRead(int projectId)
 {
 	auto const prj = m_projectModel.findProject(projectId);

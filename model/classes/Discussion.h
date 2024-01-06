@@ -36,6 +36,11 @@ namespace gpr::api
 		MR &mr();
 		MR const &mr() const;
 
+		Q_INVOKABLE void resolve();
+		Q_INVOKABLE void unresolve();
+
+		Q_INVOKABLE void addNote(QString noteBody);
+
 		Q_INVOKABLE void markRead();
 		Q_INVOKABLE bool hasUnreadNotes() const;
 		Q_INVOKABLE bool userCanResolve(User const &user) const;

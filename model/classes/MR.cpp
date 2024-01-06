@@ -56,6 +56,11 @@ namespace gpr::api
 		project().manager().client().unapproveMR(project().id(), iid());
 	}
 
+	void MR::addDiscussion(QString noteText)
+	{
+		project().manager().client().addDiscussion(project().id(), iid(), std::move(noteText));
+	}
+
 	QDateTime MR::createdAt() const
 	{
 		return m_data.created;

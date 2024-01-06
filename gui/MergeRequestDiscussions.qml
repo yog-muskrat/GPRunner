@@ -53,23 +53,16 @@ Item {
                     projectId: discussions.currentProject
                     mr: discussions.currentMR
 
-                    onAddNoteRequested: function(discussionId) {
-                        dialog.discussionId = discussionId
+                    onAddNoteRequested: function(discussion) {
+                        dialog.discussion = discussion
                         dialog.open()
                     }
 
-                    onEditNoteRequested: function(discussionId, noteId, noteText) {
-                        dialog.discussionId = discussionId
-                        dialog.noteId = noteId
-                        dialog.noteText = noteText
+                    onEditNoteRequested: function(note) {
+                        dialog.note = note
+                        dialog.noteText = note.body
                         dialog.open()
                     }
-
-                    onRemoveNoteRequested: function(discussionId, noteId) { gpm.removeMRDiscussionNote(currentProject, currentMR.iid, discussionId, noteId) }
-
-                    onResolveRequested: function(discussionId) { gpm.resolveMRDiscussion(currentProject, currentMR.iid, discussionId) }
-
-                    onUnresolveRequested: function(discussionId) { gpm.unresolveMRDiscussion(currentProject, currentMR.iid, discussionId) }
                 }
 
                 DiscussionNoteDialog {

@@ -63,6 +63,15 @@ namespace gpr::api
 		return m_discussion;
 	}
 
+	void Note::remove()
+	{
+		discussion().mr().project().manager().client().removeDiscussionNote(
+			discussion().mr().project().id(),
+			discussion().mr().iid(),
+			discussion().id(),
+			id());
+	}
+
 	User const &Note::author() const
 	{
 		return m_data.author;
@@ -71,6 +80,16 @@ namespace gpr::api
 	QString const &Note::body() const
 	{
 		return m_data.body;
+	}
+
+	void Note::setBody(QString body)
+	{
+		discussion().mr().project().manager().client().editDiscussionNote(
+			discussion().mr().project().id(),
+			discussion().mr().iid(),
+			discussion().id(),
+			id(),
+			std::move(body));
 	}
 
 	QString Note::url() const

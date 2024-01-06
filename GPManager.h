@@ -55,13 +55,6 @@ public:
 	void setMRReviewer(QPointer<gpr::api::MR> mr, int userId);
 	void setMRAssignee(QPointer<gpr::api::MR> mr, int userId);
 
-	Q_INVOKABLE void resolveMRDiscussion(int projectId, int mrIid, QString const &discussionId);
-	Q_INVOKABLE void unresolveMRDiscussion(int projectId, int mrIid, QString const &discussionId);
-	Q_INVOKABLE void addMRDiscussionNote(int projectId, int mrIid, QString const &discussionId, QString const &note);
-	Q_INVOKABLE void addMRDiscussion(int projectId, int mrIid, QString const &note);
-	Q_INVOKABLE void editMRDiscussionNote(int projectId, int mrIid, QString const &discussionId, int noteId, QString const &note);
-	Q_INVOKABLE void removeMRDiscussionNote(int projectId, int mrIid, QString const &discussionId, int noteId);
-
 	Q_INVOKABLE void markDiscussionsRead(int projectId);
 
 	QAbstractItemModel *getProjectModel();

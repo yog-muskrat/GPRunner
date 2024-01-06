@@ -16,6 +16,7 @@ namespace gpr::api
 		Q_PROPERTY(User author READ author NOTIFY modified)
 		Q_PROPERTY(QDateTime created READ created NOTIFY modified)
 		Q_PROPERTY(QString url READ url NOTIFY modified)
+		Q_PROPERTY(QString body READ body WRITE setBody NOTIFY modified)
 		Q_PROPERTY(QList<EmojiReaction> reactions READ reactions NOTIFY modified)
 
 	public:
@@ -40,9 +41,12 @@ namespace gpr::api
 		Discussion &discussion();
 		Discussion const &discussion() const;
 
+		Q_INVOKABLE void remove();
+
 		User const &author() const;
 
 		QString const &body() const;
+		void setBody(QString body);
 
 		QString url() const;
 		

@@ -38,6 +38,21 @@ namespace gpr::api
 		return m_mr;
 	}
 
+	void Discussion::resolve()
+	{
+		mr().project().manager().client().resolveDiscussion(mr().project().id(), mr().iid(), id());
+	}
+
+	void Discussion::unresolve()
+	{
+		mr().project().manager().client().unresolveDiscussion(mr().project().id(), mr().iid(), id());
+	}
+
+	void Discussion::addNote(QString noteBody)
+	{
+		mr().project().manager().client().addDiscussionNote(mr().project().id(), mr().iid(), id(), std::move(noteBody));
+	}
+
 	std::vector<QPointer<Note>> const &Discussion::notes() const
 	{
 		return m_notes;
@@ -133,5 +148,4 @@ namespace gpr::api
 	{
 		connect(note, &Note::modified, [this, note] { Q_EMIT noteUpdated(note); });
 	}
-
 } // namespace gpr::api

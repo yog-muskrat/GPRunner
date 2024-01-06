@@ -6,13 +6,8 @@ Item {
     required property int projectId
     required property var mr
 
-    signal addNoteRequested(discussionId: string)
-    signal addDiscussionRequested()
-    signal addCommentRequested()
-    signal removeNoteRequested(discussionId: string, noteId: int)
-    signal editNoteRequested(discussionId: string, noteId: int, noteText: string)
-    signal resolveRequested(discussionId: string)
-    signal unresolveRequested(discussionId: string)
+    signal addNoteRequested(discussion: var)
+    signal editNoteRequested(note: var)
 
     readonly property real indent: 20
     readonly property real padding: 5
@@ -153,8 +148,8 @@ Item {
             TapHandler {
                 enabled: canResolve(discussion)
                 onTapped: {
-                    if(discussion.isResolved) treeDelegate.unresolveRequested(model.discussionId)
-                    else treeDelegate.resolveRequested(model.discussionId)
+                    if(discussion.isResolved) discussion.unresolve()
+                    else discussion.resolve()
                 }
             }
         }
@@ -220,7 +215,7 @@ Item {
 
                     DefaultToolTip { toolTipText: "Edit" }
                     HoverHandler { cursorShape: Qt.PointingHandCursor }
-                    TapHandler { onTapped: treeDelegate.editNoteRequested(model.discussion.id, model.note.id, model.display) }
+                    TapHandler { onTapped: treeDelegate.editNoteRequested(model.note) }
                 }
 
                 Label {
@@ -231,7 +226,7 @@ Item {
 
                     DefaultToolTip { toolTipText: "Remove" }
                     HoverHandler { cursorShape: Qt.PointingHandCursor }
-                    TapHandler { onTapped: treeDelegate.removeNoteRequested(model.discussion.id, model.note.id) }
+                    TapHandler { onTapped: model.note.remove() }
                 }
 
                 Item { Layout.minimumWidth: 25 }
@@ -280,19 +275,19 @@ Item {
 
                 Button {
                     text: "Add reply"
-                    onClicked: treeDelegate.addNoteRequested(model.discussion.id)
+                    onClicked: treeDelegate.addNoteRequested(model.discussion)
                 }
 
                 Button {
                     visible: canResolve(model.discussion) && !model.discussion.isResolved
                     text: "Resolve"
-                    onClicked: treeDelegate.resolveRequested(model.discussion.id)
+                    onClicked: model.discussion.resolve()
                 }
 
                 Button {
                     visible: canResolve(model.discussion) && model.discussion.isResolved
                     text: "Unresolve"
-                    onClicked: treeDelegate.unresolveRequested(model.discussion.id)
+                    onClicked: model.discussion.unresolve()
                 }
             }
         }

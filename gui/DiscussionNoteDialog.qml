@@ -5,8 +5,9 @@ Dialog {
     required property int currentProject
     required property var currentMR
 
-    property string discussionId: ""
-    property int noteId: 0
+    property var discussion
+    property var note
+
     property string noteText
 
     modal: true
@@ -16,36 +17,30 @@ Dialog {
 
     contentItem:
     ScrollView {
+        //anchors.fill: parent
         TextArea {
-            id: note
-            anchors.fill: parent
+            id: noteEdit
             wrapMode: TextEdit.WordWrap
         }
     }
 
     onNoteTextChanged: {
-        note.text = noteText
+        noteEdit.text = noteText
     }
 
     onAccepted: {
-        if(discussionId && noteId > 0) {
-            gpm.editMRDiscussionNote(currentProject, currentMR.iid, discussionId, noteId, note.text)
-        }
-        else if(discussionId) {
-            gpm.addMRDiscussionNote(currentProject, currentMR.iid, discussionId, note.text)
-        }
-        else {
-            gpm.addMRDiscussion(currentProject, currentMR.iid, note.text)
-        }
+        if(note)            { note.body = noteEdit.text }
+        else if(discussion) { discussion.addNote(noteEdit.text) }
+        else                { currentMR.addDiscussion(noteEdit.text) }
         reset();
     }
 
     onRejected: reset()
 
     function reset() {
-        discussionId = ""
-        noteId = 0
+        discussion = null
+        note = null
         noteText = ""
-        note.text = ""
+        noteEdit.text = ""
     }
 }

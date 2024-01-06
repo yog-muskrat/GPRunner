@@ -60,7 +60,7 @@ namespace gpr::api
 
 		Q_INVOKABLE void approve();
 		Q_INVOKABLE void unapprove();
-
+		Q_INVOKABLE void addDiscussion(QString noteText);
 		Q_INVOKABLE void markDiscussionsRead();
 		Q_INVOKABLE bool isApprovedBy(User const &user) const;
 		Q_INVOKABLE bool isApprovedBy(QString const &username) const;
