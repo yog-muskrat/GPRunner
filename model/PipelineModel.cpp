@@ -1,6 +1,16 @@
-#include <QFont>
+#ifdef _DEBUG
+#include <QAbstractItemModelTester>
+#endif
 
-#include "PipelineModel.h"
+#include "model/PipelineModel.h"
+
+PipelineModel::PipelineModel(QObject *parent)
+	: QAbstractTableModel(parent)
+{
+#ifdef _DEBUG
+	new QAbstractItemModelTester(this, this);
+#endif
+}
 
 void PipelineModel::clear()
 {

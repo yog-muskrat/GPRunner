@@ -1,7 +1,9 @@
 #include <algorithm>
 #include <cassert>
 
-#include <QFont>
+#ifdef _DEBUG
+#include <QAbstractItemModelTester>
+#endif
 
 #include "model/ProjectModel.h"
 #include "GPManager.h"
@@ -9,7 +11,11 @@
 ProjectModel::ProjectModel(GPManager &manager)
 	: QAbstractTableModel(&manager)
 	, m_manager{manager}
-{}
+{
+#ifdef _DEBUG
+	new QAbstractItemModelTester(this, this);
+#endif
+}
 
 void ProjectModel::clear()
 {

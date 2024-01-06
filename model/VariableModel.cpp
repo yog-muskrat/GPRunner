@@ -1,4 +1,16 @@
-﻿#include "VariableModel.h"
+﻿#ifdef _DEBUG
+#include <QAbstractItemModelTester>
+#endif
+
+#include "model/VariableModel.h"
+
+VariableModel::VariableModel(QObject *parent)
+	: QAbstractTableModel(parent)
+{
+#ifdef _DEBUG
+	new QAbstractItemModelTester(this, this);
+#endif
+}
 
 void VariableModel::clear()
 {

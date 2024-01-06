@@ -16,9 +16,7 @@ public:
 		Count
 	};
 
-	VariableModel(QObject *parent = nullptr)
-		: QAbstractTableModel(parent)
-	{}
+	VariableModel(QObject *parent = nullptr);
 
 	void clear();
 	std::vector<gpr::Variable> variables() const { return m_variables; }

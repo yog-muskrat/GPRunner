@@ -1,11 +1,19 @@
 ﻿#include <ranges>
 
+#ifdef _DEBUG
+#include <QAbstractItemModelTester>
+#endif
+
 #include "model/DiscussionModel.h"
 #include "model/classes/MR.h"
 
 DiscussionModel::DiscussionModel(QObject *parent)
 	: QAbstractItemModel(parent)
-{}
+{
+#ifdef _DEBUG
+	new QAbstractItemModelTester(this, this);
+#endif
+}
 
 void DiscussionModel::clear()
 {
@@ -67,6 +75,12 @@ QModelIndex DiscussionModel::index(int row, int column, QModelIndex const &paren
 	if (parent.internalPointer()) return {};
 
 	auto const discussion = m_mr->discussions().at(parent.row());
+	if(row >= std::ssize(discussion->notes()))
+	{
+		assert(false && "Invalid row");
+		return {};
+	}
+
 	return createIndex(row, column, &*discussion);
 }
 
@@ -99,6 +113,8 @@ QVariant DiscussionModel::discussionData(QPointer<gpr::api::Discussion> discussi
 	if (role == Qt::ItemDataRole::DisplayRole)
 	{
 		auto resolvables = m_mr->discussions() | std::views::filter(&gpr::api::Discussion::isResolvable);
+
+		if(discussion->notes().empty()) return QString("Дискуссия");
 
 		if(auto pos = std::ranges::find(resolvables, discussion->id(), &gpr::api::Discussion::id); pos == std::ranges::cend(resolvables))
 		{

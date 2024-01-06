@@ -1,9 +1,5 @@
 ﻿#include "GPManager.h"
 
-#ifdef _DEBUG
-#include <QAbstractItemModelTester>
-#endif
-
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonArray>
@@ -305,13 +301,6 @@ void GPManager::initModels()
 	QObject::connect(&m_projectModel, &ProjectModel::projectMrDiscussionAdded, this, &GPManager::onDiscussionAdded);
 	QObject::connect(&m_projectModel, &ProjectModel::projectMrDiscussionNoteAdded, this, &GPManager::onDiscussionNoteAdded);
 	QObject::connect(&m_projectModel, &ProjectModel::projectMrDiscussionNoteUpdated, this, &GPManager::onDiscussionNoteUpdated);
-
-#ifdef _DEBUG
-	new QAbstractItemModelTester(&m_projectModel, this);
-	new QAbstractItemModelTester(&m_pipelineModel, this);
-	new QAbstractItemModelTester(&m_mrModel, this);
-	new QAbstractItemModelTester(&m_variableModel, this);
-#endif
 }
 
 void GPManager::initUpdateTimer()

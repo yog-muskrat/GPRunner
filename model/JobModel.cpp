@@ -1,5 +1,9 @@
 ﻿#include <ranges>
 
+#ifdef _DEBUG
+#include <QAbstractItemModelTester>
+#endif
+
 #include "model/JobModel.h"
 
 #include "model/classes/Pipeline.h"
@@ -7,7 +11,9 @@
 
 JobModel::JobModel(QObject *parent) : QAbstractTableModel(parent)
 {
-
+#ifdef _DEBUG
+	new QAbstractItemModelTester(this, this);
+#endif
 }
 
 void JobModel::setPipeline(gpr::api::Pipeline *pipeline)

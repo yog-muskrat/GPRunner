@@ -29,9 +29,7 @@ public:
 		PipelineRole = Qt::ItemDataRole::UserRole + 1,
 	};
 
-	PipelineModel(QObject *parent = nullptr)
-		: QAbstractTableModel(parent)
-	{}
+	PipelineModel(QObject *parent = nullptr);
 
 	void clear();
 	void setProject(QPointer<gpr::api::Project> project);

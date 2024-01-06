@@ -1,9 +1,11 @@
 ﻿#include <ranges>
 
-#include <QFont>
+#ifdef _DEBUG
+#include <QAbstractItemModelTester>
+#endif
 
 #include "GPManager.h"
-#include "MRModel.h"
+#include "model/MRModel.h"
 
 namespace {
 	struct StatusInfo
@@ -59,7 +61,11 @@ namespace {
 MRModel::MRModel(GPManager &manager)
 	: QAbstractTableModel(&manager)
 	, m_manager{manager}
-{}
+{
+#ifdef _DEBUG
+	new QAbstractItemModelTester(this, this);
+#endif
+}
 
 void MRModel::clear()
 {
@@ -169,6 +175,8 @@ QHash<int, QByteArray> MRModel::roleNames() const
 
 Qt::ItemFlags MRModel::flags(QModelIndex const &index) const
 {
+	if(!index.isValid()) return {};
+
 	auto &mr = *m_project->openMRs().at(index.row());
 	auto flags = Qt::ItemIsSelectable | Qt::ItemIsEnabled;
 	if((index.column() == Column::Reviewer || index.column() == Column::Assignee) && mr.author() == m_manager.getCurrentUser())
