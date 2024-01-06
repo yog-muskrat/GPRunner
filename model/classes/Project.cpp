@@ -8,8 +8,8 @@
 
 namespace gpr::api
 {
-	Project::Project(GPManager &manager, Data data, QObject *parent)
-		: QObject(parent)
+	Project::Project(GPManager &manager, Data data)
+		: QObject(&manager)
 		, m_data{std::move(data)}
 		, m_manager{manager}
 	{}
@@ -29,6 +29,16 @@ namespace gpr::api
 
 		m_data = std::move(data);
 		Q_EMIT modified();
+	}
+
+	GPManager &Project::manager()
+	{
+		return m_manager;
+	}
+
+	GPManager const &Project::manager() const
+	{
+		return m_manager;
 	}
 
 	QString Project::name() const

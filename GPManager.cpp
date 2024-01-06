@@ -58,14 +58,6 @@ void GPManager::setCurrentProject(int projectId)
 	m_mrModel.setProject(prj);
 }
 
-void GPManager::setCurrentMR(int projectId, int mrId)
-{
-	auto project = m_projectModel.findProject(projectId);
-	assert(project);
-
-	auto mr = project->findMRById(mrId);
-}
-
 void GPManager::loadProjects()
 {
 	m_client.requestProjects(std::bind_front(&GPManager::parseProjects, this));
@@ -203,16 +195,6 @@ void GPManager::retryPipeline(int pipelineId)
 	m_client.retryPipeline(m_currentProject, pipelineId);
 }
 
-void GPManager::approveMR(int projectId, int mrIid)
-{
-	m_client.approveMR(projectId, mrIid);
-}
-
-void GPManager::unapproveMR(int projectId, int mrIid)
-{
-	m_client.unapproveMR(projectId, mrIid);
-}
-
 void GPManager::setMRReviewer(QPointer<gpr::api::MR> mr, int userId)
 {
 	if(!mr)
@@ -323,6 +305,11 @@ void GPManager::addVariable()
 void GPManager::removeVariable(int index)
 {
 	m_variableModel.removeRow(index);
+}
+
+gpr::Client &GPManager::client()
+{
+	return m_client;
 }
 
 void GPManager::initModels()

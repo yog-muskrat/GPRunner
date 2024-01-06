@@ -24,11 +24,14 @@ namespace gpr::api
 			// TODO: QPixmap avatar;
 		};
 
-		Project(GPManager &manager, Data data, QObject *parent);
+		Project(GPManager &manager, Data data);
 
 		int id() const;
 
 		void update(Data data);
+
+		GPManager &manager();
+		GPManager const &manager() const;
 
 		QString name() const;
 		void setName(QString name);

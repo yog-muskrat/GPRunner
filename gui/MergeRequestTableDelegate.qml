@@ -112,7 +112,7 @@ Rectangle {
 
             TapHandler {
                 enabled: canApprove(mr, column)
-                onTapped: isApproved(mr, column) ? gpm.unapproveMR(currentProject, mr.iid) : gpm.approveMR(currentProject, mr.iid)
+                onTapped: isApproved(mr, column) ? mr.unapprove() : mr.approve()
             }
         }
 

@@ -58,6 +58,9 @@ namespace gpr::api
 		Project &project();
 		Project const &project() const;
 
+		Q_INVOKABLE void approve();
+		Q_INVOKABLE void unapprove();
+
 		Q_INVOKABLE void markDiscussionsRead();
 		Q_INVOKABLE bool isApprovedBy(User const &user) const;
 		Q_INVOKABLE bool isApprovedBy(QString const &username) const;

@@ -27,7 +27,7 @@ void ProjectModel::addProject(gpr::api::Project::Data projectData)
 	else
 	{
 		beginResetModel();
-		auto project = new gpr::api::Project(m_manager, std::move(projectData), this);
+		auto project = new gpr::api::Project(m_manager, std::move(projectData));
 		connectProject(project);
 
 		connect(project, &gpr::api::Project::modified, [this, project] { onProjectUpdated(project); });

@@ -1,6 +1,7 @@
 ﻿#include <cassert>
 #include <ranges>
 
+#include "GPManager.h"
 #include "model/classes/MR.h"
 #include "model/classes/Project.h"
 
@@ -43,6 +44,16 @@ namespace gpr::api
 	Project const &MR::project() const
 	{
 		return m_project;
+	}
+
+	void MR::approve()
+	{
+		project().manager().client().approveMR(project().id(), iid());
+	}
+
+	void MR::unapprove()
+	{
+		project().manager().client().unapproveMR(project().id(), iid());
 	}
 
 	QDateTime MR::createdAt() const
