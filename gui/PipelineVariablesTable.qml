@@ -2,12 +2,25 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import Qt.labs.qmlmodels
+import mudbay.gprunner.models
 import "Utility.js" as Utility
 
 Item {
     required property var currentProject
 
     clip: true
+
+    function getVariables() {
+        return variableModel.variables()
+    }
+
+    function setVariables(variables) {
+        variableModel.setVariables(variables)
+    }
+
+    VariableModel {
+        id: variableModel
+    }
 
     ColumnLayout {
         anchors.fill: parent
@@ -31,9 +44,8 @@ Item {
                 focus: true
                 clip: true
 
-                model: gpm.getVariableModel()
-                selectionModel: ItemSelectionModel {
-                }
+                model: variableModel
+                selectionModel: ItemSelectionModel { }
 
                 columnWidthProvider: Utility.calcColumnWidth.bind(this, header)
 
@@ -47,9 +59,9 @@ Item {
                     border.width: current ? 1 : 0
 
                     TableView.editDelegate: DelegateChooser {
-                        DelegateChoice { column: 0; TextField { text: model.edit; TableView.onCommit: model.edit = text } }
-                        DelegateChoice { column: 1; TextField { text: model.edit; TableView.onCommit: model.edit = text } }
-                        DelegateChoice { column: 2; CheckBox  { checked: model.edit; onToggled: model.edit = checked }}
+                        DelegateChoice { column: VariableModel.Key; TextField { text: model.edit; TableView.onCommit: model.edit = text } }
+                        DelegateChoice { column: VariableModel.Value; TextField { text: model.edit; TableView.onCommit: model.edit = text } }
+                        DelegateChoice { column: VariableModel.Used; CheckBox  { checked: model.edit; onToggled: model.edit = checked }}
                     }
 
                     Label {
@@ -70,13 +82,13 @@ Item {
             Button {
                 enabled: currentProject != null
                 text: "+"
-                onClicked: gpm.addVariable()
+                onClicked: variableModel.addVariable("variable", "value", false)
             }
 
             Button {
                 enabled: currentProject != null && variables.currentRow >= 0
                 text: "-"
-                onClicked: gpm.removeVariable(variables.currentRow)
+                onClicked: variableModel.removeRow(variables.currentRow)
             }
         }
     }

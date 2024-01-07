@@ -1,12 +1,14 @@
 #pragma once
 
 #include <QAbstractTableModel>
+#include <QQmlEngine>
 
 #include "model/classes/GPClasses.h"
 
 class VariableModel : public QAbstractTableModel
 {
 	Q_OBJECT
+	QML_ELEMENT
 public:
 	enum Column
 	{
@@ -15,13 +17,14 @@ public:
 		Used,
 		Count
 	};
+	Q_ENUMS(Column)
 
 	VariableModel(QObject *parent = nullptr);
 
-	void clear();
-	std::vector<gpr::Variable> variables() const { return m_variables; }
-	void setVariables(std::vector<gpr::Variable> variables);
-	void addVariable(gpr::Variable variable);
+	Q_INVOKABLE void clear();
+	Q_INVOKABLE void addVariable(QString key, QString value, bool used);
+	Q_INVOKABLE QList<gpr::Variable> variables() const { return m_variables; }
+	Q_INVOKABLE void setVariables(QList<gpr::Variable> variables);
 
 	int rowCount(QModelIndex const & = {}) const override;
 	int columnCount(QModelIndex const & = {}) const override;
@@ -35,5 +38,5 @@ private:
 	QVariant displayRole(QModelIndex const &idx) const;
 	QVariant editRole(QModelIndex const &idx) const;
 
-	std::vector<gpr::Variable> m_variables;
+	QList<gpr::Variable> m_variables;
 };

@@ -78,6 +78,12 @@ namespace gpr
 
 	struct Variable
 	{
+		Q_GADGET
+		Q_PROPERTY(QString key MEMBER key)
+		Q_PROPERTY(QString value MEMBER value)
+		Q_PROPERTY(bool used MEMBER used)
+
+	public:
 		QString key;
 		QString value;
 		bool used{true};

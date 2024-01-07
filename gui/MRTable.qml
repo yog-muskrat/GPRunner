@@ -14,7 +14,6 @@ Item {
 
     onCurrentProjectChanged: {
         currentMR = null
-        console.log("Project changed", currentProject)
         if(currentProject) {
             mrs.model.sourceModel.setProject(currentProject)
         }

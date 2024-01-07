@@ -21,7 +21,7 @@ namespace gpr::api
 	int parseMRHeadPipeline(QJsonObject const &json);
 	std::pair<Discussion::Data, std::vector<Note::Data>> parseDiscussion(QJsonObject const &json);
 	std::vector<QString> parseApprovals(QJsonObject const &json);
-	std::vector<Variable> parseVariables(QJsonDocument const &doc);
+	QList<Variable> parseVariables(QJsonDocument const &doc);
 	QStringList parseBranches(QJsonDocument const &doc);
 	gpr::User parseUser(QJsonObject const &json);
 	QList<gpr::EmojiReaction> parseNoteEmojis(QJsonDocument const &doc, std::map<QString, gpr::Emoji> const &emojiDictionary);

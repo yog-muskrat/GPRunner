@@ -44,20 +44,9 @@ void GPManager::loadProjectPipelines(int projectId)
 	m_client.requestProjectPipelines(projectId, std::bind_front(&GPManager::parsePipelines, this, projectId));
 }
 
-void GPManager::runPipeline(int projectId, QString const &ref)
+void GPManager::loadProjectPipelineVariables(QPointer<gpr::api::Project> project, QString const &ref)
 {
-	m_client.runPipeline(projectId, ref, m_variableModel.variables());
-}
-
-QStringList GPManager::getProjectBranches(int projectId)
-{
-	if (auto prj = m_projectModel.findProject(projectId)) return prj->branches();
-	return QStringList{"master"};
-}
-
-void GPManager::loadPipelineVariables(int projectId, QString const &ref)
-{
-	m_client.requestPipelineVariables(projectId, ref, std::bind_front(&GPManager::parseVariables, this));
+	m_client.requestPipelineVariables(project->id(), ref, std::bind_front(&GPManager::parseVariables, this, project));
 }
 
 void GPManager::loadPipelineStatistics(int projectId, QDateTime const &from, QDateTime const &to)
@@ -171,11 +160,6 @@ QAbstractItemModel *GPManager::getMRModel()
 	return &m_mrProxyModel;
 }
 
-QAbstractItemModel *GPManager::getVariableModel()
-{
-	return &m_variableProxyModel;
-}
-
 QVariantList GPManager::getActiveUsers() const
 {
 	QVariantList result;
@@ -201,16 +185,6 @@ bool GPManager::hasNewNotes() const
 	return !std::ranges::all_of(notes, &gpr::api::Note::isRead);
 }
 
-void GPManager::addVariable()
-{
-	m_variableModel.addVariable({.key = "variable", .value = "value", .used = false});
-}
-
-void GPManager::removeVariable(int index)
-{
-	m_variableModel.removeRow(index);
-}
-
 gpr::Client &GPManager::client()
 {
 	return m_client;
@@ -233,8 +207,6 @@ void GPManager::initModels()
 	m_mrProxyModel.setSortRole(Qt::ItemDataRole::EditRole);
 	m_mrProxyModel.sort(MRModel::Column::Updated, Qt::SortOrder::DescendingOrder);
 
-	m_variableProxyModel.setSourceModel(&m_variableModel);
-
 	QObject::connect(&m_projectModel, &ProjectModel::projectMrDiscussionAdded, this, &GPManager::onDiscussionAdded);
 	QObject::connect(&m_projectModel, &ProjectModel::projectMrDiscussionNoteAdded, this, &GPManager::onDiscussionNoteAdded);
 	QObject::connect(&m_projectModel, &ProjectModel::projectMrDiscussionNoteUpdated, this, &GPManager::onDiscussionNoteUpdated);
@@ -252,17 +224,19 @@ void GPManager::parseProjects(QJsonDocument const &doc)
 {
 	m_projectModel.clear();
 
-	for (auto prj : doc.array() | std::views::transform(&QJsonValueRef::toObject) | std::views::transform(gpr::api::parseProject))
+	for (auto prjData : doc.array() | std::views::transform(&QJsonValueRef::toObject) | std::views::transform(gpr::api::parseProject))
 	{
-		m_projectModel.addProject(prj);
-		loadProjectBranches(prj.id);
+		auto project = m_projectModel.addProject(std::move(prjData));
+		loadProjectBranches(project->id());
+		loadProjectPipelineVariables(project);
 
-		if (!prj.avatarUrl.isEmpty())
-		{
-			m_client.requestFileDownload(
-				prj.avatarUrl,
-				std::bind_front(&GPManager::parseProviderImage, this, QString("project_%1").arg(prj.id)));
-		}
+		//TODO
+		//if (!project->avatarUrl().isEmpty())
+		//{
+		//	m_client.requestFileDownload(
+		//		project->avatarUrl(),
+		//		std::bind_front(&GPManager::parseProviderImage, this, QString("project_%1").arg(project->id())));
+		//}
 	}
 }
 
@@ -421,13 +395,19 @@ void GPManager::parseMRApprovals(QPointer<gpr::api::MR> mr, QJsonDocument const 
 	mr->setApprovedBy(gpr::api::parseApprovals(doc.object()));
 }
 
-void GPManager::parseVariables(QJsonDocument const &doc)
+void GPManager::parseVariables(QPointer<gpr::api::Project> project, QJsonDocument const &doc)
 {
+	if(!project)
+	{
+		assert(false && "Invalid project");
+		return;
+	}
+
 	if (auto const content = doc.object().value("content"); !content.isNull())
 	{
 		auto varsDoc = QJsonDocument::fromJson(QByteArray::fromBase64(content.toString().toUtf8()));
 
-		m_variableModel.setVariables(gpr::api::parseVariables(varsDoc));
+		project->setVariables(gpr::api::parseVariables(varsDoc));
 	}
 	else
 	{

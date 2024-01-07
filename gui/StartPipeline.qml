@@ -29,14 +29,18 @@ Item {
                 implicitContentWidthPolicy: ComboBox.WidestText
             }
             Button {
-                text: "Update vars"
+                text: "Reset vars"
                 enabled: currentProject != null
-                onClicked: gpm.loadPipelineVariables(currentProject.id, ref.currentText)
+                onClicked: {
+                    if(currentProject) variables.setVariables(currentProject.variables)
+                }
             }
             Button {
                 text: "⏵"
                 enabled: currentProject != null
-                onClicked: gpm.runPipeline(currentProject.id, ref.currentText)
+                onClicked: {
+                    if(currentProject) currentProject.runPipeline(variables.getVariables(), ref.currentText)
+                }
             }
         }
     }

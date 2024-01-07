@@ -11,6 +11,7 @@
 #include "model/JobModel.h"
 #include "model/PipelineModel.h"
 #include "model/DiscussionModel.h"
+#include "model/VariableModel.h"
 
 int main(int argc, char *argv[])
 {
@@ -27,9 +28,10 @@ int main(int argc, char *argv[])
 
 	qmlRegisterType<MRModel>("mudbay.gprunner.models", 1, 0, "MRModel");
 	qmlRegisterType<JobModel>("mudbay.gprunner.models", 1, 0, "JobModel");
-	qmlRegisterUncreatableType<gpr::api::Pipeline>("mudbay.gprunner.models", 1, 0, "Pipeline", "Created by GPManager");
 	qmlRegisterType<PipelineModel>("mudbay.gprunner.models", 1, 0, "PipelineModel");
+	qmlRegisterType<VariableModel>("mudbay.gprunner.models", 1, 0, "VariableModel");
 	qmlRegisterType<DiscussionModel>("mudbay.gprunner.models", 1, 0, "DiscussionModel");
+	qmlRegisterUncreatableType<gpr::api::Pipeline>("mudbay.gprunner.models", 1, 0, "Pipeline", "Created by GPManager");
 
 	QQmlApplicationEngine engine;
 	engine.addImageProvider("gpr", imageProvider);

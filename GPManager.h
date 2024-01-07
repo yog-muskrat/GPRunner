@@ -9,7 +9,6 @@
 
 #include "model/ProjectModel.h"
 #include "model/PipelineModel.h"
-#include "model/VariableModel.h"
 #include "model/MRModel.h"
 
 class QJsonDocument;
@@ -27,22 +26,15 @@ public:
 
 	Q_INVOKABLE void connect();
 
-	Q_INVOKABLE void runPipeline(int projectId, QString const &ref);
-	Q_INVOKABLE QStringList getProjectBranches(int projectId);
-	Q_INVOKABLE void loadPipelineVariables(int projectId, QString const &ref);
 	Q_INVOKABLE void loadPipelineStatistics(int projectId, QDateTime const &from, QDateTime const &to);
 
 	Q_INVOKABLE QAbstractItemModel *getProjectModel();
 	Q_INVOKABLE QAbstractItemModel *getPipelineModel();
 	Q_INVOKABLE QAbstractItemModel *getMRModel();
-	Q_INVOKABLE QAbstractItemModel *getVariableModel();
 
 	gpr::User getCurrentUser() const { return m_currentUser; }
 	QVariantList getActiveUsers() const;
 	bool hasNewNotes() const;
-
-	Q_INVOKABLE void addVariable();
-	Q_INVOKABLE void removeVariable(int index);
 
 	std::map<QString, gpr::Emoji> const &emojiDict() const { return m_emojis; }
 
@@ -67,7 +59,7 @@ private:
 	void parseMRDiscussions(QPointer<gpr::api::MR> mr, QJsonDocument const &doc);
 	void parseMRNoteEmojis(QPointer<gpr::api::MR> mr, QString const &discussionId, int noteId, QJsonDocument const &doc);
 	void parseMRApprovals(QPointer<gpr::api::MR> mr, QJsonDocument const &doc);
-	void parseVariables(QJsonDocument const &doc);
+	void parseVariables(QPointer<gpr::api::Project> project, QJsonDocument const &doc);
 	void parseBranches(int projectId, QJsonDocument const &doc);
 	void parseCurrentUser(QJsonDocument const &doc);
 	void parseActiveUsers(QJsonDocument const &doc);
@@ -79,6 +71,7 @@ private:
 	void loadProjects();
 	void loadProjectBranches(int projectId);
 	void loadProjectPipelines(int projectId);
+	void loadProjectPipelineVariables(QPointer<gpr::api::Project> project, QString const &ref = "master");
 	void loadProjectMRs(int projectId);
 	void loadProjectMRInfo(int projectId);
 	void loadPipelineInfo(int projectId, int pipelineId);
@@ -100,9 +93,6 @@ private:
 
 	MRModel m_mrModel;
 	QSortFilterProxyModel m_mrProxyModel;
-
-	VariableModel m_variableModel;
-	QSortFilterProxyModel m_variableProxyModel;
 
 	gpr::Client m_client;
 

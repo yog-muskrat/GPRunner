@@ -175,7 +175,7 @@ namespace gpr
 			});
 	}
 
-	void Client::runPipeline(int projectId, QString const &ref, std::vector<Variable> const &variables)
+	void Client::runPipeline(int projectId, QString const &ref, QList<Variable> const &variables)
 	{
 		makePostRequest(
 			prepareRequest(endpoint::ProjectPipelineRun, projectId),
@@ -303,7 +303,7 @@ namespace gpr
 		return request;
 	}
 
-	QJsonArray Client::prepareVariables(std::vector<Variable> const &variables) const
+	QJsonArray Client::prepareVariables(QList<Variable> const &variables) const
 	{
 		QJsonArray vars;
 

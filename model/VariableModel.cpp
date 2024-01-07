@@ -19,18 +19,18 @@ void VariableModel::clear()
 	endResetModel();
 }
 
-void VariableModel::setVariables(std::vector<gpr::Variable> variables)
+void VariableModel::setVariables(QList<gpr::Variable> variables)
 {
 	beginResetModel();
 	m_variables = std::move(variables);
 	endResetModel();
 }
 
-void VariableModel::addVariable(gpr::Variable variable)
+void VariableModel::addVariable(QString key, QString value, bool used)
 {
 	auto const row = rowCount();
 	beginInsertRows({}, row, row);
-	m_variables.push_back(std::move(variable));
+	m_variables.emplace_back(key, value, used);
 	endInsertRows();
 }
 

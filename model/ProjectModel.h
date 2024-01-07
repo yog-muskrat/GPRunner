@@ -28,7 +28,7 @@ public:
 
 	void clear();
 
-	void addProject(gpr::api::Project::Data projectData);
+	QPointer<gpr::api::Project> addProject(gpr::api::Project::Data projectData);
 
 	std::vector<QPointer<gpr::api::Project>> const &projects() const;
 

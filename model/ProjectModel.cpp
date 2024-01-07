@@ -24,23 +24,24 @@ void ProjectModel::clear()
 	endResetModel();
 }
 
-void ProjectModel::addProject(gpr::api::Project::Data projectData)
+QPointer<gpr::api::Project> ProjectModel::addProject(gpr::api::Project::Data projectData)
 {
 	if (auto const pos = std::ranges::find(m_projects, projectData.id, &gpr::api::Project::id); pos != m_projects.cend())
 	{
 		(*pos)->update(std::move(projectData));
+		return *pos;
 	}
-	else
-	{
-		beginResetModel();
-		auto project = new gpr::api::Project(m_manager, std::move(projectData));
-		connectProject(project);
 
-		connect(project, &gpr::api::Project::modified, [this, project] { onProjectUpdated(project); });
+	beginResetModel();
+	auto project = new gpr::api::Project(m_manager, std::move(projectData));
+	connectProject(project);
 
-		m_projects.push_back(std::move(project));
-		endResetModel();
-	}
+	connect(project, &gpr::api::Project::modified, [this, project] { onProjectUpdated(project); });
+
+	m_projects.push_back(project);
+	endResetModel();
+
+	return project;
 }
 
 std::vector<QPointer<gpr::api::Project>> const &ProjectModel::projects() const

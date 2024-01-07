@@ -46,6 +46,11 @@ namespace gpr::api
 		std::ranges::for_each(m_openMRs, &gpr::api::MR::markDiscussionsRead);
 	}
 
+	void Project::runPipeline(QList<gpr::Variable> const &variables, QString const &branch)
+	{
+		manager().client().runPipeline(id(), branch, variables);
+	}
+
 	QString Project::name() const
 	{
 		return m_data.name;
@@ -169,6 +174,17 @@ namespace gpr::api
 			return *pos;
 		}
 		return nullptr;
+	}
+
+	QList<Variable> Project::variables() const
+	{
+		return m_variables;
+	}
+
+	void Project::setVariables(QList<Variable> variables)
+	{
+		m_variables = std::move(variables);
+		Q_EMIT modified();
 	}
 
 	void Project::connectMR(QPointer<MR> mr)

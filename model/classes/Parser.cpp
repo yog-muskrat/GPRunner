@@ -117,7 +117,7 @@ namespace gpr::api
 		     | std::ranges::to<std::vector>();
 	}
 
-	std::vector<Variable> parseVariables(QJsonDocument const &doc)
+	QList<Variable> parseVariables(QJsonDocument const &doc)
 	{
 		if (!doc.isArray())
 		{
@@ -125,7 +125,7 @@ namespace gpr::api
 			return {};
 		}
 
-		std::vector<gpr::Variable> vars;
+		QList<gpr::Variable> vars;
 		for (auto const var : doc.array() | std::views::transform(&QJsonValueRef::toObject))
 		{
 			vars.push_back(

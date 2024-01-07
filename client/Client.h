@@ -44,7 +44,7 @@ namespace gpr
 
 		void requestFileDownload(QString const &url, RawCallback callback);
 
-		void runPipeline(int projectId, QString const &ref, std::vector<Variable> const &variables);
+		void runPipeline(int projectId, QString const &ref, QList<Variable> const &variables);
 		void cancelPipeline(int projectId, int pipelineId);
 		void retryPipeline(int projectId, int pipelineId);
 
@@ -71,7 +71,7 @@ namespace gpr
 
 		template<typename ...Ts>
 		QNetworkRequest prepareRequest(QString urlSubpath, Ts && ...args) const;
-		QJsonArray prepareVariables(std::vector<Variable> const &variables) const;
+		QJsonArray prepareVariables(QList<Variable> const &variables) const;
 
 		static std::optional<QUrl> getNextPageLink(QByteArray const &linkHeader);
 
