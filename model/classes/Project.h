@@ -67,13 +67,13 @@ namespace gpr::api
 		void mrRemoved(QPointer<MR>);
 		void mrUpdated(QPointer<MR>);
 
-		void mrDiscussionAdded(QPointer<MR>, QPointer<Discussion>);
-		void mrDiscussionUpdated(QPointer<MR>, QPointer<Discussion>);
-		void mrDiscussionRemoved(QPointer<MR>, QPointer<Discussion>);
+		void mrDiscussionAdded(QPointer<Discussion>);
+		void mrDiscussionUpdated(QPointer<Discussion>);
+		void mrDiscussionRemoved(QPointer<Discussion>);
 
-		void mrDiscussionNoteAdded(QPointer<MR>, QPointer<Discussion>, QPointer<Note>);
-		void mrDiscussionNoteUpdated(QPointer<MR>, QPointer<Discussion>, QPointer<Note>);
-		void mrDiscussionNoteRemoved(QPointer<MR>, QPointer<Discussion>, QPointer<Note>);
+		void mrDiscussionNoteAdded(QPointer<Note>);
+		void mrDiscussionNoteUpdated(QPointer<Note>);
+		void mrDiscussionNoteRemoved(QPointer<Note>);
 
 		void pipelineAdded(QPointer<Pipeline>);
 		void pipelineRemoved(QPointer<Pipeline>);

@@ -112,45 +112,48 @@ void GPManager::loadActiveUsers()
 	m_client.requestActiveUsers(std::bind_front(&GPManager::parseActiveUsers, this));
 }
 
-void GPManager::onDiscussionAdded(
-	QPointer<gpr::api::Project> project,
-	QPointer<gpr::api::MR> mr,
-	QPointer<gpr::api::Discussion> discussion)
+void GPManager::onDiscussionAdded(QPointer<gpr::api::Discussion> discussion)
 {
-	if(mr->discussionsLoaded() && mr->isUserInvolved(m_currentUser) && discussion->author() != m_currentUser)
+	if(discussion->mr().discussionsLoaded() && discussion->mr().isUserInvolved(m_currentUser) && discussion->author() != m_currentUser)
 	{
-		Q_EMIT notification("Новая дискуссия", QString("Новая дискуссия в %1/%2").arg(project->name()).arg(mr->title()));
+		Q_EMIT notification(
+			"Новая дискуссия",
+			QString("Новая дискуссия в %1/%2").arg(discussion->mr().project().name()).arg(discussion->mr().title()));
 		Q_EMIT newNotesReceived();
 	}
 }
 
-void GPManager::onDiscussionNoteAdded(
-	QPointer<gpr::api::Project> project,
-	QPointer<gpr::api::MR> mr,
-	QPointer<gpr::api::Discussion> discussion,
-	QPointer<gpr::api::Note> note)
+void GPManager::onDiscussionNoteAdded(QPointer<gpr::api::Note> note)
 {
-	if(mr->discussionsLoaded() && mr->isUserInvolved(m_currentUser) && note->author() != m_currentUser)
+	if(note->discussion().mr().discussionsLoaded() && note->discussion().mr().isUserInvolved(m_currentUser) && note->author() != m_currentUser)
 	{
-		Q_EMIT notification("Новые сообщения", QString("Новые сообщение в %1/%2").arg(project->name()).arg(mr->title()));
+		Q_EMIT notification(
+			"Новые сообщения",
+			QString("Новые сообщение в %1/%2")
+				.arg(note->discussion().mr().project().name())
+				.arg(note->discussion().mr().title()));
 		Q_EMIT newNotesReceived();
 	}
 
-	m_client.requestMRNoteEmojis(project->id(), mr->iid(), note->id(), std::bind_front(&GPManager::parseMRNoteEmojis, this, mr, discussion->id(), note->id()));
+	m_client.requestMRNoteEmojis(
+		note->discussion().mr().project().id(),
+		note->discussion().mr().iid(),
+		note->id(),
+		std::bind_front(&GPManager::parseMRNoteEmojis, this, &note->discussion().mr(), note->discussion().id(), note->id()));
 }
 
-void GPManager::onDiscussionNoteUpdated(
-	QPointer<gpr::api::Project> project,
-	QPointer<gpr::api::MR> mr,
-	QPointer<gpr::api::Discussion> discussion,
-	QPointer<gpr::api::Note> note)
+void GPManager::onDiscussionNoteUpdated(QPointer<gpr::api::Note> note)
 {
-	if(mr->isUserInvolved(m_currentUser))
+	if (note->discussion().mr().isUserInvolved(m_currentUser))
 	{
 		Q_EMIT newNotesReceived();
 	}
 
-	m_client.requestMRNoteEmojis(project->id(), mr->iid(), note->id(), std::bind_front(&GPManager::parseMRNoteEmojis, this, mr, discussion->id(), note->id()));
+	m_client.requestMRNoteEmojis(
+		note->discussion().mr().project().id(),
+		note->discussion().mr().iid(),
+		note->id(),
+		std::bind_front(&GPManager::parseMRNoteEmojis, this, &note->discussion().mr(), note->discussion().id(), note->id()));
 }
 
 QAbstractItemModel *GPManager::getProjectModel()

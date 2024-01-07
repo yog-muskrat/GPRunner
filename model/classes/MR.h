@@ -116,9 +116,9 @@ namespace gpr::api
 		void discussionUpdated(QPointer<Discussion>);
 		void discussionRemoved(QPointer<Discussion>);
 
-		void discussionNoteAdded(QPointer<Discussion>, QPointer<Note>);
-		void discussionNoteUpdated(QPointer<Discussion>, QPointer<Note>);
-		void discussionNoteRemoved(QPointer<Discussion>, QPointer<Note>);
+		void discussionNoteAdded(QPointer<Note>);
+		void discussionNoteUpdated(QPointer<Note>);
+		void discussionNoteRemoved(QPointer<Note>);
 
 	private:
 		void connectDiscussion(QPointer<Discussion> discussion);

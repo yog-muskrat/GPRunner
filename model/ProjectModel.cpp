@@ -135,36 +135,15 @@ void ProjectModel::onProjectUpdated(QPointer<gpr::api::Project> project)
 
 void ProjectModel::connectProject(QPointer<gpr::api::Project> project)
 {
-	connect(project, &gpr::api::Project::mrAdded,   [this, project](auto mr) { Q_EMIT projectMergeRequestAdded(project, mr); });
-	connect(project, &gpr::api::Project::mrRemoved, [this, project](auto mr) { Q_EMIT projectMergeRequestRemoved(project, mr); });
-	connect(project, &gpr::api::Project::mrUpdated, [this, project](auto mr) { Q_EMIT projectMergeRequestUpdated(project, mr); });
+	connect(project, &gpr::api::Project::mrAdded,   this, &ProjectModel::projectMergeRequestAdded);
+	connect(project, &gpr::api::Project::mrRemoved, this, &ProjectModel::projectMergeRequestRemoved);
+	connect(project, &gpr::api::Project::mrUpdated, this, &ProjectModel::projectMergeRequestUpdated);
 
-	connect(
-		project,
-		&gpr::api::Project::mrDiscussionAdded,
-		[this, project](auto mr, auto discussion) { Q_EMIT projectMrDiscussionAdded(project, mr, discussion); });
-	connect(
-		project,
-		&gpr::api::Project::mrDiscussionUpdated,
-		[this, project](auto mr, auto discussion) { Q_EMIT projectMrDiscussionUpdated(project, mr, discussion); });
-	connect(
-		project,
-		&gpr::api::Project::mrDiscussionRemoved,
-		[this, project](auto mr, auto discussion) { Q_EMIT projectMrDiscussionRemoved(project, mr, discussion); });
+	connect(project, &gpr::api::Project::mrDiscussionAdded, this, &ProjectModel::projectMrDiscussionAdded);
+	connect(project, &gpr::api::Project::mrDiscussionUpdated, this, &ProjectModel::projectMrDiscussionUpdated);
+	connect(project, &gpr::api::Project::mrDiscussionRemoved, this, &ProjectModel::projectMrDiscussionRemoved);
 
-	connect(
-		project,
-		&gpr::api::Project::mrDiscussionNoteAdded,
-		[this, project](auto mr, auto discussion, auto note)
-		{ Q_EMIT projectMrDiscussionNoteAdded(project, mr, discussion, note); });
-	connect(
-		project,
-		&gpr::api::Project::mrDiscussionNoteUpdated,
-		[this, project](auto mr, auto discussion, auto note)
-		{ Q_EMIT projectMrDiscussionNoteUpdated(project, mr, discussion, note); });
-	connect(
-		project,
-		&gpr::api::Project::mrDiscussionNoteRemoved,
-		[this, project](auto mr, auto discussion, auto note)
-		{ Q_EMIT projectMrDiscussionNoteRemoved(project, mr, discussion, note); });
+	connect(project, &gpr::api::Project::mrDiscussionNoteAdded, this, &ProjectModel::projectMrDiscussionNoteAdded);
+	connect(project, &gpr::api::Project::mrDiscussionNoteUpdated, this, &ProjectModel::projectMrDiscussionNoteUpdated);
+	connect(project, &gpr::api::Project::mrDiscussionNoteRemoved, this, &ProjectModel::projectMrDiscussionNoteRemoved);
 }

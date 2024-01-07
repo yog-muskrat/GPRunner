@@ -42,17 +42,17 @@ public:
 	QHash<int, QByteArray> roleNames() const override;
 
 Q_SIGNALS:
-	void projectMergeRequestAdded(QPointer<gpr::api::Project>, QPointer<gpr::api::MR>);
-	void projectMergeRequestRemoved(QPointer<gpr::api::Project>, QPointer<gpr::api::MR>);
-	void projectMergeRequestUpdated(QPointer<gpr::api::Project>, QPointer<gpr::api::MR>);
+	void projectMergeRequestAdded(QPointer<gpr::api::MR>);
+	void projectMergeRequestRemoved(QPointer<gpr::api::MR>);
+	void projectMergeRequestUpdated(QPointer<gpr::api::MR>);
 
-	void projectMrDiscussionAdded(QPointer<gpr::api::Project>, QPointer<gpr::api::MR>, QPointer<gpr::api::Discussion>);
-	void projectMrDiscussionUpdated(QPointer<gpr::api::Project>, QPointer<gpr::api::MR>, QPointer<gpr::api::Discussion>);
-	void projectMrDiscussionRemoved(QPointer<gpr::api::Project>, QPointer<gpr::api::MR>, QPointer<gpr::api::Discussion>);
+	void projectMrDiscussionAdded(QPointer<gpr::api::Discussion>);
+	void projectMrDiscussionUpdated(QPointer<gpr::api::Discussion>);
+	void projectMrDiscussionRemoved(QPointer<gpr::api::Discussion>);
 
-	void projectMrDiscussionNoteAdded(QPointer<gpr::api::Project>, QPointer<gpr::api::MR>, QPointer<gpr::api::Discussion>, QPointer<gpr::api::Note>);
-	void projectMrDiscussionNoteUpdated(QPointer<gpr::api::Project>, QPointer<gpr::api::MR>, QPointer<gpr::api::Discussion>, QPointer<gpr::api::Note>);
-	void projectMrDiscussionNoteRemoved(QPointer<gpr::api::Project>, QPointer<gpr::api::MR>, QPointer<gpr::api::Discussion>, QPointer<gpr::api::Note>);
+	void projectMrDiscussionNoteAdded(QPointer<gpr::api::Note>);
+	void projectMrDiscussionNoteUpdated(QPointer<gpr::api::Note>);
+	void projectMrDiscussionNoteRemoved(QPointer<gpr::api::Note>);
 
 private:
 	void onProjectUpdated(QPointer<gpr::api::Project> project);

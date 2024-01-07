@@ -59,7 +59,7 @@ QVariant DiscussionModel::data(QModelIndex const &index, int role) const
 	{
 		auto const discussion = static_cast<gpr::api::Discussion *>(index.internalPointer());
 		auto const &note = discussion->notes().at(index.row());
-		return noteData(discussion, note, role);
+		return noteData(note, role);
 	}
 
 	return discussionData(m_mr->discussions().at(index.row()), role);
@@ -134,7 +134,7 @@ QVariant DiscussionModel::discussionData(QPointer<gpr::api::Discussion> discussi
 	return QVariant{};
 }
 
-QVariant DiscussionModel::noteData(QPointer<gpr::api::Discussion> discussion, QPointer<gpr::api::Note> note, int role) const
+QVariant DiscussionModel::noteData(QPointer<gpr::api::Note> note, int role) const
 {
 	if (role == Qt::ItemDataRole::DisplayRole)
 	{
@@ -143,7 +143,7 @@ QVariant DiscussionModel::noteData(QPointer<gpr::api::Discussion> discussion, QP
 		return note->body();
 	}
 	if (role == Role::NoteRole)         return QVariant::fromValue(note.get());
-	if (role == Role::DiscussionRole)   return QVariant::fromValue(discussion.get());
+	if (role == Role::DiscussionRole)   return QVariant::fromValue(&note->discussion());
 
 	return QVariant{};
 }
@@ -206,12 +206,12 @@ void DiscussionModel::onDiscussionRemoved(QPointer<gpr::api::Discussion> discuss
 	endRemoveRows();
 }
 
-void DiscussionModel::onDiscussionNoteAdded(QPointer<gpr::api::Discussion> discussion, QPointer<gpr::api::Note> note)
+void DiscussionModel::onDiscussionNoteAdded(QPointer<gpr::api::Note> note)
 {
-	auto const parentRow = getRow(discussion);
+	auto const parentRow = getRow(&note->discussion());
 	assert(parentRow >= 0);
 
-	auto const row = getRow(discussion, note);
+	auto const row = getRow(note);
 	assert(row >= 0);
 
 	auto const parentIndex = index(parentRow, 0);
@@ -220,12 +220,12 @@ void DiscussionModel::onDiscussionNoteAdded(QPointer<gpr::api::Discussion> discu
 	endInsertRows();
 }
 
-void DiscussionModel::onDiscussionNoteUpdated(QPointer<gpr::api::Discussion> discussion, QPointer<gpr::api::Note> note)
+void DiscussionModel::onDiscussionNoteUpdated(QPointer<gpr::api::Note> note)
 {
-	auto const parentRow = getRow(discussion);
+	auto const parentRow = getRow(&note->discussion());
 	assert(parentRow >= 0);
 
-	auto const row = getRow(discussion, note);
+	auto const row = getRow(note);
 	assert(row >= 0);
 
 	auto const parentIndex = index(parentRow, 0);
@@ -233,12 +233,12 @@ void DiscussionModel::onDiscussionNoteUpdated(QPointer<gpr::api::Discussion> dis
 	Q_EMIT dataChanged(index(row, 0, parentIndex), index(row, columnCount() - 1, parentIndex));
 }
 
-void DiscussionModel::onDiscussionNoteRemoved(QPointer<gpr::api::Discussion> discussion, QPointer<gpr::api::Note> note)
+void DiscussionModel::onDiscussionNoteRemoved(QPointer<gpr::api::Note> note)
 {
-	auto const parentRow = getRow(discussion);
+	auto const parentRow = getRow(&note->discussion());
 	assert(parentRow >= 0);
 
-	auto const row = getRow(discussion, note);
+	auto const row = getRow(note);
 	assert(row >= 0);
 
 	auto const parentIndex = index(parentRow, 0);
@@ -256,11 +256,11 @@ int DiscussionModel::getRow(QPointer<gpr::api::Discussion> discussion) const
 	return -1;
 }
 
-int DiscussionModel::getRow(QPointer<gpr::api::Discussion> discussion, QPointer<gpr::api::Note> note) const
+int DiscussionModel::getRow(QPointer<gpr::api::Note> note) const
 {
-	if(auto const pos = std::ranges::find(discussion->notes(), note); pos != discussion->notes().cend())
+	if(auto const pos = std::ranges::find(note->discussion().notes(), note); pos != note->discussion().notes().cend())
 	{
-		return static_cast<int>(std::ranges::distance(discussion->notes().cbegin(), pos));
+		return static_cast<int>(std::ranges::distance(note->discussion().notes().cbegin(), pos));
 	}
 	return -1;
 }

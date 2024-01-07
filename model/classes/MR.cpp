@@ -268,9 +268,9 @@ namespace gpr::api
 	{
 		connect(discussion, &Discussion::modified, [this, discussion]{ Q_EMIT discussionUpdated(discussion); });
 
-		connect(discussion, &Discussion::noteAdded  , [this, discussion](QPointer<Note> note){ Q_EMIT discussionNoteAdded(discussion, note); });
-		connect(discussion, &Discussion::noteUpdated, [this, discussion](QPointer<Note> note){ Q_EMIT discussionNoteUpdated(discussion, note); });
-		connect(discussion, &Discussion::noteRemoved, [this, discussion](QPointer<Note> note){ Q_EMIT discussionNoteRemoved(discussion, note); });
+		connect(discussion, &Discussion::noteAdded  , this, &MR::discussionNoteAdded);
+		connect(discussion, &Discussion::noteUpdated, this, &MR::discussionNoteUpdated);
+		connect(discussion, &Discussion::noteRemoved, this, &MR::discussionNoteRemoved);
 	}
 
 } // namespace gpr::api

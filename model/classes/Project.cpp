@@ -173,21 +173,12 @@ namespace gpr::api
 
 	void Project::connectMR(QPointer<MR> mr)
 	{
-		connect(mr, &MR::discussionAdded, [this, mr](auto discussion) { Q_EMIT mrDiscussionAdded(mr, discussion); });
-		connect(mr, &MR::discussionUpdated, [this, mr](auto discussion) { Q_EMIT mrDiscussionUpdated(mr, discussion); });
-		connect(mr, &MR::discussionRemoved, [this, mr](auto discussion) { Q_EMIT mrDiscussionRemoved(mr, discussion); });
+		connect(mr, &MR::discussionAdded, this, &Project::mrDiscussionAdded);
+		connect(mr, &MR::discussionUpdated, this, &Project::mrDiscussionUpdated);
+		connect(mr, &MR::discussionRemoved, this, &Project::mrDiscussionRemoved);
 
-		connect(
-			mr,
-			&MR::discussionNoteAdded,
-			[this, mr](auto discussion, auto note) { Q_EMIT mrDiscussionNoteAdded(mr, discussion, note); });
-		connect(
-			mr,
-			&MR::discussionNoteUpdated,
-			[this, mr](auto discussion, auto note) { Q_EMIT mrDiscussionNoteUpdated(mr, discussion, note); });
-		connect(
-			mr,
-			&MR::discussionNoteRemoved,
-			[this, mr](auto discussion, auto note) { Q_EMIT mrDiscussionNoteRemoved(mr, discussion, note); });
+		connect(mr, &MR::discussionNoteAdded, this, &Project::mrDiscussionNoteAdded);
+		connect(mr, &MR::discussionNoteUpdated, this, &Project::mrDiscussionNoteUpdated);
+		connect(mr, &MR::discussionNoteRemoved, this, &Project::mrDiscussionNoteRemoved);
 	}
 } // namespace gpr::api

@@ -56,7 +56,7 @@ public:
 
 private:
 	QVariant discussionData(QPointer<gpr::api::Discussion> discussion, int role) const;
-	QVariant noteData(QPointer<gpr::api::Discussion> discussion, QPointer<gpr::api::Note> note, int role) const;
+	QVariant noteData(QPointer<gpr::api::Note> note, int role) const;
 
 	void connectMR(QPointer<gpr::api::MR> mr);
 	void disconnectMR(QPointer<gpr::api::MR> mr);
@@ -67,12 +67,12 @@ private:
 	void onDiscussionUpdated(QPointer<gpr::api::Discussion> discussion);
 	void onDiscussionRemoved(QPointer<gpr::api::Discussion> discussion);
 
-	void onDiscussionNoteAdded(QPointer<gpr::api::Discussion> discussion, QPointer<gpr::api::Note> note);
-	void onDiscussionNoteUpdated(QPointer<gpr::api::Discussion> discussion, QPointer<gpr::api::Note> note);
-	void onDiscussionNoteRemoved(QPointer<gpr::api::Discussion> discussion, QPointer<gpr::api::Note> note);
+	void onDiscussionNoteAdded(QPointer<gpr::api::Note> note);
+	void onDiscussionNoteUpdated(QPointer<gpr::api::Note> note);
+	void onDiscussionNoteRemoved(QPointer<gpr::api::Note> note);
 
 	int getRow(QPointer<gpr::api::Discussion> discussion) const;
-	int getRow(QPointer<gpr::api::Discussion> discussion, QPointer<gpr::api::Note> note) const;
+	int getRow(QPointer<gpr::api::Note> note) const;
 
 	GPManager *m_manager;
 
