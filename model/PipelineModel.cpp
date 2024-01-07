@@ -17,7 +17,7 @@ void PipelineModel::clear()
 	setProject(nullptr);
 }
 
-void PipelineModel::setProject(QPointer<gpr::api::Project> project)
+void PipelineModel::setProject(gpr::api::Project *project)
 {
 	beginResetModel();
 	disconnectProject(m_project);

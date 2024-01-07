@@ -2,10 +2,7 @@
 
 #include <QFile>
 #include <QJsonDocument>
-#include <QJsonArray>
-#include <QJsonObject>
 
-#include <thread>
 #include <ranges>
 #include <format>
 
@@ -35,23 +32,6 @@ void GPManager::connect()
 	loadProjects();
 
 	m_updateTimer.start();
-}
-
-void GPManager::setCurrentProject(int projectId)
-{
-	if (projectId != m_currentProject)
-	{
-		m_pipelineModel.clear();
-		m_mrModel.clear();
-		m_variableModel.clear();
-	}
-
-	m_currentProject = projectId;
-
-	auto prj = m_projectModel.findProject(projectId);
-
-	m_pipelineModel.setProject(prj);
-	m_mrModel.setProject(prj);
 }
 
 void GPManager::loadProjects()
@@ -173,14 +153,6 @@ void GPManager::onDiscussionNoteUpdated(
 	m_client.requestMRNoteEmojis(project->id(), mr->iid(), note->id(), std::bind_front(&GPManager::parseMRNoteEmojis, this, mr, discussion->id(), note->id()));
 }
 
-void GPManager::onMergeRequestRemoved(QPointer<gpr::api::Project> project, QPointer<gpr::api::MR> mr)
-{
-	if(project->id() == m_currentProject)
-	{
-		m_pipelineModel.clear();
-	}
-}
-
 QAbstractItemModel *GPManager::getProjectModel()
 {
 	return &m_projectProxyModel;
@@ -260,7 +232,6 @@ void GPManager::initModels()
 
 	m_variableProxyModel.setSourceModel(&m_variableModel);
 
-	QObject::connect(&m_projectModel, &ProjectModel::projectMergeRequestRemoved, this, &GPManager::onMergeRequestRemoved);
 	QObject::connect(&m_projectModel, &ProjectModel::projectMrDiscussionAdded, this, &GPManager::onDiscussionAdded);
 	QObject::connect(&m_projectModel, &ProjectModel::projectMrDiscussionNoteAdded, this, &GPManager::onDiscussionNoteAdded);
 	QObject::connect(&m_projectModel, &ProjectModel::projectMrDiscussionNoteUpdated, this, &GPManager::onDiscussionNoteUpdated);

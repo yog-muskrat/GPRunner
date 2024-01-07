@@ -12,7 +12,16 @@ Item {
 
     clip: true
 
-    onCurrentProjectChanged: { currentMR = null }
+    onCurrentProjectChanged: {
+        currentMR = null
+        console.log("Project changed", currentProject)
+        if(currentProject) {
+            mrs.model.sourceModel.setProject(currentProject)
+        }
+        else {
+            mrs.model.sourceModel.clear()
+        }
+    }
 
     ColumnLayout {
         anchors.fill: parent

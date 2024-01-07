@@ -39,7 +39,7 @@ public:
 	~MRModel() override = default;
 
 	Q_INVOKABLE void clear();
-	Q_INVOKABLE void setProject(QPointer<gpr::api::Project> project);
+	Q_INVOKABLE void setProject(gpr::api::Project *project);
 
 	int rowCount(QModelIndex const & = {}) const override;
 	int columnCount(QModelIndex const & = {}) const override;

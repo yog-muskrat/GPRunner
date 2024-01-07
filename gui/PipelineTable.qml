@@ -5,9 +5,20 @@ import mudbay.gprunner.models
 import "Utility.js" as Utility
 
 Item {
+    property var currentProject
     property var currentPipeline
 
     clip: true
+
+    onCurrentProjectChanged: {
+        currentPipeline = null
+        if(currentProject) {
+            pipelines.model.sourceModel.setProject(currentProject)
+        }
+        else {
+            pipelines.model.sourceModel.clear()
+        }
+    }
 
     ColumnLayout {
         anchors.fill: parent

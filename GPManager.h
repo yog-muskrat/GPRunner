@@ -27,8 +27,6 @@ public:
 
 	Q_INVOKABLE void connect();
 
-	Q_INVOKABLE void setCurrentProject(int projectId);
-
 	Q_INVOKABLE void runPipeline(int projectId, QString const &ref);
 	Q_INVOKABLE QStringList getProjectBranches(int projectId);
 	Q_INVOKABLE void loadPipelineVariables(int projectId, QString const &ref);
@@ -105,8 +103,6 @@ private:
 		QPointer<gpr::api::Discussion> discussion,
 		QPointer<gpr::api::Note> note);
 
-	void onMergeRequestRemoved(QPointer<gpr::api::Project> project, QPointer<gpr::api::MR> mr);
-
 	void update();
 
 	ProjectModel m_projectModel;
@@ -131,6 +127,4 @@ private:
 	ImageProvider &m_imageProvider;
 
 	std::map<QString, gpr::Emoji> m_emojis;
-
-	int m_currentProject{-1};
 };

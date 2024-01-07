@@ -40,7 +40,6 @@ ListView {
             onTapped: {
                 projects.currentIndex = index;
                 projects.currentProject = project;
-                gpm.setCurrentProject(project.id);
             }
             onDoubleTapped: Qt.openUrlExternally(project.url)
         }

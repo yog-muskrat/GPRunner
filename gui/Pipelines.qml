@@ -5,15 +5,14 @@ import QtQuick.Controls
 SplitView {
     required property var currentProject
 
-    orientation: Qt.Vertical
+    id: root
 
-    onCurrentProjectChanged: {
-        startPipeline.currentProject = currentProject
-    }
+    orientation: Qt.Vertical
 
     RowLayout {
         PipelineTable {
             id: pipelinesTable
+            currentProject: root.currentProject
             Layout.fillHeight: true
             Layout.fillWidth: true
         }
@@ -23,7 +22,7 @@ SplitView {
             Layout.fillHeight: true
             Layout.minimumWidth: 500
             Layout.maximumWidth: 500
-            currentProject: currentProject
+            currentProject: root.currentProject
         }
     }
 

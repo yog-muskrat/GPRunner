@@ -72,7 +72,7 @@ void MRModel::clear()
 	setProject(nullptr);
 }
 
-void MRModel::setProject(QPointer<gpr::api::Project> project)
+void MRModel::setProject(gpr::api::Project *project)
 {
 	beginResetModel();
 
