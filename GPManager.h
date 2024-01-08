@@ -18,7 +18,7 @@ class GPManager : public QObject
 {
 	Q_OBJECT
 	Q_PROPERTY(gpr::User currentUser READ getCurrentUser NOTIFY currentUserChanged)
-	Q_PROPERTY(QVariantList activeUsers READ getActiveUsers NOTIFY activeUsersChanged)
+	Q_PROPERTY(QList<gpr::User> activeUsers READ getActiveUsers NOTIFY activeUsersChanged)
 	Q_PROPERTY(bool hasNewNotes READ hasNewNotes NOTIFY newNotesReceived)
 
 public:
@@ -33,7 +33,7 @@ public:
 	Q_INVOKABLE QAbstractItemModel *getMRModel();
 
 	gpr::User getCurrentUser() const { return m_currentUser; }
-	QVariantList getActiveUsers() const;
+	QList<gpr::User> getActiveUsers() const;
 	bool hasNewNotes() const;
 
 	std::map<QString, gpr::Emoji> const &emojiDict() const { return m_emojis; }
@@ -42,7 +42,7 @@ public:
 
 Q_SIGNALS:
 	void currentUserChanged(gpr::User const &);
-	void activeUsersChanged(QVariantList const &);
+	void activeUsersChanged(QList<gpr::User> const &);
 	void newNotesReceived() const;
 	void notification(QString title, QString message) const;
 

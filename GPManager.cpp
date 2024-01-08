@@ -160,15 +160,9 @@ QAbstractItemModel *GPManager::getMRModel()
 	return &m_mrProxyModel;
 }
 
-QVariantList GPManager::getActiveUsers() const
+QList<gpr::User> GPManager::getActiveUsers() const
 {
-	QVariantList result;
-	result.reserve(m_activeUsers.size());
-	for(auto v : m_activeUsers | std::views::transform([](auto const &u) { return QVariant::fromValue(u); }))
-	{
-		result.push_back(std::move(v));
-	}
-	return result;
+	return m_activeUsers;
 }
 
 bool GPManager::hasNewNotes() const

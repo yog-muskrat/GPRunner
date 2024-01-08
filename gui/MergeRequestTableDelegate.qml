@@ -139,7 +139,7 @@ Rectangle {
         model: gpm.activeUsers
         textRole: "username"
 
-        currentIndex: indexOfValue(getUser(column))
+        currentIndex: currentIndex < 0 ? indexOfValue(getUser(column)) : currentIndex
 
         implicitContentWidthPolicy: ComboBox.WidestText
         TableView.onCommit: edit = currentValue
