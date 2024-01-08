@@ -39,9 +39,9 @@ void GPManager::loadProjects()
 	m_client.requestProjects(std::bind_front(&GPManager::parseProjects, this));
 }
 
-void GPManager::loadProjectPipelines(int projectId)
+void GPManager::loadProjectPipelines(QPointer<gpr::api::Project> project)
 {
-	m_client.requestProjectPipelines(projectId, std::bind_front(&GPManager::parsePipelines, this, projectId));
+	m_client.requestProjectPipelines(project->id(), std::bind_front(&GPManager::parsePipelines, this, project));
 }
 
 void GPManager::loadProjectPipelineVariables(QPointer<gpr::api::Project> project, QString const &ref)
@@ -49,34 +49,31 @@ void GPManager::loadProjectPipelineVariables(QPointer<gpr::api::Project> project
 	m_client.requestPipelineVariables(project->id(), ref, std::bind_front(&GPManager::parseVariables, this, project));
 }
 
-void GPManager::loadPipelineStatistics(int projectId, QDateTime const &from, QDateTime const &to)
+void GPManager::loadPipelineStatistics(QPointer<gpr::api::Project> project, QDateTime const &from, QDateTime const &to)
 {
-	std::ignore = projectId, from, to;
+	std::ignore = project, from, to;
 }
 
-void GPManager::loadProjectBranches(int projectId)
+void GPManager::loadProjectBranches(QPointer<gpr::api::Project> project)
 {
-	m_client.requestProjectBranches(projectId, std::bind_front(&GPManager::parseBranches, this, projectId));
+	m_client.requestProjectBranches(project->id(), std::bind_front(&GPManager::parseBranches, this, project));
 }
 
-void GPManager::loadProjectMRs(int projectId)
+void GPManager::loadProjectMRs(QPointer<gpr::api::Project> project)
 {
-	m_client.requestProjectMRs(projectId, std::bind_front(&GPManager::parseMRs, this, projectId));
+	m_client.requestProjectMRs(project->id(), std::bind_front(&GPManager::parseMRs, this, project));
 }
 
-void GPManager::loadProjectMRInfo(int projectId)
+void GPManager::loadProjectMRInfo(QPointer<gpr::api::Project> project)
 {
-	auto prj = m_projectModel.findProject(projectId);
-	if (!prj) return;
-
-	for (auto const &mr : prj->openMRs())
+	for (auto const &mr : project->openMRs())
 	{
-		m_client.requestMRDetails(projectId, mr->iid(), std::bind_front(&GPManager::parseMRDetails, this, mr));
-		m_client.requestMRApprovals(projectId, mr->iid(), std::bind_front(&GPManager::parseMRApprovals, this, mr));
+		m_client.requestMRDetails(project->id(), mr->iid(), std::bind_front(&GPManager::parseMRDetails, this, mr));
+		m_client.requestMRApprovals(project->id(), mr->iid(), std::bind_front(&GPManager::parseMRApprovals, this, mr));
 
 		if(mr->hasNotes())
 		{
-			m_client.requestMRDiscussions(projectId, mr->iid(), std::bind_front(&GPManager::parseMRDiscussions, this, mr));
+			m_client.requestMRDiscussions(project->id(), mr->iid(), std::bind_front(&GPManager::parseMRDiscussions, this, mr));
 		}
 	}
 }
@@ -86,9 +83,9 @@ void GPManager::loadPipelineInfo(int projectId, int pipelineId)
 	m_client.requestPipelineInfo(projectId, pipelineId, std::bind_front(&GPManager::parsePipelineInfo, this, projectId, pipelineId));
 }
 
-void GPManager::loadPipelineJobs(int projectId, int pipelineId)
+void GPManager::loadPipelineJobs(QPointer<gpr::api::Pipeline> pipeline)
 {
-	m_client.requestPipelineJobs(projectId, pipelineId, std::bind_front(&GPManager::parsePipelineJobs, this, projectId, pipelineId));
+	m_client.requestPipelineJobs(pipeline->project().id(), pipeline->id(), std::bind_front(&GPManager::parsePipelineJobs, this, pipeline));
 }
 
 void GPManager::loadCurrentUser()
@@ -221,7 +218,7 @@ void GPManager::parseProjects(QJsonDocument const &doc)
 	for (auto prjData : doc.array() | std::views::transform(&QJsonValueRef::toObject) | std::views::transform(gpr::api::parseProject))
 	{
 		auto project = m_projectModel.addProject(std::move(prjData));
-		loadProjectBranches(project->id());
+		loadProjectBranches(project);
 		loadProjectPipelineVariables(project);
 
 		//TODO
@@ -234,15 +231,8 @@ void GPManager::parseProjects(QJsonDocument const &doc)
 	}
 }
 
-void GPManager::parsePipelines(int projectId, QJsonDocument const &doc)
+void GPManager::parsePipelines(QPointer<gpr::api::Project> project, QJsonDocument const &doc)
 {
-	auto project = m_projectModel.findProject(projectId);
-	if (!project)
-	{
-		qDebug() << "Invalid project id: " << projectId;
-		return;
-	}
-
 	auto pipelines = doc.array() | std::views::transform(&QJsonValueRef::toObject)
 	               | std::views::transform(gpr::api::parseProjectPipeline) | std::ranges::to<std::vector>();
 
@@ -251,8 +241,8 @@ void GPManager::parsePipelines(int projectId, QJsonDocument const &doc)
 	for (auto const &pipeline :
 	     project->pipelines() | std::views::filter([](auto const &p) { return p->user().username.isEmpty(); }))
 	{
-		loadPipelineInfo(projectId, pipeline->id());
-		loadPipelineJobs(projectId, pipeline->id());
+		loadPipelineInfo(project->id(), pipeline->id());
+		loadPipelineJobs(pipeline);
 	}
 }
 
@@ -277,37 +267,16 @@ void GPManager::parsePipelineInfo(int projectId, int pipelineId, QJsonDocument c
 	}
 }
 
-void GPManager::parsePipelineJobs(int projectId, int pipelineId, QJsonDocument const &doc)
+void GPManager::parsePipelineJobs(QPointer<gpr::api::Pipeline> pipeline, QJsonDocument const &doc)
 {
-	auto project = m_projectModel.findProject(projectId);
-	if (!project)
-	{
-		qDebug() << "Invalid project id: " << projectId;
-		return;
-	}
-
-	auto pipeline = project->findPipeline(pipelineId);
-	if (!pipeline)
-	{
-		qDebug() << "Invalid pipeline id: " << pipelineId;
-		return;
-	}
-
 	auto jobs = doc.array() | std::views::transform(&QJsonValueRef::toObject)
 		| std::views::transform(gpr::api::parseJobInfo)
 		| std::ranges::to<std::vector>();
 	pipeline->updateJobs(std::move(jobs));
 }
 
-void GPManager::parseMRs(int projectId, QJsonDocument const &doc)
+void GPManager::parseMRs(QPointer<gpr::api::Project> project, QJsonDocument const &doc)
 {
-	auto project = m_projectModel.findProject(projectId);
-	if (!project)
-	{
-		qDebug() << "Invalid project id: " << projectId;
-		return;
-	}
-
 	auto mrs = doc.array()
 		| std::views::transform(&QJsonValueRef::toObject)
 		| std::views::transform(gpr::api::parseMR)
@@ -409,12 +378,9 @@ void GPManager::parseVariables(QPointer<gpr::api::Project> project, QJsonDocumen
 	}
 }
 
-void GPManager::parseBranches(int projectId, QJsonDocument const &doc)
+void GPManager::parseBranches(QPointer<gpr::api::Project> project, QJsonDocument const &doc)
 {
-	if (auto prj = m_projectModel.findProject(projectId))
-	{
-		prj->setBranches(gpr::api::parseBranches(doc));
-	}
+	project->setBranches(gpr::api::parseBranches(doc));
 }
 
 void GPManager::parseCurrentUser(QJsonDocument const &doc)
@@ -451,12 +417,12 @@ void GPManager::update()
 {
 	m_updateTimer.stop();
 
-	for (auto const id : m_projectModel.projects() | std::views::transform(&gpr::api::Project::id))
+	for (auto prj : m_projectModel.projects())
 	{
-		loadProjectMRs(id);
-		loadProjectPipelines(id);
-		loadProjectBranches(id);
-		loadProjectMRInfo(id);
+		loadProjectMRs(prj);
+		loadProjectPipelines(prj);
+		loadProjectBranches(prj);
+		loadProjectMRInfo(prj);
 	}
 
 	m_updateTimer.start();

@@ -26,7 +26,7 @@ public:
 
 	Q_INVOKABLE void connect();
 
-	Q_INVOKABLE void loadPipelineStatistics(int projectId, QDateTime const &from, QDateTime const &to);
+	Q_INVOKABLE void loadPipelineStatistics(QPointer<gpr::api::Project> project, QDateTime const &from, QDateTime const &to);
 
 	Q_INVOKABLE QAbstractItemModel *getProjectModel();
 	Q_INVOKABLE QAbstractItemModel *getPipelineModel();
@@ -51,16 +51,16 @@ private:
 	void initUpdateTimer();
 
 	void parseProjects(QJsonDocument const &doc);
-	void parsePipelines(int projectId, QJsonDocument const &doc);
+	void parsePipelines(QPointer<gpr::api::Project> project, QJsonDocument const &doc);
 	void parsePipelineInfo(int projectId, int pipelineId, QJsonDocument const &doc);
-	void parsePipelineJobs(int projectId, int pipelineId, QJsonDocument const &doc);
-	void parseMRs(int projectId, QJsonDocument const &doc);
+	void parsePipelineJobs(QPointer<gpr::api::Pipeline> pipeline, QJsonDocument const &doc);
+	void parseMRs(QPointer<gpr::api::Project> project, QJsonDocument const &doc);
 	void parseMRDetails(QPointer<gpr::api::MR> mr, QJsonDocument const &doc);
 	void parseMRDiscussions(QPointer<gpr::api::MR> mr, QJsonDocument const &doc);
 	void parseMRNoteEmojis(QPointer<gpr::api::MR> mr, QString const &discussionId, int noteId, QJsonDocument const &doc);
 	void parseMRApprovals(QPointer<gpr::api::MR> mr, QJsonDocument const &doc);
 	void parseVariables(QPointer<gpr::api::Project> project, QJsonDocument const &doc);
-	void parseBranches(int projectId, QJsonDocument const &doc);
+	void parseBranches(QPointer<gpr::api::Project> project, QJsonDocument const &doc);
 	void parseCurrentUser(QJsonDocument const &doc);
 	void parseActiveUsers(QJsonDocument const &doc);
 
@@ -69,13 +69,13 @@ private:
 	void readEmojis();
 
 	void loadProjects();
-	void loadProjectBranches(int projectId);
-	void loadProjectPipelines(int projectId);
+	void loadProjectBranches(QPointer<gpr::api::Project> project);
+	void loadProjectPipelines(QPointer<gpr::api::Project> project);
 	void loadProjectPipelineVariables(QPointer<gpr::api::Project> project, QString const &ref = "master");
-	void loadProjectMRs(int projectId);
-	void loadProjectMRInfo(int projectId);
+	void loadProjectMRs(QPointer<gpr::api::Project> project);
+	void loadProjectMRInfo(QPointer<gpr::api::Project> project);
 	void loadPipelineInfo(int projectId, int pipelineId);
-	void loadPipelineJobs(int projectId, int pipelineId);
+	void loadPipelineJobs(QPointer<gpr::api::Pipeline> pipeline);
 	void loadCurrentUser();
 	void loadActiveUsers();
 
