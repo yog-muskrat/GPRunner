@@ -6,62 +6,25 @@
 #endif
 
 #include "model/ProjectModel.h"
-#include "GPManager.h"
 
-ProjectModel::ProjectModel(GPManager &manager)
-	: QAbstractTableModel(&manager)
-	, m_manager{manager}
+ProjectModel::ProjectModel(QObject *parent)
+	: QAbstractTableModel(parent)
 {
 #ifdef _DEBUG
 	new QAbstractItemModelTester(this, this);
 #endif
 }
 
-void ProjectModel::clear()
+void ProjectModel::setGPManager(GPManager *manager)
 {
-	beginResetModel();
-	m_projects.clear();
-	endResetModel();
-}
-
-QPointer<gpr::api::Project> ProjectModel::addProject(gpr::api::Project::Data projectData)
-{
-	if (auto const pos = std::ranges::find(m_projects, projectData.id, &gpr::api::Project::id); pos != m_projects.cend())
-	{
-		(*pos)->update(std::move(projectData));
-		return *pos;
-	}
-
-	beginResetModel();
-	auto project = new gpr::api::Project(m_manager, std::move(projectData));
-	connectProject(project);
-
-	connect(project, &gpr::api::Project::modified, [this, project] { onProjectUpdated(project); });
-
-	m_projects.push_back(project);
-	endResetModel();
-
-	return project;
-}
-
-std::vector<QPointer<gpr::api::Project>> const &ProjectModel::projects() const
-{
-	return m_projects;
-}
-
-QPointer<gpr::api::Project> ProjectModel::findProject(int projectId) const
-{
-	if (auto const pos = std::ranges::find(m_projects, projectId, &gpr::api::Project::id); pos != m_projects.cend())
-	{
-		return *pos;
-	}
-
-	return nullptr;
+	m_manager = manager;
+	connect(m_manager, &GPManager::projectsLoaded, this, &ProjectModel::onProjectsReady);
 }
 
 int ProjectModel::rowCount(QModelIndex const &) const
 {
-	return std::ranges::ssize(m_projects);
+	if(!m_manager) return 0;
+	return std::ranges::ssize(m_manager->projects());
 }
 
 int ProjectModel::columnCount(QModelIndex const &) const
@@ -73,7 +36,7 @@ QVariant ProjectModel::data(QModelIndex const &index, int role) const
 {
 	if (!checkIndex(index)) return {};
 
-	auto const &prj = m_projects[index.row()];
+	auto const &prj = m_manager->projects()[index.row()];
 
 	if (role == Qt::ItemDataRole::DisplayRole)
 	{
@@ -99,14 +62,14 @@ QVariant ProjectModel::data(QModelIndex const &index, int role) const
 			prj->openMRs(), 
 			[this](QPointer<gpr::api::MR> const &mr)
 			{
-				return mr->isUserInvolved(m_manager.getCurrentUser()) && mr->hasUnreadNotes();
+				return mr->isUserInvolved(m_manager->getCurrentUser()) && mr->hasUnreadNotes();
 			});
 	}
 	else if (role == Role::HasCurrentUserMRsRole)
 	{
 		return std::ranges::any_of(
 			prj->openMRs(),
-			[this](auto const &mr) { return mr->isUserInvolved(m_manager.getCurrentUser()); });
+			[this](auto const &mr) { return mr->isUserInvolved(m_manager->getCurrentUser()); });
 	}
 
 	return QVariant();
@@ -121,30 +84,8 @@ QHash<int, QByteArray> ProjectModel::roleNames() const
 	return names;
 }
 
-void ProjectModel::onProjectUpdated(QPointer<gpr::api::Project> project)
+void ProjectModel::onProjectsReady()
 {
-	if (auto const pos = std::ranges::find(m_projects, project); pos != m_projects.cend())
-	{
-		auto const row = std::ranges::distance(m_projects.cbegin(), pos);
-		Q_EMIT dataChanged(index(row, 0), index(row, Column::Count - 1));
-	}
-	else
-	{
-		assert(false && "Invalid project");
-	}
-}
-
-void ProjectModel::connectProject(QPointer<gpr::api::Project> project)
-{
-	connect(project, &gpr::api::Project::mrAdded,   this, &ProjectModel::projectMergeRequestAdded);
-	connect(project, &gpr::api::Project::mrRemoved, this, &ProjectModel::projectMergeRequestRemoved);
-	connect(project, &gpr::api::Project::mrUpdated, this, &ProjectModel::projectMergeRequestUpdated);
-
-	connect(project, &gpr::api::Project::mrDiscussionAdded, this, &ProjectModel::projectMrDiscussionAdded);
-	connect(project, &gpr::api::Project::mrDiscussionUpdated, this, &ProjectModel::projectMrDiscussionUpdated);
-	connect(project, &gpr::api::Project::mrDiscussionRemoved, this, &ProjectModel::projectMrDiscussionRemoved);
-
-	connect(project, &gpr::api::Project::mrDiscussionNoteAdded, this, &ProjectModel::projectMrDiscussionNoteAdded);
-	connect(project, &gpr::api::Project::mrDiscussionNoteUpdated, this, &ProjectModel::projectMrDiscussionNoteUpdated);
-	connect(project, &gpr::api::Project::mrDiscussionNoteRemoved, this, &ProjectModel::projectMrDiscussionNoteRemoved);
+	beginResetModel();
+	endResetModel();
 }

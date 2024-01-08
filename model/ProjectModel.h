@@ -1,15 +1,21 @@
 #pragma once
 
 #include <QAbstractTableModel>
+#include <QQmlEngine>
 
 #include "model/classes/GPClasses.h"
 #include "model/classes/Project.h"
+
+#include "GPManager.h"
 
 class GPManager;
 
 class ProjectModel : public QAbstractTableModel
 {
 	Q_OBJECT
+	QML_ELEMENT
+	Q_PROPERTY(GPManager* manager WRITE setGPManager READ gpManager)
+
 public:
 	enum Column
 	{
@@ -24,15 +30,10 @@ public:
 		HasCurrentUserMRsRole
 	};
 
-	ProjectModel(GPManager &manager);
+	ProjectModel(QObject *parent = nullptr);
 
-	void clear();
-
-	QPointer<gpr::api::Project> addProject(gpr::api::Project::Data projectData);
-
-	std::vector<QPointer<gpr::api::Project>> const &projects() const;
-
-	QPointer<gpr::api::Project> findProject(int projectId) const;
+	void setGPManager(GPManager *manager);
+	GPManager *gpManager() const { return m_manager; }
 
 	int rowCount(QModelIndex const & = {}) const override;
 	int columnCount(QModelIndex const & = {}) const override;
@@ -41,23 +42,8 @@ public:
 
 	QHash<int, QByteArray> roleNames() const override;
 
-Q_SIGNALS:
-	void projectMergeRequestAdded(QPointer<gpr::api::MR>);
-	void projectMergeRequestRemoved(QPointer<gpr::api::MR>);
-	void projectMergeRequestUpdated(QPointer<gpr::api::MR>);
-
-	void projectMrDiscussionAdded(QPointer<gpr::api::Discussion>);
-	void projectMrDiscussionUpdated(QPointer<gpr::api::Discussion>);
-	void projectMrDiscussionRemoved(QPointer<gpr::api::Discussion>);
-
-	void projectMrDiscussionNoteAdded(QPointer<gpr::api::Note>);
-	void projectMrDiscussionNoteUpdated(QPointer<gpr::api::Note>);
-	void projectMrDiscussionNoteRemoved(QPointer<gpr::api::Note>);
-
 private:
-	void onProjectUpdated(QPointer<gpr::api::Project> project);
-	void connectProject(QPointer<gpr::api::Project> project);
+	void onProjectsReady();
 
-	std::vector<QPointer<gpr::api::Project>> m_projects;
-	GPManager &m_manager;
+	QPointer<GPManager> m_manager;
 };

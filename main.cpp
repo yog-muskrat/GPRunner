@@ -9,9 +9,10 @@
 
 #include "model/MRModel.h"
 #include "model/JobModel.h"
+#include "model/ProjectModel.h"
 #include "model/PipelineModel.h"
-#include "model/DiscussionModel.h"
 #include "model/VariableModel.h"
+#include "model/DiscussionModel.h"
 
 int main(int argc, char *argv[])
 {
@@ -28,6 +29,7 @@ int main(int argc, char *argv[])
 
 	qmlRegisterType<MRModel>("mudbay.gprunner.models", 1, 0, "MRModel");
 	qmlRegisterType<JobModel>("mudbay.gprunner.models", 1, 0, "JobModel");
+	qmlRegisterType<ProjectModel>("mudbay.gprunner.models", 1, 0, "ProjectModel");
 	qmlRegisterType<PipelineModel>("mudbay.gprunner.models", 1, 0, "PipelineModel");
 	qmlRegisterType<VariableModel>("mudbay.gprunner.models", 1, 0, "VariableModel");
 	qmlRegisterType<DiscussionModel>("mudbay.gprunner.models", 1, 0, "DiscussionModel");

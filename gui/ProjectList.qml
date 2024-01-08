@@ -1,6 +1,7 @@
 ﻿import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
+import mudbay.gprunner.models
 
 ListView {
     id: projects
@@ -9,7 +10,7 @@ ListView {
     focus: true
     clip: true
 
-    model: gpm.getProjectModel()
+    model: ProjectModel { manager: gpm }
 
     delegate: Rectangle {
         width: ListView.view.width

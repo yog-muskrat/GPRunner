@@ -7,7 +7,6 @@
 
 #include "client/Client.h"
 
-#include "model/ProjectModel.h"
 #include "model/PipelineModel.h"
 #include "model/MRModel.h"
 
@@ -28,9 +27,10 @@ public:
 
 	Q_INVOKABLE void loadPipelineStatistics(QPointer<gpr::api::Project> project, QDateTime const &from, QDateTime const &to);
 
-	Q_INVOKABLE QAbstractItemModel *getProjectModel();
 	Q_INVOKABLE QAbstractItemModel *getPipelineModel();
 	Q_INVOKABLE QAbstractItemModel *getMRModel();
+
+	QList<QPointer<gpr::api::Project>> const &projects() const { return m_projects; }
 
 	gpr::User getCurrentUser() const { return m_currentUser; }
 	QList<gpr::User> getActiveUsers() const;
@@ -45,14 +45,17 @@ Q_SIGNALS:
 	void activeUsersChanged(QList<gpr::User> const &);
 	void newNotesReceived() const;
 	void notification(QString title, QString message) const;
+	void projectsLoaded() const;
 
 private:
 	void initModels();
 	void initUpdateTimer();
 
+	void connectProject(QPointer<gpr::api::Project> project);
+
 	void parseProjects(QJsonDocument const &doc);
 	void parsePipelines(QPointer<gpr::api::Project> project, QJsonDocument const &doc);
-	void parsePipelineInfo(int projectId, int pipelineId, QJsonDocument const &doc);
+	void parsePipelineInfo(QPointer<gpr::api::Project> project, int pipelineId, QJsonDocument const &doc);
 	void parsePipelineJobs(QPointer<gpr::api::Pipeline> pipeline, QJsonDocument const &doc);
 	void parseMRs(QPointer<gpr::api::Project> project, QJsonDocument const &doc);
 	void parseMRDetails(QPointer<gpr::api::MR> mr, QJsonDocument const &doc);
@@ -74,7 +77,7 @@ private:
 	void loadProjectPipelineVariables(QPointer<gpr::api::Project> project, QString const &ref = "master");
 	void loadProjectMRs(QPointer<gpr::api::Project> project);
 	void loadProjectMRInfo(QPointer<gpr::api::Project> project);
-	void loadPipelineInfo(int projectId, int pipelineId);
+	void loadPipelineInfo(QPointer<gpr::api::Project> project, int pipelineId);
 	void loadPipelineJobs(QPointer<gpr::api::Pipeline> pipeline);
 	void loadCurrentUser();
 	void loadActiveUsers();
@@ -84,9 +87,6 @@ private:
 	void onDiscussionNoteUpdated(QPointer<gpr::api::Note> note);
 
 	void update();
-
-	ProjectModel m_projectModel;
-	QSortFilterProxyModel m_projectProxyModel;
 
 	PipelineModel m_pipelineModel;
 	QSortFilterProxyModel m_pipelineProxyModel;
@@ -100,6 +100,8 @@ private:
 	
 	gpr::User m_currentUser;
 	QList<gpr::User> m_activeUsers;
+
+	QList<QPointer<gpr::api::Project>> m_projects;
 
 	ImageProvider &m_imageProvider;
 
