@@ -104,7 +104,7 @@ void GPManager::onDiscussionAdded(QPointer<gpr::api::Discussion> discussion)
 		Q_EMIT notification(
 			"Новая дискуссия",
 			QString("Новая дискуссия в %1/%2").arg(discussion->mr().project().name()).arg(discussion->mr().title()));
-		Q_EMIT newNotesReceived();
+		Q_EMIT newNotesChanged();
 	}
 }
 
@@ -117,7 +117,7 @@ void GPManager::onDiscussionNoteAdded(QPointer<gpr::api::Note> note)
 			QString("Новые сообщение в %1/%2")
 				.arg(note->discussion().mr().project().name())
 				.arg(note->discussion().mr().title()));
-		Q_EMIT newNotesReceived();
+		Q_EMIT newNotesChanged();
 	}
 
 	m_client.requestMRNoteEmojis(
@@ -129,10 +129,7 @@ void GPManager::onDiscussionNoteAdded(QPointer<gpr::api::Note> note)
 
 void GPManager::onDiscussionNoteUpdated(QPointer<gpr::api::Note> note)
 {
-	if (note->discussion().mr().isUserInvolved(m_currentUser))
-	{
-		Q_EMIT newNotesReceived();
-	}
+	Q_EMIT newNotesChanged();
 
 	m_client.requestMRNoteEmojis(
 		note->discussion().mr().project().id(),

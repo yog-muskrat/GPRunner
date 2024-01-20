@@ -138,6 +138,9 @@ namespace gpr::api
 
 	void Note::markRead()
 	{
-		m_wasRead = true;
+		if(!std::exchange(m_wasRead, true))
+		{
+			Q_EMIT modified();
+		}
 	}
 } // namespace gpr::api

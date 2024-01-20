@@ -18,7 +18,7 @@ class GPManager : public QObject
 	Q_OBJECT
 	Q_PROPERTY(gpr::User currentUser READ getCurrentUser NOTIFY currentUserChanged)
 	Q_PROPERTY(QList<gpr::User> activeUsers READ getActiveUsers NOTIFY activeUsersChanged)
-	Q_PROPERTY(bool hasNewNotes READ hasNewNotes NOTIFY newNotesReceived)
+	Q_PROPERTY(bool hasNewNotes READ hasNewNotes NOTIFY newNotesChanged)
 
 public:
 	GPManager(ImageProvider &imageProvider, QObject *parent = nullptr);
@@ -43,7 +43,7 @@ public:
 Q_SIGNALS:
 	void currentUserChanged(gpr::User const &);
 	void activeUsersChanged(QList<gpr::User> const &);
-	void newNotesReceived() const;
+	void newNotesChanged() const;
 	void notification(QString title, QString message) const;
 	void projectsLoaded() const;
 
