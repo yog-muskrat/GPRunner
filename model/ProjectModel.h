@@ -45,5 +45,7 @@ public:
 private:
 	void onProjectsReady();
 
+	void onProjectModified(gpr::api::Project *prj);
+
 	QPointer<GPManager> m_manager;
 };

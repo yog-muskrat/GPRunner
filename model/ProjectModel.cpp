@@ -87,5 +87,23 @@ QHash<int, QByteArray> ProjectModel::roleNames() const
 void ProjectModel::onProjectsReady()
 {
 	beginResetModel();
+	for(auto prj : m_manager->projects())
+	{
+		connect(prj, &gpr::api::Project::modified, [this, prj]{ onProjectModified(prj); });
+	}
+
 	endResetModel();
+}
+
+void ProjectModel::onProjectModified(gpr::api::Project *prj)
+{
+	auto const &projects = m_manager->projects();
+
+	auto const pos = std::ranges::find(projects, prj, &QPointer<gpr::api::Project>::get);
+
+	if(pos == projects.cend()) return;
+
+	auto const row = static_cast<int>(std::ranges::distance(projects.cbegin(), pos));
+
+	Q_EMIT dataChanged(index(row, 0), index(row, columnCount() - 1));
 }
