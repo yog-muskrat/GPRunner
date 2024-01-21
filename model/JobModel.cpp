@@ -92,7 +92,7 @@ QVariant JobModel::data(const QModelIndex &index, int role) const
 				break;
 		}
 	}
-	if(role == Qt::EditRole)
+	else if(role == Qt::EditRole)
 	{
 		switch(index.column())
 		{
@@ -115,6 +115,10 @@ QVariant JobModel::data(const QModelIndex &index, int role) const
 		if(index.column() == Column::Id) return job->url();
 		return QString{};
 	}
+	else if(role == Role::JobRole)
+	{
+		return QVariant::fromValue(job.get());
+	}
 
 	return {};
 }
@@ -123,6 +127,7 @@ QHash<int, QByteArray> JobModel::roleNames() const
 {
 	auto names = QAbstractTableModel::roleNames();
 	names.emplace(Role::UrlRole, "url");
+	names.emplace(Role::JobRole, "job");
 	return names;
 }
 

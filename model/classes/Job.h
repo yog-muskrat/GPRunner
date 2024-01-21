@@ -13,6 +13,8 @@ namespace gpr::api
 	class Job : public QObject
 	{
 		Q_OBJECT
+		Q_PROPERTY(QString status READ status NOTIFY modified)
+
 	public:
 		struct Data
 		{

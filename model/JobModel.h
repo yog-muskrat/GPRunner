@@ -34,6 +34,7 @@ public:
 	enum Role
 	{
 		UrlRole = Qt::UserRole,
+		JobRole,
 	};
 
 	JobModel(QObject *parent = nullptr);

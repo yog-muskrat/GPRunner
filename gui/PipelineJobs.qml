@@ -42,6 +42,7 @@ Item {
                 clip: true
 
                 model: jobModel
+                selectionModel: ItemSelectionModel { }
 
                 columnWidthProvider: Utility.calcColumnWidth.bind(this, header)
 
@@ -63,8 +64,19 @@ Item {
                         Label {
                             text: model.display
                             padding: 5
-                            color: jobs.currentRow ? palette.highlightedText : palette.text
+                            color: getTextColor(column, job)
                         }
+                    }
+
+                    function getTextColor(column, job) {
+                        if (job != null && column == JobModel.Status) {
+                            if (job.status == "success")   return "#429942";
+                            if (job.status == "canceled")  return "#999942";
+                            if (job.status == "failed")    return "#FE4242";
+                            if (job.status == "running")   return "#4242FE";
+                            // TODO: created, waiting_for_resource, preparing, pending, skipped, manual, scheduled
+                        }
+                        return jobs.currentRow ? palette.highlightedText : palette.text;
                     }
                 }
             }
