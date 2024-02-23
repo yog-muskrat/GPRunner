@@ -71,7 +71,9 @@ Rectangle {
         Image {
             visible: isUserColumn(column)
             Layout.maximumHeight: 28
+            Layout.minimumHeight: 28
             Layout.maximumWidth: Layout.maximumHeight
+            Layout.minimumWidth: Layout.maximumWidth
             source: avatarUrl(mr, column)
             fillMode: Image.PreserveAspectFit
         }

@@ -182,6 +182,8 @@ Item {
                     Layout.alignment: Qt.AlignTop
                     Layout.maximumHeight: imgSize
                     Layout.maximumWidth: imgSize
+                    Layout.minimumHeight: imgSize
+                    Layout.minimumWidth: imgSize
 
                     source: model.note ? model.note.author.avatarUrl : ""
                     fillMode: Image.PreserveAspectFit
