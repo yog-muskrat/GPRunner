@@ -3,6 +3,7 @@
 #include <QQuickStyle>
 #include <QIcon>
 #include <QQmlApplicationEngine>
+#include <QSharedMemory>
 
 #include "GPManager.h"
 #include "ImageProvider.h"
@@ -16,6 +17,13 @@
 
 int main(int argc, char *argv[])
 {
+	QSharedMemory lock("{36978912-A450-4E92-AAAD-0AD4B4B349D2}");
+	if (!lock.create(512, QSharedMemory::ReadWrite))
+	{
+		qWarning() << "Can't start more than one instance of the application.";
+		exit(0);
+	}
+
 	QGuiApplication app(argc, argv);
 	app.setWindowIcon(QIcon(":/icons/gitlab-green.png"));
 	app.setOrganizationName("mudbay");
