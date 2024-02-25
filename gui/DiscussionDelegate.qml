@@ -252,6 +252,12 @@ Item {
             textFormat: Text.MarkdownText
             rightPadding: treeDelegate.padding
             bottomPadding: treeDelegate.padding
+
+            onLinkActivated: function(link){ Qt.openUrlExternally(link) }
+            HoverHandler {
+                enabled: parent.hoveredLink
+                cursorShape: Qt.PointingHandCursor
+            }
         }
 
         Item {
