@@ -5,7 +5,7 @@
 #include <ranges>
 
 #include "model/classes/Parser.h"
-#include "Parser.h"
+#include "GPManager.h"
 
 namespace gpr::api
 {
@@ -15,6 +15,28 @@ namespace gpr::api
 		{
 			return QDateTime::fromString(json.toString(), Qt::DateFormat::ISODate);
 		}
+
+		QList<User> parseMentionedUsers(QString const &text, QList<User> const &activeUsers)
+		{
+			QList<User> result;
+
+			QRegularExpression regex{"@([a-zA-Z0-9_]+)"};
+
+			auto iter = regex.globalMatch(text);
+
+			while(iter.hasNext())
+			{
+				auto match = iter.next();
+				if(auto const pos = std::ranges::find(activeUsers, match.captured(1), &User::username);
+					pos != activeUsers.cend() && !result.contains(*pos))
+				{
+					result.push_back(*pos);
+				}
+			}
+
+			return result;
+		}
+
 	} // namespace
 
 	Project::Data gpr::api::parseProject(QJsonObject const &json)
@@ -88,7 +110,7 @@ namespace gpr::api
 		return json["head_pipeline"]["id"].toInt();
 	}
 
-	std::pair<Discussion::Data, std::vector<Note::Data>> parseDiscussion(QJsonObject const &json)
+	std::pair<Discussion::Data, std::vector<Note::Data>> parseDiscussion(QJsonObject const &json, GPManager const &manager)
 	{
 		Discussion::Data discussion {.id = json["id"].toString() };
 
@@ -97,14 +119,17 @@ namespace gpr::api
 		for (auto const &note : json["notes"].toArray() | std::views::transform(&QJsonValueRef::toObject)
 		                            | std::views::filter([](auto const &obj) { return !obj["system"].toBool(); }))
 		{
-			notes.push_back(Note::Data{
+			Note::Data data{
 				.id = note["id"].toInt(),
 				.author = parseUser(note["author"].toObject()),
 				.body = note["body"].toString(),
 				.created = toDateTime(note["created_at"]),
 				.updated = toDateTime(note["updated_at"]),
 				.resolvable = note["resolvable"].toBool(),
-				.resolved = note["resolved"].toBool()});
+				.resolved = note["resolved"].toBool()};
+
+			data.mentions = parseMentionedUsers(data.body, manager.getActiveUsers());
+			notes.push_back(std::move(data));
 		}
 
 		return std::make_pair(discussion, std::move(notes));
@@ -161,21 +186,21 @@ namespace gpr::api
 		return {.id = json["id"].toInt(), .username = json["username"].toString(), .avatarUrl = json["avatar_url"].toString()};
 	}
 
-	QList<gpr::EmojiReaction> parseNoteEmojis(QJsonDocument const &doc, std::map<QString, gpr::Emoji> const &emojiDictionary)
+	QList<gpr::EmojiReaction> parseNoteEmojis(QJsonDocument const &doc, GPManager const &manager)
 	{
 		QList<gpr::EmojiReaction> result;
 
 		for (auto const obj : doc.array() | std::views::transform(&QJsonValueRef::toObject))
 		{
 			auto const name = obj["name"].toString();
-			auto const pos = emojiDictionary.find(name);
+			auto const pos = manager.emojiDict().find(name);
 			// TODO: Проверить алиасы, если имя не найдено
 
 			result.push_back(gpr::EmojiReaction{
 				.id = obj["id"].toInt(),
 				.awardableId = obj["awardable_id"].toInt(),
 				.awardableType = obj["awardable_type"].toString(),
-				.reaction = pos == emojiDictionary.cend() ? gpr::Emoji{ .name = name, .moji = "?" } : pos->second,
+				.reaction = pos == manager.emojiDict().cend() ? gpr::Emoji{ .name = name, .moji = "?" } : pos->second,
 				.user = parseUser(obj["user"].toObject()),
 				.created = toDateTime(obj["created_at"]),
 			});

@@ -307,7 +307,7 @@ void GPManager::parseMRDiscussions(QPointer<gpr::api::MR> mr, QJsonDocument cons
 
 	auto discussions =  doc.array()
 		| std::views::transform(&QJsonValueRef::toObject)
-		| std::views::transform(gpr::api::parseDiscussion)
+		| std::views::transform([this](auto const &obj) { return gpr::api::parseDiscussion(obj, *this); })
 		| std::views::filter([](auto const &pair) { return !pair.second.empty(); })
 		| std::ranges::to<std::vector>();
 
@@ -336,7 +336,7 @@ void GPManager::parseMRNoteEmojis(QPointer<gpr::api::MR> mr, QString const &disc
 		return;
 	}
 
-	note->setReactions(gpr::api::parseNoteEmojis(doc, m_emojis));
+	note->setReactions(gpr::api::parseNoteEmojis(doc, *this));
 }
 
 void GPManager::parseMRApprovals(QPointer<gpr::api::MR> mr, QJsonDocument const &doc)

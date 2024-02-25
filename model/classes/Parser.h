@@ -7,6 +7,7 @@
 
 class QJsonObject;
 class QJsonDocument;
+class GPManager;
 
 namespace gpr::api
 {
@@ -19,12 +20,12 @@ namespace gpr::api
 	Job::Data parseJobInfo(QJsonObject const &json);
 	MR::Data parseMR(QJsonObject const &json);
 	int parseMRHeadPipeline(QJsonObject const &json);
-	std::pair<Discussion::Data, std::vector<Note::Data>> parseDiscussion(QJsonObject const &json);
+	std::pair<Discussion::Data, std::vector<Note::Data>> parseDiscussion(QJsonObject const &json, GPManager const &manager);
 	std::vector<QString> parseApprovals(QJsonObject const &json);
 	QList<Variable> parseVariables(QJsonDocument const &doc);
 	QStringList parseBranches(QJsonDocument const &doc);
 	gpr::User parseUser(QJsonObject const &json);
-	QList<gpr::EmojiReaction> parseNoteEmojis(QJsonDocument const &doc, std::map<QString, gpr::Emoji> const &emojiDictionary);
+	QList<gpr::EmojiReaction> parseNoteEmojis(QJsonDocument const &doc, GPManager const &manager);
 
 	std::map<QString, gpr::Emoji> parseEmojis(QJsonDocument const &doc);
 } // namespace gpr::api

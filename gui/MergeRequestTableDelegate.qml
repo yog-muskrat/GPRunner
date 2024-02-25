@@ -32,11 +32,8 @@ Rectangle {
         return ""
     }
 
-    function isCurrentUser(mr, column) {
-        if(column == MRModel.Author)   return mr.author == gpm.currentUser;
-        if(column == MRModel.Assignee) return mr.assignee == gpm.currentUser;
-        if(column == MRModel.Reviewer) return mr.reviewer == gpm.currentUser;
-        return false
+    function isUserInvolved(mr, column) {
+        return mr.isUserInvolved(gpm.currentUser)
     }
 
     function getUser(column) {
@@ -83,7 +80,7 @@ Rectangle {
 
             visible: column != MRModel.Pipeline
             text: model.display
-            font.bold: isCurrentUser(mr, column)
+            font.bold: isUserInvolved(mr, column)
             color: mrs.currentRow ? palette.highlightedText : palette.text
 
             DefaultToolTip {

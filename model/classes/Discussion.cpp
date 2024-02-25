@@ -147,4 +147,14 @@ namespace gpr::api
 	{
 		connect(note, &Note::modified, [this, note] { Q_EMIT noteUpdated(note); });
 	}
+
+	bool Discussion::isUserInvolved(QString const &username) const
+	{
+		return std::ranges::any_of(
+			notes(),
+			[&username](auto const &note) {
+				return note->author().username == username
+			        || std::ranges::contains(note->mentionedUsers(), username, &User::username);
+			});
+	}
 } // namespace gpr::api

@@ -44,6 +44,7 @@ namespace gpr::api
 		Q_INVOKABLE void markRead();
 		Q_INVOKABLE bool hasUnreadNotes() const;
 		Q_INVOKABLE bool userCanResolve(User const &user) const;
+		Q_INVOKABLE bool isUserInvolved(QString const &username) const;
 
 		std::vector<QPointer<Note>> const &notes() const;
 		QPointer<Note> findNote(int id) const;

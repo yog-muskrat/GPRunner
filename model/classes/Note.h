@@ -18,6 +18,7 @@ namespace gpr::api
 		Q_PROPERTY(QString url READ url NOTIFY modified)
 		Q_PROPERTY(QString body READ body WRITE setBody NOTIFY modified)
 		Q_PROPERTY(QList<EmojiReaction> reactions READ reactions NOTIFY modified)
+		Q_PROPERTY(QList<User> mentionedUsers READ mentionedUsers NOTIFY modified)
 
 	public:
 		struct Data
@@ -30,6 +31,8 @@ namespace gpr::api
 
 			bool resolvable{};
 			bool resolved{};
+
+			QList<User> mentions;
 		};
 
 		Note(Data data, Discussion &discussion);
@@ -60,6 +63,9 @@ namespace gpr::api
 
 		QList<EmojiReaction> const &reactions() const;
 		void setReactions(QList<EmojiReaction> reactions);
+
+		QList<User> const &mentionedUsers() const;
+		void setMentionedUsers(QList<User> users);
 
 		bool isRead() const;
 		void markRead();

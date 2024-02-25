@@ -126,7 +126,21 @@ namespace gpr::api
 		//TODO: сранивать умнее
 		if(!std::ranges::equal(reactions, m_reactions))
 		{
-			m_reactions = reactions;
+			m_reactions.swap(reactions);
+			Q_EMIT modified();
+		}
+	}
+
+	QList<User> const &Note::mentionedUsers() const
+	{
+		return m_data.mentions;
+	}
+
+	void Note::setMentionedUsers(QList<User> users)
+	{
+		if(!std::ranges::equal(users, m_data.mentions))
+		{
+			m_data.mentions.swap(users);
 			Q_EMIT modified();
 		}
 	}

@@ -250,8 +250,10 @@ namespace gpr::api
 
 	bool MR::isUserInvolved(QString const &username) const
 	{
-		// TODO: Проверять упоминания пользователя в дискуссиях.
-		return m_data.author.username == username || m_data.assignee.username == username || m_data.reviewer.username == username;
+		return m_data.author.username == username
+			|| m_data.assignee.username == username
+			|| m_data.reviewer.username == username
+			|| std::ranges::any_of(m_discussions, [&username](auto const &d) { return d->isUserInvolved(username); });
 	}
 
 	QPointer<Discussion> MR::findDiscussion(QString const &id) const
