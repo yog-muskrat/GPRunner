@@ -4,3 +4,4 @@ settings.json
 *.user
 /.build
 /GPRunner/x64
+/bin
