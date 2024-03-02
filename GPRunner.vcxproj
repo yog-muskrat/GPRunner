@@ -36,7 +36,6 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="QtSettings">
     <QtModules>qml;quick;quickcontrols2;quicklayouts</QtModules>
-    <QtBuildConfig>release</QtBuildConfig>
   </PropertyGroup>
   <Target Name="QtMsBuildNotFound" BeforeTargets="CustomBuild;ClCompile" Condition="!Exists('$(QtMsBuild)\qt.targets') or !Exists('$(QtMsBuild)\qt.props')">
     <Message Importance="High" Text="QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly." />
@@ -57,8 +56,21 @@
     <IntDir>.build\$(Platform)\$(Configuration)\obj\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutDir>.build\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>.build\$(Platform)\$(Configuration)\obj\</IntDir>
+    <OutDir>$(ProjectDir)bin\</OutDir>
+    <IntDir>$(ProjectDir).build\$(Platform)\$(Configuration)\obj\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Label="QtDeploy" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <QtDeployDir>$(OutDir)deploy</QtDeployDir>
+    <QtDeployLibDir>$(OutDir)deploy/libs</QtDeployLibDir>
+    <QtDeployPluginDir>$(OutDir)deploy/plugins</QtDeployPluginDir>
+    <QtDeployNoPlugins>false</QtDeployNoPlugins>
+    <QtDeployNoLibraries>false</QtDeployNoLibraries>
+    <QtDeployCompilerRuntime>skip</QtDeployCompilerRuntime>
+    <QtDeployWebkit2>skip</QtDeployWebkit2>
+    <QtDeployAngle>skip</QtDeployAngle>
+    <QtDeployNoOpenglSw>true</QtDeployNoOpenglSw>
+    <QtDeployQmlDir>$(ProjectDir)src</QtDeployQmlDir>
+    <QtDeploy>true</QtDeploy>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
