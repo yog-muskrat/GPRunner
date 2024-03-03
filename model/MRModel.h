@@ -22,10 +22,8 @@ public:
 		Author,
 		Assignee,
 		Reviewer,
-		SourceBranch,
-		TargetBranch,
-		Updated,
-		Created,
+		Branches,
+		CreatedUpdated,
 		Count,
 	};
 	Q_ENUM(Column)
@@ -33,6 +31,7 @@ public:
 	enum Role
 	{
 		MrRole = Qt::UserRole,
+		UpdatedRole
 	};
 
 	MRModel(GPManager &manager);

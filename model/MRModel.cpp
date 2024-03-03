@@ -19,7 +19,7 @@ namespace {
 	{
 		static std::map<QString, StatusInfo> const mergeStatuses = {
 		{"blocked_status",           {"BLK",  "Blocked by another merge request."}},
-		{"broken_status",            {"BRK",  "Can’t merge into the target branch due to a potential conflict."}},
+		{"broken_status",            {"⚠",  "Can’t merge into the target branch due to a potential conflict."}},
 		{"checking",                 {"GIT",  "Git is testing if a valid merge is possible."}},
 		{"unchecked",                {"GIT",  "Git has not yet tested if a valid merge is possible."}},
 		{"ci_must_pass",             {"CI",   "A CI/CD pipeline must succeed before merge."}},
@@ -105,18 +105,16 @@ QVariant MRModel::headerData(int section, Qt::Orientation orientation, int role)
 
 	switch (section)
 	{
-		case Column::Iid: return "IID";
-		case Column::Title: return "Title";
-		case Column::Status: return "?";
-		case Column::Pipeline: return "PL";
-		case Column::Author: return "Author";
-		case Column::Discussions: return "🗨";
-		case Column::Assignee: return "Assignee";
-		case Column::Reviewer: return "Reviewer";
-		case Column::SourceBranch: return "Source";
-		case Column::TargetBranch: return "Target";
-		case Column::Created: return "Created";
-		case Column::Updated: return "Updated";
+		case Column::Iid:            return "IID";
+		case Column::Title:          return "Title";
+		case Column::Status:         return "?";
+		case Column::Pipeline:       return "PL";
+		case Column::Author:         return "Author";
+		case Column::Discussions:    return "🗨";
+		case Column::Assignee:       return "Assignee";
+		case Column::Reviewer:       return "Reviewer";
+		case Column::Branches:       return "Branches";
+		case Column::CreatedUpdated: return "Created/Updated";
 		default: break;
 	}
 	return {};
@@ -132,10 +130,11 @@ QVariant MRModel::data(QModelIndex const &index, int role) const
 	auto mr = m_project->openMRs().at(index.row());
 	auto const column = static_cast<Column>(index.column());
 
-	if (role == Qt::DisplayRole)      return displayRole(*mr, column);
-	if (role == Qt::EditRole)         return editRole(*mr, column);
-	if (role == Qt::ToolTipRole)      return toolTipRole(*mr, column);
-	if (role == Role::MrRole)         return QVariant::fromValue(mr.get());
+	if (role == Qt::DisplayRole)   return displayRole(*mr, column);
+	if (role == Qt::EditRole)      return editRole(*mr, column);
+	if (role == Qt::ToolTipRole)   return toolTipRole(*mr, column);
+	if (role == Role::MrRole)      return QVariant::fromValue(mr.get());
+	if (role == Role::UpdatedRole) return mr->updatedAt();
 
 	return QVariant();
 }
@@ -197,12 +196,10 @@ QVariant MRModel::editRole(gpr::api::MR const &mr, Column column) const
 		case Column::Assignee:
 		case Column::Reviewer:
 		case Column::Discussions:
-		case Column::SourceBranch:
-		case Column::TargetBranch: return displayRole(mr, column);
-		case Column::Status:       return mr.mergeStatus();
-		case Column::Pipeline:     return mr.pipeline() ? mr.pipeline()->status() : QString{""};
-		case Column::Created:      return mr.createdAt();
-		case Column::Updated:      return mr.updatedAt();
+		case Column::CreatedUpdated:
+		case Column::Branches:       return displayRole(mr, column);
+		case Column::Status:         return mr.mergeStatus();
+		case Column::Pipeline:       return mr.pipeline() ? mr.pipeline()->status() : QString{""};
 		default: break;
 	}
 	return {};
@@ -212,18 +209,16 @@ QVariant MRModel::displayRole(gpr::api::MR const &mr, Column column) const
 {
 	switch (column)
 	{
-		case Column::Iid:          return mr.iid();
-		case Column::Title:        return mr.title();
-		case Column::Status:       return getStatusInfo(mr.mergeStatus()).shortInfo;
-		case Column::Pipeline:     return getPipelineStatusIcon(mr.pipeline() ? mr.pipeline()->status() : QString{""});
-		case Column::Author:       return mr.author().username;
-		case Column::Discussions:  return getDiscussionsString(mr);
-		case Column::Assignee:     return mr.assignee().username;
-		case Column::Reviewer:     return mr.reviewer().username;
-		case Column::SourceBranch: return mr.sourceBranch();
-		case Column::TargetBranch: return mr.targetBranch();
-		case Column::Created:      return getDateTimeString(mr.createdAt());
-		case Column::Updated:      return getDateTimeString(mr.updatedAt());
+		case Column::Iid:            return mr.iid();
+		case Column::Title:          return mr.title();
+		case Column::Status:         return getStatusInfo(mr.mergeStatus()).shortInfo;
+		case Column::Pipeline:       return getPipelineStatusIcon(mr.pipeline() ? mr.pipeline()->status() : QString{""});
+		case Column::Author:         return mr.author().username;
+		case Column::Discussions:    return getDiscussionsString(mr);
+		case Column::Assignee:       return mr.assignee().username;
+		case Column::Reviewer:       return mr.reviewer().username;
+		case Column::Branches:       return QString{"%1\n%2"}.arg(mr.sourceBranch(), mr.targetBranch());
+		case Column::CreatedUpdated: return QString{"%1\n%2"}.arg(getDateTimeString(mr.createdAt()), getDateTimeString(mr.updatedAt()));
 		default: break;
 	}
 	return {};

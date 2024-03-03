@@ -26,6 +26,10 @@ namespace gpr::api
 		Q_PROPERTY(User reviewer READ reviewer WRITE setReviewer NOTIFY modified)
 		Q_PROPERTY(Pipeline * pipeline READ pipeline NOTIFY modified)
 		Q_PROPERTY(bool hasUnreadNotes READ hasUnreadNotes NOTIFY modified)
+		Q_PROPERTY(QDateTime createdAt READ createdAt NOTIFY modified)
+		Q_PROPERTY(QDateTime updatedAt READ updatedAt NOTIFY modified)
+		Q_PROPERTY(QString sourceBranch READ sourceBranch NOTIFY modified)
+		Q_PROPERTY(QString targetBranch READ targetBranch NOTIFY modified)
 		
 
 	public:

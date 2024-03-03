@@ -189,6 +189,12 @@
     <None Include="gui\EmojiButton.qml">
       <Filter>gui\common</Filter>
     </None>
+    <None Include="gui\MrDelegate.qml">
+      <Filter>gui\mr</Filter>
+    </None>
+    <None Include="gui\User.qml">
+      <Filter>gui\common</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="gui\qml.qrc">

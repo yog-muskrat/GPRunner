@@ -181,8 +181,8 @@ void GPManager::initModels()
 
 	m_mrProxyModel.setSourceModel(&m_mrModel);
 	m_mrProxyModel.setDynamicSortFilter(true);
-	m_mrProxyModel.setSortRole(Qt::ItemDataRole::EditRole);
-	m_mrProxyModel.sort(MRModel::Column::Updated, Qt::SortOrder::DescendingOrder);
+	m_mrProxyModel.setSortRole(MRModel::Role::UpdatedRole);
+	m_mrProxyModel.sort(MRModel::Column::CreatedUpdated);
 }
 
 void GPManager::initUpdateTimer()
