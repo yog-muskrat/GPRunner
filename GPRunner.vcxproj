@@ -145,6 +145,7 @@
     <None Include="gui\MergeRequestTableDelegate.qml" />
     <None Include="gui\MrDelegate.qml" />
     <None Include="gui\MRTable.qml" />
+    <None Include="gui\MrUser.qml" />
     <None Include="gui\StartPipeline.qml" />
     <None Include="gui\PipelineJobs.qml" />
     <None Include="gui\PipelineStatistics.qml" />

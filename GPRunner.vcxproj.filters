@@ -195,6 +195,9 @@
     <None Include="gui\User.qml">
       <Filter>gui\common</Filter>
     </None>
+    <None Include="gui\MrUser.qml">
+      <Filter>gui\mr</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="gui\qml.qrc">

@@ -14,14 +14,11 @@ class MRModel : public QAbstractTableModel
 public:
 	enum Column
 	{
-		Iid,
+		Title,
 		Status,
 		Pipeline,
 		Discussions,
-		Title,
-		Author,
-		Assignee,
-		Reviewer,
+		Users,
 		Branches,
 		CreatedUpdated,
 		Count,

@@ -18,8 +18,8 @@ namespace gpr::api
 	class MR : public QObject
 	{
 		Q_OBJECT
-		Q_PROPERTY(int id READ id)
-		Q_PROPERTY(int iid READ iid)
+		Q_PROPERTY(int id READ id NOTIFY modified)
+		Q_PROPERTY(int iid READ iid NOTIFY modified)
 		Q_PROPERTY(QString url READ url NOTIFY modified)
 		Q_PROPERTY(User author READ author NOTIFY modified)
 		Q_PROPERTY(User assignee READ assignee WRITE setAssignee NOTIFY modified)

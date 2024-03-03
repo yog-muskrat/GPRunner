@@ -7,14 +7,33 @@ import "Utility.js" as Utility
 
 DelegateChooser {
     DelegateChoice {
-        column: MRModel.Iid
+        column: MRModel.Title
 
         MrDelegate {
-            TextLinkButton { url: mr.url }
-            Label { text: display }
-            HorizontalSpacer {}
+            ColumnLayout {
+                Label {
+                    text: display
+                    font.bold: mr.isUserInvolved(gpm.currentUser)
+                }
+                RowLayout {
+                    TextLinkButton {
+                        url: mr.url
+                        text: "!" + mr.iid
+                        font.pointSize: 9
+                    }
+                    Label {
+                        text: "Created at " + Utility.formatDateTime(mr.createdAt) + " by "
+                        font.pointSize: 9
+                    }
+                    User {
+                        user: model.mr.author
+                        size: 19
+                        showLabel: false
+                    }
+                }
+            }
         }
-    } 
+    }
 
 	DelegateChoice {
         column: MRModel.Status
@@ -44,10 +63,7 @@ DelegateChooser {
         column: MRModel.Discussions
 
         MrDelegate {
-            Label {
-                text: display
-            }
-
+            Label { text: display }
             UnreadMarker {
                 mr: model.mr
                 visible: model.mr.hasUnreadNotes
@@ -56,45 +72,24 @@ DelegateChooser {
     }
 
 	DelegateChoice {
-        column: MRModel.Title
+        column: MRModel.Users
 
         MrDelegate {
-            Label {
-                text: display
-                font.bold: mr.isUserInvolved(gpm.currentUser)
-            }
-        }
-    }
-
-	DelegateChoice {
-        column: MRModel.Author
-
-        MrDelegate {
-            User {
-                user: model.mr.author
-                boldFont: mr.isUserInvolved(gpm.currentUser)
-            }
-        }
-    }
-
-	DelegateChoice {
-        column: MRModel.Assignee
-
-        MrDelegate {
-            User {
-                user: model.mr.assignee
-                boldFont: mr.isUserInvolved(gpm.currentUser)
-            }
-        }
-    }
-
-	DelegateChoice {
-        column: MRModel.Reviewer
-
-        MrDelegate {
-            User {
-                user: model.mr.reviewer
-                boldFont: mr.isUserInvolved(gpm.currentUser)
+            ColumnLayout {
+                MrUser {
+                    user: model.mr.assignee
+                    mr: model.mr
+                    showLabel: false
+                    size: 19
+                    font.bold: mr.isUserInvolved(gpm.currentUser)
+                }
+                MrUser {
+                    user: model.mr.reviewer
+                    mr: model.mr
+                    showLabel: false
+                    size: 19
+                    font.bold: mr.isUserInvolved(gpm.currentUser)
+                }
             }
         }
     }
@@ -104,7 +99,7 @@ DelegateChooser {
 
         MrDelegate {
             Label {
-                text: "From: " + mr.sourceBranch + "\nTo:" + mr.targetBranch
+                text: mr.sourceBranch + "\n" + mr.targetBranch
             }
         }
     }
@@ -114,56 +109,13 @@ DelegateChooser {
 
         MrDelegate {
             Label {
-                text: "Created: " + Utility.formatDateTime(mr.createdAt) + "\nUpdated: " + Utility.formatDateTime(mr.updatedAt)
+                text: Utility.formatDateTime(mr.updatedAt)
             }
         }
     }
 }
 
 /*Rectangle {
-    function isApproved(mr, column) {
-        if(column == MRModel.Assignee) return mr.isApprovedBy(mr.assignee)
-        if(column == MRModel.Reviewer) return mr.isApprovedBy(mr.reviewer)
-        return false;
-    }
-
-    function canApprove(mr, column) {
-        return (column == MRModel.Assignee && mr.assignee == gpm.currentUser)
-        || (column == MRModel.Reviewer && mr.reviewer == gpm.currentUser);
-    }
-
-    RowLayout {
-        Label {
-            id: approveCheckbox
-
-            visible: {
-                if(column != MRModel.Assignee && column != MRModel.Reviewer) return false
-                return isApproved(mr, column) || canApprove(mr, column)
-            }
-
-            rightPadding: 5
-
-            text: isApproved(mr, column) ? "☑" : canApprove(mr, column) ? "☐" : ""
-            color: canApprove(mr, column) ? (isApproved(mr, column) ? "green" : "yellow") : palette.text
-
-            DefaultToolTip {
-                toolTipText: canApprove(mr, column) ? (isApproved(mr, column) ? "Unapprove" : "Approve") : ""
-            }
-
-            HoverHandler {
-                enabled: canApprove(mr, column)
-                cursorShape: Qt.PointingHandCursor
-            }
-
-            TapHandler {
-                enabled: canApprove(mr, column)
-                onTapped: isApproved(mr, column) ? mr.unapprove() : mr.approve()
-            }
-        }
-
-        }
-    }
-
     TableView.editDelegate: ComboBox {
         id: combo
 

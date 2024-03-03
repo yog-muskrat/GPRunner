@@ -105,14 +105,11 @@ QVariant MRModel::headerData(int section, Qt::Orientation orientation, int role)
 
 	switch (section)
 	{
-		case Column::Iid:            return "IID";
 		case Column::Title:          return "Title";
 		case Column::Status:         return "?";
 		case Column::Pipeline:       return "PL";
-		case Column::Author:         return "Author";
 		case Column::Discussions:    return "🗨";
-		case Column::Assignee:       return "Assignee";
-		case Column::Reviewer:       return "Reviewer";
+		case Column::Users:          return "Users";
 		case Column::Branches:       return "Branches";
 		case Column::CreatedUpdated: return "Created/Updated";
 		default: break;
@@ -150,16 +147,17 @@ bool MRModel::setData(QModelIndex const &index, QVariant const &value, int role)
 
 	if (role == Qt::EditRole)
 	{
-		auto const user = value.canConvert<gpr::User>() ? value.value<gpr::User>() : gpr::User{.id = 0};
+		Q_UNUSED(value)
+		//auto const user = value.canConvert<gpr::User>() ? value.value<gpr::User>() : gpr::User{.id = 0};
 
-		if (index.column() == Column::Reviewer)
+		/*if (index.column() == Column::Reviewer)
 		{
 			mr->setReviewer(user);
 		}
 		else if (index.column() == Column::Assignee)
 		{
 			mr->setAssignee(user);
-		}
+		}*/
 	}
 
 	return false;
@@ -177,12 +175,12 @@ Qt::ItemFlags MRModel::flags(QModelIndex const &index) const
 {
 	if(!index.isValid()) return {};
 
-	auto &mr = *m_project->openMRs().at(index.row());
+	//auto &mr = *m_project->openMRs().at(index.row());
 	auto flags = Qt::ItemIsSelectable | Qt::ItemIsEnabled;
-	if((index.column() == Column::Reviewer || index.column() == Column::Assignee) && mr.author() == m_manager.getCurrentUser())
-	{
-		flags |= Qt::ItemIsEditable;
-	}
+	//if((index.column() == Column::Reviewer || index.column() == Column::Assignee) && mr.author() == m_manager.getCurrentUser())
+	//{
+	//	flags |= Qt::ItemIsEditable;
+	//}
 	return flags;
 }
 
@@ -190,11 +188,8 @@ QVariant MRModel::editRole(gpr::api::MR const &mr, Column column) const
 {
 	switch (column)
 	{
-		case Column::Iid:
 		case Column::Title:
-		case Column::Author:
-		case Column::Assignee:
-		case Column::Reviewer:
+		case Column::Users:
 		case Column::Discussions:
 		case Column::CreatedUpdated:
 		case Column::Branches:       return displayRole(mr, column);
@@ -209,14 +204,11 @@ QVariant MRModel::displayRole(gpr::api::MR const &mr, Column column) const
 {
 	switch (column)
 	{
-		case Column::Iid:            return mr.iid();
 		case Column::Title:          return mr.title();
 		case Column::Status:         return getStatusInfo(mr.mergeStatus()).shortInfo;
 		case Column::Pipeline:       return getPipelineStatusIcon(mr.pipeline() ? mr.pipeline()->status() : QString{""});
-		case Column::Author:         return mr.author().username;
 		case Column::Discussions:    return getDiscussionsString(mr);
-		case Column::Assignee:       return mr.assignee().username;
-		case Column::Reviewer:       return mr.reviewer().username;
+		case Column::Users:          return QString{"%1\n%2"}.arg(mr.assignee().username, mr.reviewer().username);
 		case Column::Branches:       return QString{"%1\n%2"}.arg(mr.sourceBranch(), mr.targetBranch());
 		case Column::CreatedUpdated: return QString{"%1\n%2"}.arg(getDateTimeString(mr.createdAt()), getDateTimeString(mr.updatedAt()));
 		default: break;
