@@ -111,7 +111,6 @@ QVariant MRModel::headerData(int section, Qt::Orientation orientation, int role)
 		case Column::Discussions:    return "🗨";
 		case Column::Users:          return "Users";
 		case Column::Branches:       return "Branches";
-		case Column::CreatedUpdated: return "Created/Updated";
 		default: break;
 	}
 	return {};
@@ -136,52 +135,12 @@ QVariant MRModel::data(QModelIndex const &index, int role) const
 	return QVariant();
 }
 
-bool MRModel::setData(QModelIndex const &index, QVariant const &value, int role)
-{
-	if (!checkIndex(index, CheckIndexOption::IndexIsValid))
-	{
-		return false;
-	}
-
-	auto const mr = m_project->openMRs().at(index.row());
-
-	if (role == Qt::EditRole)
-	{
-		Q_UNUSED(value)
-		//auto const user = value.canConvert<gpr::User>() ? value.value<gpr::User>() : gpr::User{.id = 0};
-
-		/*if (index.column() == Column::Reviewer)
-		{
-			mr->setReviewer(user);
-		}
-		else if (index.column() == Column::Assignee)
-		{
-			mr->setAssignee(user);
-		}*/
-	}
-
-	return false;
-}
-
 QHash<int, QByteArray> MRModel::roleNames() const
 {
 	auto names = QAbstractTableModel::roleNames();
 	names.emplace(Role::MrRole, "mr");
 
 	return names;
-}
-
-Qt::ItemFlags MRModel::flags(QModelIndex const &index) const
-{
-	if(!index.isValid()) return {};
-
-	//auto &mr = *m_project->openMRs().at(index.row());
-	auto flags = Qt::ItemIsSelectable | Qt::ItemIsEnabled;
-	//if((index.column() == Column::Reviewer || index.column() == Column::Assignee) && mr.author() == m_manager.getCurrentUser())
-	//{
-	//	flags |= Qt::ItemIsEditable;
-	//}
-	return flags;
 }
 
 QVariant MRModel::editRole(gpr::api::MR const &mr, Column column) const
@@ -191,7 +150,6 @@ QVariant MRModel::editRole(gpr::api::MR const &mr, Column column) const
 		case Column::Title:
 		case Column::Users:
 		case Column::Discussions:
-		case Column::CreatedUpdated:
 		case Column::Branches:       return displayRole(mr, column);
 		case Column::Status:         return mr.mergeStatus();
 		case Column::Pipeline:       return mr.pipeline() ? mr.pipeline()->status() : QString{""};
@@ -210,7 +168,6 @@ QVariant MRModel::displayRole(gpr::api::MR const &mr, Column column) const
 		case Column::Discussions:    return getDiscussionsString(mr);
 		case Column::Users:          return QString{"%1\n%2"}.arg(mr.assignee().username, mr.reviewer().username);
 		case Column::Branches:       return QString{"%1\n%2"}.arg(mr.sourceBranch(), mr.targetBranch());
-		case Column::CreatedUpdated: return QString{"%1\n%2"}.arg(getDateTimeString(mr.createdAt()), getDateTimeString(mr.updatedAt()));
 		default: break;
 	}
 	return {};
@@ -247,12 +204,6 @@ QString MRModel::getDiscussionsString(gpr::api::MR const &mr) const
 		}
 	}
 	return result;
-}
-
-QString MRModel::getDateTimeString(QDateTime const &dt) const
-{
-	auto const format = dt.date() == QDate::currentDate() ? "hh:mm" : "dd.MM.yyyy hh:mm";
-	return dt.toLocalTime().toString(format);
 }
 
 void MRModel::connectProject(QPointer<gpr::api::Project> project)

@@ -26,7 +26,36 @@ RowLayout {
         mipmap: true
         smooth: false
 
+        ComboBox {
+            id: combo
+
+            visible: false
+
+            background: Pane{}
+            model: gpm.activeUsers
+            textRole: "username"
+
+            //currentIndex: currentIndex < 0 ? indexOfValue(user) : currentIndex
+            currentIndex: indexOfValue(user)
+
+            implicitContentWidthPolicy: ComboBox.WidestText
+            onActivated: (idx) => {
+                root.user = currentValue
+                visible: false
+            }
+        }
+
         DefaultToolTip { toolTipText: user ? user.username : "" }
+
+        HoverHandler {
+            enabled: editable
+            cursorShape: Qt.PointingHandCursor
+        }
+
+        //TapHandler {
+        //    enabled: editable
+        //    onTapped: combo.visible = true
+        //}
     }
 
     Label {

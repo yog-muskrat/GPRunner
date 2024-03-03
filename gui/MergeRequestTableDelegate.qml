@@ -11,9 +11,15 @@ DelegateChooser {
 
         MrDelegate {
             ColumnLayout {
-                Label {
-                    text: display
-                    font.bold: mr.isUserInvolved(gpm.currentUser)
+                RowLayout {
+                    UnreadMarker {
+                        mr: model.mr
+                        visible: model.mr.hasUnreadNotes
+                    }
+                    Label {
+                        text: display
+                        font.bold: mr.isUserInvolved(gpm.currentUser)
+                    }
                 }
                 RowLayout {
                     TextLinkButton {
@@ -54,7 +60,7 @@ DelegateChooser {
             TextLinkButton {
                 text: display
                 url: mr.pipeline ? mr.pipeline.url : ""
-                toolTip: edit
+                toolTip: "Pipeline: " + edit
             }
         }
     }
@@ -63,10 +69,12 @@ DelegateChooser {
         column: MRModel.Discussions
 
         MrDelegate {
-            Label { text: display }
-            UnreadMarker {
-                mr: model.mr
-                visible: model.mr.hasUnreadNotes
+            ColumnLayout {
+                Label { text: display }
+                Label {
+                    font.pointSize: 9
+                    text: "Updated at " + Utility.formatDateTime(mr.updatedAt)
+                }
             }
         }
     }
@@ -75,21 +83,21 @@ DelegateChooser {
         column: MRModel.Users
 
         MrDelegate {
-            ColumnLayout {
-                MrUser {
-                    user: model.mr.assignee
-                    mr: model.mr
-                    showLabel: false
-                    size: 19
-                    font.bold: mr.isUserInvolved(gpm.currentUser)
-                }
-                MrUser {
-                    user: model.mr.reviewer
-                    mr: model.mr
-                    showLabel: false
-                    size: 19
-                    font.bold: mr.isUserInvolved(gpm.currentUser)
-                }
+            MrUser {
+                user: model.mr.assignee
+                editable: model.mr.author == gpm.currentUser
+                mr: model.mr
+                showLabel: false
+                size: 28
+                font.bold: mr.isUserInvolved(gpm.currentUser)
+            }
+            MrUser {
+                user: model.mr.reviewer
+                editable: model.mr.author == gpm.currentUser
+                mr: model.mr
+                showLabel: false
+                size: 28
+                font.bold: mr.isUserInvolved(gpm.currentUser)
             }
         }
     }
@@ -103,50 +111,4 @@ DelegateChooser {
             }
         }
     }
-
-	DelegateChoice {
-        column: MRModel.CreatedUpdated
-
-        MrDelegate {
-            Label {
-                text: Utility.formatDateTime(mr.updatedAt)
-            }
-        }
-    }
 }
-
-/*Rectangle {
-    TableView.editDelegate: ComboBox {
-        id: combo
-
-        background: Pane{}
-        model: gpm.activeUsers
-        textRole: "username"
-
-        currentIndex: currentIndex < 0 ? indexOfValue(getUser(column)) : currentIndex
-
-        implicitContentWidthPolicy: ComboBox.WidestText
-        TableView.onCommit: edit = currentValue
-
-        Pane{
-            visible: getUser(column).id > 0
-            padding: 0
-
-            anchors.left: parent.right
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-
-            Button {
-                anchors.fill: parent
-
-                text: "X"
-
-                onClicked: {
-                    edit = 0
-                    mrDelegate.TableView.view.closeEditor()
-                }
-            }
-        }
-    }
-}
-*/

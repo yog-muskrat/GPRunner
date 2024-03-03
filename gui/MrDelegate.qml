@@ -4,7 +4,7 @@ import QtQuick.Controls
 import Qt.labs.qmlmodels
 
 Rectangle {
-    property int padding: 5
+    property int padding: 8
 
     default property alias content: mainLayout.children
 
@@ -27,5 +27,13 @@ Rectangle {
         anchors.rightMargin: padding
         anchors.topMargin: padding
         anchors.bottomMargin: padding
+    }
+
+    Rectangle {
+        height: 1
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        color: palette.window
     }
 }
