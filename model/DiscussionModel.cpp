@@ -183,12 +183,16 @@ void DiscussionModel::onMRRemoved()
 	clear();
 }
 
-void DiscussionModel::onDiscussionAdded(QPointer<gpr::api::Discussion> discussion)
+void DiscussionModel::onDiscussionAdded(QPointer<gpr::api::Discussion> /*discussion*/)
 {
-	auto const row = getRow(discussion);
-	assert(row >= 0);
-	beginInsertRows({}, row, row);
-	endInsertRows();
+	beginResetModel();
+	endResetModel();
+
+	// NOTE: Костыль для обхода проблемы с падением при отображении списка дискуссий в QML
+	//auto const row = getRow(discussion);
+	//assert(row >= 0);
+	//beginInsertRows({}, row, row);
+	//endInsertRows();
 }
 
 void DiscussionModel::onDiscussionUpdated(QPointer<gpr::api::Discussion> discussion)
