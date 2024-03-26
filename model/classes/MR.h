@@ -72,6 +72,8 @@ namespace gpr::api
 		Q_INVOKABLE bool isUserInvolved(User const &user) const;
 		Q_INVOKABLE bool userCanApprove(QString const &username) const;
 		Q_INVOKABLE bool userCanApprove(User const &user) const;
+		Q_INVOKABLE void clearAssignee();
+		Q_INVOKABLE void clearReviewer();
 
 		QDateTime createdAt() const;
 		QDateTime updatedAt() const;

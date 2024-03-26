@@ -90,6 +90,11 @@ DelegateChooser {
                 showLabel: false
                 size: 28
                 font.bold: mr.isUserInvolved(gpm.currentUser)
+                onUserSelected: (newUser) => { mr.assignee = newUser }
+                onUserCleared: {
+                    mr.clearAssignee()
+                    console.log("Clear assignee!")
+                }
             }
             MrUser {
                 user: model.mr.reviewer
@@ -98,6 +103,11 @@ DelegateChooser {
                 showLabel: false
                 size: 28
                 font.bold: mr.isUserInvolved(gpm.currentUser)
+                onUserSelected: (newUser) => { mr.reviewer = newUser }
+                onUserCleared: {
+                    mr.clearReviewer()
+                    console.log("Clear reviewer!")
+                }
             }
         }
     }

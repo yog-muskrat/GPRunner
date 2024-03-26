@@ -4,7 +4,7 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import Qt.labs.platform
 
-RowLayout {
+Item {
     property var user: null
     property int size: 23
     property bool editable: false
@@ -12,56 +12,99 @@ RowLayout {
     property alias font: label.font
     property alias showLabel: label.visible
 
+    implicitWidth: mainLayout.implicitWidth
+    implicitHeight: size
+
+    signal userSelected(var newUser)
+    signal userCleared()
+
     id: root
 
-    Image {
-        id: image
-        Layout.maximumHeight: size
-        Layout.minimumHeight: size
-        Layout.maximumWidth: size
-        Layout.minimumWidth: size
+    RowLayout {
+        id: mainLayout
 
-        source: user ? user.avatarUrl : ""
-        fillMode: Image.PreserveAspectFit
-        mipmap: true
-        smooth: false
+        spacing: 5
 
-        ComboBox {
-            id: combo
+        Rectangle {
+            Layout.maximumHeight: size
+            Layout.minimumHeight: size
+            Layout.maximumWidth: size
+            Layout.minimumWidth: size
+    
+            border.color: palette.light
+            border.width: imageHover.hovered ? 1 : 0
 
-            visible: false
+            color: "transparent"
 
-            background: Pane{}
-            model: gpm.activeUsers
-            textRole: "username"
+            Image {
+                id: image
+                
+                anchors.fill: parent
+                anchors.margins: 1
+                source: user && user.avatarUrl ? user.avatarUrl : ""
+                fillMode: Image.PreserveAspectFit
+                mipmap: true
+                smooth: false
+    
+            }
 
-            //currentIndex: currentIndex < 0 ? indexOfValue(user) : currentIndex
-            currentIndex: indexOfValue(user)
+            DefaultToolTip { toolTipText: user ? user.username : "" }
 
-            implicitContentWidthPolicy: ComboBox.WidestText
-            onActivated: (idx) => {
-                root.user = currentValue
-                visible: false
+            HoverHandler {
+                id: imageHover
+                enabled: editable
+                cursorShape: Qt.PointingHandCursor
+            }
+
+            TapHandler {
+                enabled: editable
+                onTapped: { combo.popup.open() }
             }
         }
 
-        DefaultToolTip { toolTipText: user ? user.username : "" }
+        Label {
+            id: clear
 
-        HoverHandler {
-            enabled: editable
-            cursorShape: Qt.PointingHandCursor
+            visible: editable && user
+
+            text: "X"
+
+            DefaultToolTip { toolTipText: "Clear user" }
+
+            HoverHandler { cursorShape: Qt.PointingHandCursor }
+
+            TapHandler {
+                onTapped: {
+                    root.user = null
+                    root.userCleared()
+                }
+            }
         }
 
-        //TapHandler {
-        //    enabled: editable
-        //    onTapped: combo.visible = true
-        //}
+        Label {
+            id: label
+            Layout.fillWidth: true
+            
+            text: user ? user.username : ""
+        }
     }
 
-    Label {
-        id: label
-        Layout.fillWidth: true
-        leftPadding: 5
-        text: user ? user.username : ""
+    ComboBox {
+        id: combo
+
+        visible: popup.opened
+
+        background: Pane{}
+        model: gpm.activeUsers
+        textRole: "username"
+
+        currentIndex: indexOfValue(user)
+
+        implicitContentWidthPolicy: ComboBox.WidestText
+        onActivated: (idx) => {
+            root.user = currentValue
+            combo.popup.close()
+            root.userSelected(root.user)
+        }
     }
 }
