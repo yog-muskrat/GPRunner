@@ -202,6 +202,7 @@ namespace gpr::api
 				connectDiscussion(discussion);
 				Q_EMIT discussionAdded(discussion);
 			}
+
 			discussion->updateNotes(std::move(notes));
 		}
 

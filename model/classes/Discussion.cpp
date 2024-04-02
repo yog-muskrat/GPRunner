@@ -83,7 +83,14 @@ namespace gpr::api
 			else
 			{
 				auto const &newNote = m_notes.emplace_back(new Note(std::move(note), *this));
-				if(!m_loaded) newNote->markRead();
+				auto const currentUser = mr().project().manager().getCurrentUser();
+
+				if(!m_loaded // Не помечать сообщения при первоначальной загрузке
+					|| newNote->author() == currentUser // Не помечать собственные сообщения
+					|| mr().isUserInvolved(currentUser)) // Не помечать сообщения из чужих MR-ов)
+				{
+					newNote->markRead();
+				}
 				connectNote(newNote);
 				Q_EMIT noteAdded(newNote);
 			}
