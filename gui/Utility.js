@@ -15,3 +15,17 @@
   let min = 15
   return Math.max(min, stretched, ew, iw, hw);
 }
+
+function isToday(someDate) {
+  const today = new Date()
+
+  return someDate.getDate() == today.getDate()
+      && someDate.getMonth() == today.getMonth()
+      && someDate.getFullYear() == today.getFullYear()
+}
+
+function formatDateTime(dt) {
+  if(isToday(dt)) return dt.toLocaleTimeString(Qt.locale("ru_RU"), "hh:mm")
+
+  return dt.toLocaleString(Qt.locale("ru_RU"), "dd.MM.yyyy hh:mm")
+}

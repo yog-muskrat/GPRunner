@@ -248,6 +248,16 @@ namespace gpr::api
 		return userCanApprove(user.username);
 	}
 
+	void MR::clearAssignee()
+	{
+		setAssignee({});
+	}
+
+	void MR::clearReviewer()
+	{
+		setReviewer({});
+	}
+
 	bool MR::isUserInvolved(QString const &username) const
 	{
 		return m_data.author.username == username

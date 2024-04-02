@@ -22,6 +22,9 @@
         <file>EmojiButton.qml</file>
         <file>PipelineJobs.qml</file>
         <file>StartPipeline.qml</file>
+        <file>User.qml</file>
+        <file>MrDelegate.qml</file>
+        <file>MrUser.qml</file>
     </qresource>
     <qresource prefix="/icons">
         <file alias="gitlab.png">icons/gitlab.png</file>

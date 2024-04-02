@@ -18,14 +18,18 @@ namespace gpr::api
 	class MR : public QObject
 	{
 		Q_OBJECT
-		Q_PROPERTY(int id READ id)
-		Q_PROPERTY(int iid READ iid)
+		Q_PROPERTY(int id READ id NOTIFY modified)
+		Q_PROPERTY(int iid READ iid NOTIFY modified)
 		Q_PROPERTY(QString url READ url NOTIFY modified)
 		Q_PROPERTY(User author READ author NOTIFY modified)
 		Q_PROPERTY(User assignee READ assignee WRITE setAssignee NOTIFY modified)
 		Q_PROPERTY(User reviewer READ reviewer WRITE setReviewer NOTIFY modified)
 		Q_PROPERTY(Pipeline * pipeline READ pipeline NOTIFY modified)
 		Q_PROPERTY(bool hasUnreadNotes READ hasUnreadNotes NOTIFY modified)
+		Q_PROPERTY(QDateTime createdAt READ createdAt NOTIFY modified)
+		Q_PROPERTY(QDateTime updatedAt READ updatedAt NOTIFY modified)
+		Q_PROPERTY(QString sourceBranch READ sourceBranch NOTIFY modified)
+		Q_PROPERTY(QString targetBranch READ targetBranch NOTIFY modified)
 		
 
 	public:
@@ -68,6 +72,8 @@ namespace gpr::api
 		Q_INVOKABLE bool isUserInvolved(User const &user) const;
 		Q_INVOKABLE bool userCanApprove(QString const &username) const;
 		Q_INVOKABLE bool userCanApprove(User const &user) const;
+		Q_INVOKABLE void clearAssignee();
+		Q_INVOKABLE void clearReviewer();
 
 		QDateTime createdAt() const;
 		QDateTime updatedAt() const;

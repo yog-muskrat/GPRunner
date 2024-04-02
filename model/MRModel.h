@@ -14,18 +14,12 @@ class MRModel : public QAbstractTableModel
 public:
 	enum Column
 	{
-		Iid,
-		Status,
-		Pipeline,
-		Discussions,
 		Title,
-		Author,
-		Assignee,
-		Reviewer,
-		SourceBranch,
-		TargetBranch,
-		Updated,
-		Created,
+		Pipeline,
+		Status,
+		Users,
+		Discussions,
+		Branches,
 		Count,
 	};
 	Q_ENUM(Column)
@@ -33,6 +27,7 @@ public:
 	enum Role
 	{
 		MrRole = Qt::UserRole,
+		UpdatedRole
 	};
 
 	MRModel(GPManager &manager);
@@ -45,9 +40,7 @@ public:
 	int columnCount(QModelIndex const & = {}) const override;
 	QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
 	QVariant data(QModelIndex const &index, int role = Qt::ItemDataRole::DisplayRole) const override;
-	bool setData(QModelIndex const &index, QVariant const &value, int role = Qt::ItemDataRole::DisplayRole) override;
 	QHash<int, QByteArray> roleNames() const override;
-	Qt::ItemFlags flags(QModelIndex const &index) const override;
 
 private:
 	QVariant editRole(gpr::api::MR const &mr, Column column) const;
@@ -55,7 +48,6 @@ private:
 	QVariant toolTipRole(gpr::api::MR const &mr, Column column) const;
 
 	QString getDiscussionsString(gpr::api::MR const &mr) const;
-	QString getDateTimeString(QDateTime const &dt) const;
 
 	void connectProject(QPointer<gpr::api::Project> project);
 	void disconnectProject(QPointer<gpr::api::Project> project);

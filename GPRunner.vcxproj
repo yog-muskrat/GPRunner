@@ -143,7 +143,9 @@
     <None Include="gui\MergeRequestDiscussions.qml" />
     <None Include="gui\MergeRequests.qml" />
     <None Include="gui\MergeRequestTableDelegate.qml" />
+    <None Include="gui\MrDelegate.qml" />
     <None Include="gui\MRTable.qml" />
+    <None Include="gui\MrUser.qml" />
     <None Include="gui\StartPipeline.qml" />
     <None Include="gui\PipelineJobs.qml" />
     <None Include="gui\PipelineStatistics.qml" />
@@ -153,6 +155,7 @@
     <None Include="gui\Pipelines.qml" />
     <None Include="gui\TextLinkButton.qml" />
     <None Include="gui\UnreadMarker.qml" />
+    <None Include="gui\User.qml" />
     <None Include="gui\Utility.js" />
     <None Include="gui\VerticalSpacer.qml" />
     <QtRcc Include="gui\qml.qrc" />

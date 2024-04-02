@@ -8,7 +8,7 @@ Item {
 
     property var currentMR: null
 
-    id: mrTable
+    id: root
 
     clip: true
 
@@ -37,6 +37,8 @@ Item {
             Layout.fillWidth: true
 
             TableView {
+                signal mrSelected(mr: var)
+
                 id: mrs
 
                 anchors.fill: parent
@@ -45,14 +47,15 @@ Item {
                 clip: true
 
                 model: gpm.getMRModel()
-                selectionModel: ItemSelectionModel {}
+                selectionModel: ItemSelectionModel { }
+
                 editTriggers: TableView.DoubleTapped
 
                 columnWidthProvider: Utility.calcColumnWidth.bind(this, header)
 
-                delegate: MergeRequestTableDelegate {
-                    onMrSelected: function(mr) { mrTable.currentMR = mr }
-                }
+                delegate: MergeRequestTableDelegate { }
+
+                onMrSelected: function (mr) { root.currentMR = mr }
             }
         }
     }
