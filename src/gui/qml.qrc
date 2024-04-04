@@ -1,30 +1,30 @@
 <RCC>
     <qresource prefix="/modules">
+        <file>common/DatePicker.qml</file>
+        <file>common/Utility.js</file>
+        <file>common/HorizontalSpacer.qml</file>
+        <file>common/VerticalSpacer.qml</file>
+        <file>common/UnreadMarker.qml</file>
+        <file>common/DefaultToolTip.qml</file>
+        <file>common/TextLinkButton.qml</file>
+        <file>common/EmojiButton.qml</file>
+        <file>common/User.qml</file>
+        <file>pipelines/PipelineTable.qml</file>
+        <file>pipelines/PipelineVariablesTable.qml</file>
+        <file>pipelines/Pipelines.qml</file>
+        <file>pipelines/PipelineStatistics.qml</file>
+        <file>pipelines/PipelineJobs.qml</file>
+        <file>pipelines/StartPipeline.qml</file>
+        <file>discussions/MergeRequestDiscussions.qml</file>
+        <file>discussions/DiscussionNoteDialog.qml</file>
+        <file>discussions/DiscussionDelegate.qml</file>
+        <file>mr/MRTable.qml</file>
+        <file>mr/MergeRequests.qml</file>
+        <file>mr/MergeRequestTableDelegate.qml</file>
+        <file>mr/MrDelegate.qml</file>
+        <file>mr/MrUser.qml</file>
         <file>main.qml</file>
-        <file>PipelineTable.qml</file>
         <file>ProjectList.qml</file>
-        <file>PipelineVariablesTable.qml</file>
-        <file>MRTable.qml</file>
-        <file>Pipelines.qml</file>
-        <file>PipelineStatistics.qml</file>
-        <file>DatePicker.qml</file>
-        <file>Utility.js</file>
-        <file>MergeRequestDiscussions.qml</file>
-        <file>MergeRequests.qml</file>
-        <file>HorizontalSpacer.qml</file>
-        <file>VerticalSpacer.qml</file>
-        <file>UnreadMarker.qml</file>
-        <file>DefaultToolTip.qml</file>
-        <file>DiscussionNoteDialog.qml</file>
-        <file>DiscussionDelegate.qml</file>
-        <file>TextLinkButton.qml</file>
-        <file>MergeRequestTableDelegate.qml</file>
-        <file>EmojiButton.qml</file>
-        <file>PipelineJobs.qml</file>
-        <file>StartPipeline.qml</file>
-        <file>User.qml</file>
-        <file>MrDelegate.qml</file>
-        <file>MrUser.qml</file>
     </qresource>
     <qresource prefix="/icons">
         <file alias="gitlab.png">icons/gitlab.png</file>

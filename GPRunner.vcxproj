@@ -57,7 +57,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutDir>$(ProjectDir)bin\</OutDir>
-    <IntDir>$(ProjectDir).build\$(Platform)\$(Configuration)\obj\</IntDir>
+    <IntDir>.build\$(Platform)\$(Configuration)\obj\</IntDir>
   </PropertyGroup>
   <PropertyGroup Label="QtDeploy" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <QtDeployDir>$(OutDir)deploy</QtDeployDir>
@@ -132,31 +132,31 @@
     <ClCompile Include="src\model\PipelineModel.cpp" />
     <ClCompile Include="src\model\ProjectModel.cpp" />
     <ClCompile Include="src\model\VariableModel.cpp" />
-    <None Include="src\gui\DefaultToolTip.qml" />
-    <None Include="src\gui\DatePicker.qml" />
-    <None Include="src\gui\DiscussionDelegate.qml" />
-    <None Include="src\gui\DiscussionNoteDialog.qml" />
-    <None Include="src\gui\EmojiButton.qml" />
+    <None Include="src\gui\common\DefaultToolTip.qml" />
+    <None Include="src\gui\common\DatePicker.qml" />
+    <None Include="src\gui\discussions\DiscussionDelegate.qml" />
+    <None Include="src\gui\discussions\DiscussionNoteDialog.qml" />
+    <None Include="src\gui\common\EmojiButton.qml" />
     <None Include="src\gui\emojis.json" />
-    <None Include="src\gui\HorizontalSpacer.qml" />
-    <None Include="src\gui\MergeRequestDiscussions.qml" />
-    <None Include="src\gui\MergeRequests.qml" />
-    <None Include="src\gui\MergeRequestTableDelegate.qml" />
-    <None Include="src\gui\MrDelegate.qml" />
-    <None Include="src\gui\MRTable.qml" />
-    <None Include="src\gui\MrUser.qml" />
-    <None Include="src\gui\StartPipeline.qml" />
-    <None Include="src\gui\PipelineJobs.qml" />
-    <None Include="src\gui\PipelineStatistics.qml" />
-    <None Include="src\gui\PipelineTable.qml" />
-    <None Include="src\gui\PipelineVariablesTable.qml" />
+    <None Include="src\gui\common\HorizontalSpacer.qml" />
+    <None Include="src\gui\discussions\MergeRequestDiscussions.qml" />
+    <None Include="src\gui\mr\MergeRequests.qml" />
+    <None Include="src\gui\mr\MergeRequestTableDelegate.qml" />
+    <None Include="src\gui\mr\MrDelegate.qml" />
+    <None Include="src\gui\mr\MRTable.qml" />
+    <None Include="src\gui\mr\MrUser.qml" />
+    <None Include="src\gui\pipelines\StartPipeline.qml" />
+    <None Include="src\gui\pipelines\PipelineJobs.qml" />
+    <None Include="src\gui\pipelines\PipelineStatistics.qml" />
+    <None Include="src\gui\pipelines\PipelineTable.qml" />
+    <None Include="src\gui\pipelines\PipelineVariablesTable.qml" />
     <None Include="src\gui\ProjectList.qml" />
-    <None Include="src\gui\Pipelines.qml" />
-    <None Include="src\gui\TextLinkButton.qml" />
-    <None Include="src\gui\UnreadMarker.qml" />
-    <None Include="src\gui\User.qml" />
-    <None Include="src\gui\Utility.js" />
-    <None Include="src\gui\VerticalSpacer.qml" />
+    <None Include="src\gui\pipelines\Pipelines.qml" />
+    <None Include="src\gui\common\TextLinkButton.qml" />
+    <None Include="src\gui\common\UnreadMarker.qml" />
+    <None Include="src\gui\common\User.qml" />
+    <None Include="src\gui\common\Utility.js" />
+    <None Include="src\gui\common\VerticalSpacer.qml" />
     <QtRcc Include="src\gui\qml.qrc" />
     <None Include="src\cpp.hint" />
     <None Include="src\gui\main.qml" />
