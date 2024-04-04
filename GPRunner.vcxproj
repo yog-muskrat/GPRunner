@@ -75,7 +75,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories);$(Qt_INCLUDEPATH_)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)src\;%(AdditionalIncludeDirectories);$(Qt_INCLUDEPATH_)</AdditionalIncludeDirectories>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
@@ -83,7 +83,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories);$(Qt_INCLUDEPATH_)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)src\;%(AdditionalIncludeDirectories);$(Qt_INCLUDEPATH_)</AdditionalIncludeDirectories>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <DiagnosticsFormat>Caret</DiagnosticsFormat>
@@ -116,82 +116,81 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="client\Client.cpp" />
-    <ClCompile Include="GPManager.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="model\classes\Discussion.cpp" />
-    <ClCompile Include="model\classes\Job.cpp" />
-    <ClCompile Include="model\classes\MR.cpp" />
-    <ClCompile Include="model\classes\Note.cpp" />
-    <ClCompile Include="model\classes\Parser.cpp" />
-    <ClCompile Include="model\classes\Pipeline.cpp" />
-    <ClCompile Include="model\classes\Project.cpp" />
-    <ClCompile Include="model\DiscussionModel.cpp" />
-    <ClCompile Include="model\JobModel.cpp" />
-    <ClCompile Include="model\MRModel.cpp" />
-    <ClCompile Include="model\PipelineModel.cpp" />
-    <ClCompile Include="model\ProjectModel.cpp" />
-    <ClCompile Include="model\VariableModel.cpp" />
-    <None Include=".clang-format" />
-    <None Include="gui\DefaultToolTip.qml" />
-    <None Include="gui\DatePicker.qml" />
-    <None Include="gui\DiscussionDelegate.qml" />
-    <None Include="gui\DiscussionNoteDialog.qml" />
-    <None Include="gui\EmojiButton.qml" />
-    <None Include="gui\emojis.json" />
-    <None Include="gui\HorizontalSpacer.qml" />
-    <None Include="gui\MergeRequestDiscussions.qml" />
-    <None Include="gui\MergeRequests.qml" />
-    <None Include="gui\MergeRequestTableDelegate.qml" />
-    <None Include="gui\MrDelegate.qml" />
-    <None Include="gui\MRTable.qml" />
-    <None Include="gui\MrUser.qml" />
-    <None Include="gui\StartPipeline.qml" />
-    <None Include="gui\PipelineJobs.qml" />
-    <None Include="gui\PipelineStatistics.qml" />
-    <None Include="gui\PipelineTable.qml" />
-    <None Include="gui\PipelineVariablesTable.qml" />
-    <None Include="gui\ProjectList.qml" />
-    <None Include="gui\Pipelines.qml" />
-    <None Include="gui\TextLinkButton.qml" />
-    <None Include="gui\UnreadMarker.qml" />
-    <None Include="gui\User.qml" />
-    <None Include="gui\Utility.js" />
-    <None Include="gui\VerticalSpacer.qml" />
-    <QtRcc Include="gui\qml.qrc" />
-    <None Include="cpp.hint" />
-    <None Include="gui\main.qml" />
+    <ClCompile Include="src\client\Client.cpp" />
+    <ClCompile Include="src\GPManager.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\model\classes\Discussion.cpp" />
+    <ClCompile Include="src\model\classes\Job.cpp" />
+    <ClCompile Include="src\model\classes\MR.cpp" />
+    <ClCompile Include="src\model\classes\Note.cpp" />
+    <ClCompile Include="src\model\classes\Parser.cpp" />
+    <ClCompile Include="src\model\classes\Pipeline.cpp" />
+    <ClCompile Include="src\model\classes\Project.cpp" />
+    <ClCompile Include="src\model\DiscussionModel.cpp" />
+    <ClCompile Include="src\model\JobModel.cpp" />
+    <ClCompile Include="src\model\MRModel.cpp" />
+    <ClCompile Include="src\model\PipelineModel.cpp" />
+    <ClCompile Include="src\model\ProjectModel.cpp" />
+    <ClCompile Include="src\model\VariableModel.cpp" />
+    <None Include="src\gui\DefaultToolTip.qml" />
+    <None Include="src\gui\DatePicker.qml" />
+    <None Include="src\gui\DiscussionDelegate.qml" />
+    <None Include="src\gui\DiscussionNoteDialog.qml" />
+    <None Include="src\gui\EmojiButton.qml" />
+    <None Include="src\gui\emojis.json" />
+    <None Include="src\gui\HorizontalSpacer.qml" />
+    <None Include="src\gui\MergeRequestDiscussions.qml" />
+    <None Include="src\gui\MergeRequests.qml" />
+    <None Include="src\gui\MergeRequestTableDelegate.qml" />
+    <None Include="src\gui\MrDelegate.qml" />
+    <None Include="src\gui\MRTable.qml" />
+    <None Include="src\gui\MrUser.qml" />
+    <None Include="src\gui\StartPipeline.qml" />
+    <None Include="src\gui\PipelineJobs.qml" />
+    <None Include="src\gui\PipelineStatistics.qml" />
+    <None Include="src\gui\PipelineTable.qml" />
+    <None Include="src\gui\PipelineVariablesTable.qml" />
+    <None Include="src\gui\ProjectList.qml" />
+    <None Include="src\gui\Pipelines.qml" />
+    <None Include="src\gui\TextLinkButton.qml" />
+    <None Include="src\gui\UnreadMarker.qml" />
+    <None Include="src\gui\User.qml" />
+    <None Include="src\gui\Utility.js" />
+    <None Include="src\gui\VerticalSpacer.qml" />
+    <QtRcc Include="src\gui\qml.qrc" />
+    <None Include="src\cpp.hint" />
+    <None Include="src\gui\main.qml" />
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="GPManager.h" />
+    <QtMoc Include="src\GPManager.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="client\Client.h" />
-    <QtMoc Include="model\classes\Discussion.h" />
-    <QtMoc Include="model\classes\Note.h" />
-    <QtMoc Include="model\classes\Job.h" />
-    <QtMoc Include="model\JobModel.h" />
-    <ClInclude Include="resource.h" />
-    <QtMoc Include="model\classes\GPClasses.h" />
-    <ClInclude Include="ImageProvider.h" />
-    <ClInclude Include="model\classes\Parser.h" />
-    <QtMoc Include="model\DiscussionModel.h" />
-    <QtMoc Include="model\MRModel.h" />
-    <QtMoc Include="model\VariableModel.h" />
-    <QtMoc Include="model\PipelineModel.h" />
-    <QtMoc Include="model\ProjectModel.h" />
+    <ClInclude Include="src\client\Client.h" />
+    <QtMoc Include="src\model\classes\Discussion.h" />
+    <QtMoc Include="src\model\classes\Note.h" />
+    <QtMoc Include="src\model\classes\Job.h" />
+    <QtMoc Include="src\model\JobModel.h" />
+    <ClInclude Include="src\resource.h" />
+    <QtMoc Include="src\model\classes\GPClasses.h" />
+    <ClInclude Include="src\ImageProvider.h" />
+    <ClInclude Include="src\model\classes\Parser.h" />
+    <QtMoc Include="src\model\DiscussionModel.h" />
+    <QtMoc Include="src\model\MRModel.h" />
+    <QtMoc Include="src\model\VariableModel.h" />
+    <QtMoc Include="src\model\PipelineModel.h" />
+    <QtMoc Include="src\model\ProjectModel.h" />
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="model\classes\MR.h" />
-    <QtMoc Include="model\classes\Pipeline.h" />
-    <QtMoc Include="model\classes\Project.h" />
+    <QtMoc Include="src\model\classes\MR.h" />
+    <QtMoc Include="src\model\classes\Pipeline.h" />
+    <QtMoc Include="src\model\classes\Project.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="GPRunner.rc" />
+    <ResourceCompile Include="src\GPRunner.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="gui\icons\gitlab-green.ico" />
-    <Image Include="gui\icons\gitlab-green.png" />
+    <Image Include="src\gui\icons\gitlab-green.ico" />
+    <Image Include="src\gui\icons\gitlab-green.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

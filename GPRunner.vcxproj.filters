@@ -30,198 +30,197 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="model\VariableModel.cpp">
+    <ClCompile Include="src\model\VariableModel.cpp">
       <Filter>model</Filter>
     </ClCompile>
-    <ClCompile Include="model\ProjectModel.cpp">
+    <ClCompile Include="src\model\ProjectModel.cpp">
       <Filter>model</Filter>
     </ClCompile>
-    <ClCompile Include="model\PipelineModel.cpp">
+    <ClCompile Include="src\model\PipelineModel.cpp">
       <Filter>model</Filter>
     </ClCompile>
-    <ClCompile Include="model\MRModel.cpp">
+    <ClCompile Include="src\model\MRModel.cpp">
       <Filter>model</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="GPManager.cpp" />
-    <ClCompile Include="model\classes\Project.cpp">
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\GPManager.cpp" />
+    <ClCompile Include="src\model\classes\Project.cpp">
       <Filter>model\classes</Filter>
     </ClCompile>
-    <ClCompile Include="model\classes\MR.cpp">
+    <ClCompile Include="src\model\classes\MR.cpp">
       <Filter>model\classes</Filter>
     </ClCompile>
-    <ClCompile Include="model\classes\Pipeline.cpp">
+    <ClCompile Include="src\model\classes\Pipeline.cpp">
       <Filter>model\classes</Filter>
     </ClCompile>
-    <ClCompile Include="model\classes\Parser.cpp">
+    <ClCompile Include="src\model\classes\Parser.cpp">
       <Filter>model\classes</Filter>
     </ClCompile>
-    <ClCompile Include="client\Client.cpp">
+    <ClCompile Include="src\client\Client.cpp">
       <Filter>client</Filter>
     </ClCompile>
-    <ClCompile Include="model\DiscussionModel.cpp">
+    <ClCompile Include="src\model\DiscussionModel.cpp">
       <Filter>model</Filter>
     </ClCompile>
-    <ClCompile Include="model\classes\Discussion.cpp">
+    <ClCompile Include="src\model\classes\Discussion.cpp">
       <Filter>model\classes</Filter>
     </ClCompile>
-    <ClCompile Include="model\classes\Note.cpp">
+    <ClCompile Include="src\model\classes\Note.cpp">
       <Filter>model\classes</Filter>
     </ClCompile>
-    <ClCompile Include="model\classes\Job.cpp">
+    <ClCompile Include="src\model\classes\Job.cpp">
       <Filter>model\classes</Filter>
     </ClCompile>
-    <ClCompile Include="model\JobModel.cpp">
+    <ClCompile Include="src\model\JobModel.cpp">
       <Filter>model</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="model\VariableModel.h">
+    <QtMoc Include="src\model\VariableModel.h">
       <Filter>model</Filter>
     </QtMoc>
-    <QtMoc Include="model\ProjectModel.h">
+    <QtMoc Include="src\model\ProjectModel.h">
       <Filter>model</Filter>
     </QtMoc>
-    <QtMoc Include="model\PipelineModel.h">
+    <QtMoc Include="src\model\PipelineModel.h">
       <Filter>model</Filter>
     </QtMoc>
-    <QtMoc Include="model\MRModel.h">
+    <QtMoc Include="src\model\MRModel.h">
       <Filter>model</Filter>
     </QtMoc>
-    <QtMoc Include="GPManager.h" />
-    <QtMoc Include="model\classes\Project.h">
+    <QtMoc Include="src\GPManager.h" />
+    <QtMoc Include="src\model\classes\Project.h">
       <Filter>model\classes</Filter>
     </QtMoc>
-    <QtMoc Include="model\classes\MR.h">
+    <QtMoc Include="src\model\classes\MR.h">
       <Filter>model\classes</Filter>
     </QtMoc>
-    <QtMoc Include="model\classes\Pipeline.h">
+    <QtMoc Include="src\model\classes\Pipeline.h">
       <Filter>model\classes</Filter>
     </QtMoc>
-    <QtMoc Include="model\DiscussionModel.h">
+    <QtMoc Include="src\model\DiscussionModel.h">
       <Filter>model</Filter>
     </QtMoc>
-    <QtMoc Include="model\classes\GPClasses.h">
+    <QtMoc Include="src\model\classes\GPClasses.h">
       <Filter>model\classes</Filter>
     </QtMoc>
-    <QtMoc Include="model\classes\Discussion.h">
+    <QtMoc Include="src\model\classes\Discussion.h">
       <Filter>model\classes</Filter>
     </QtMoc>
-    <QtMoc Include="model\classes\Note.h">
+    <QtMoc Include="src\model\classes\Note.h">
       <Filter>model\classes</Filter>
     </QtMoc>
-    <QtMoc Include="model\classes\Job.h">
+    <QtMoc Include="src\model\classes\Job.h">
       <Filter>model\classes</Filter>
     </QtMoc>
-    <QtMoc Include="model\JobModel.h">
+    <QtMoc Include="src\model\JobModel.h">
       <Filter>model</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
-    <None Include="cpp.hint" />
-    <None Include="gui\main.qml">
+    <None Include="src\cpp.hint" />
+    <None Include="src\gui\main.qml">
       <Filter>gui</Filter>
     </None>
-    <None Include="gui\ProjectList.qml">
+    <None Include="src\gui\ProjectList.qml">
       <Filter>gui</Filter>
     </None>
-    <None Include=".clang-format" />
-    <None Include="gui\MRTable.qml">
+    <None Include="src\gui\MRTable.qml">
       <Filter>gui\mr</Filter>
     </None>
-    <None Include="gui\MergeRequests.qml">
+    <None Include="src\gui\MergeRequests.qml">
       <Filter>gui\mr</Filter>
     </None>
-    <None Include="gui\DatePicker.qml">
+    <None Include="src\gui\DatePicker.qml">
       <Filter>gui\common</Filter>
     </None>
-    <None Include="gui\DefaultToolTip.qml">
+    <None Include="src\gui\DefaultToolTip.qml">
       <Filter>gui\common</Filter>
     </None>
-    <None Include="gui\HorizontalSpacer.qml">
+    <None Include="src\gui\HorizontalSpacer.qml">
       <Filter>gui\common</Filter>
     </None>
-    <None Include="gui\TextLinkButton.qml">
+    <None Include="src\gui\TextLinkButton.qml">
       <Filter>gui\common</Filter>
     </None>
-    <None Include="gui\UnreadMarker.qml">
+    <None Include="src\gui\UnreadMarker.qml">
       <Filter>gui\common</Filter>
     </None>
-    <None Include="gui\VerticalSpacer.qml">
+    <None Include="src\gui\VerticalSpacer.qml">
       <Filter>gui\common</Filter>
     </None>
-    <None Include="gui\Utility.js">
+    <None Include="src\gui\Utility.js">
       <Filter>gui\common</Filter>
     </None>
-    <None Include="gui\PipelineVariablesTable.qml">
+    <None Include="src\gui\PipelineVariablesTable.qml">
       <Filter>gui\pipelines</Filter>
     </None>
-    <None Include="gui\Pipelines.qml">
+    <None Include="src\gui\Pipelines.qml">
       <Filter>gui\pipelines</Filter>
     </None>
-    <None Include="gui\PipelineStatistics.qml">
+    <None Include="src\gui\PipelineStatistics.qml">
       <Filter>gui\pipelines</Filter>
     </None>
-    <None Include="gui\PipelineTable.qml">
+    <None Include="src\gui\PipelineTable.qml">
       <Filter>gui\pipelines</Filter>
     </None>
-    <None Include="gui\DiscussionNoteDialog.qml">
+    <None Include="src\gui\DiscussionNoteDialog.qml">
       <Filter>gui\discussions</Filter>
     </None>
-    <None Include="gui\DiscussionDelegate.qml">
+    <None Include="src\gui\DiscussionDelegate.qml">
       <Filter>gui\discussions</Filter>
     </None>
-    <None Include="gui\MergeRequestDiscussions.qml">
+    <None Include="src\gui\MergeRequestDiscussions.qml">
       <Filter>gui\discussions</Filter>
     </None>
-    <None Include="gui\MergeRequestTableDelegate.qml">
+    <None Include="src\gui\MergeRequestTableDelegate.qml">
       <Filter>gui\mr</Filter>
     </None>
-    <None Include="gui\emojis.json">
+    <None Include="src\gui\emojis.json">
       <Filter>gui</Filter>
     </None>
-    <None Include="gui\PipelineJobs.qml">
+    <None Include="src\gui\PipelineJobs.qml">
       <Filter>gui\pipelines</Filter>
     </None>
-    <None Include="gui\StartPipeline.qml">
+    <None Include="src\gui\StartPipeline.qml">
       <Filter>gui\pipelines</Filter>
     </None>
-    <None Include="gui\EmojiButton.qml">
+    <None Include="src\gui\EmojiButton.qml">
       <Filter>gui\common</Filter>
     </None>
-    <None Include="gui\MrDelegate.qml">
+    <None Include="src\gui\MrDelegate.qml">
       <Filter>gui\mr</Filter>
     </None>
-    <None Include="gui\User.qml">
+    <None Include="src\gui\User.qml">
       <Filter>gui\common</Filter>
     </None>
-    <None Include="gui\MrUser.qml">
+    <None Include="src\gui\MrUser.qml">
       <Filter>gui\mr</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <QtRcc Include="gui\qml.qrc">
+    <QtRcc Include="src\gui\qml.qrc">
       <Filter>gui</Filter>
     </QtRcc>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="model\classes\Parser.h">
+    <ClInclude Include="src\model\classes\Parser.h">
       <Filter>model\classes</Filter>
     </ClInclude>
-    <ClInclude Include="client\Client.h">
+    <ClInclude Include="src\client\Client.h">
       <Filter>client</Filter>
     </ClInclude>
-    <ClInclude Include="ImageProvider.h" />
-    <ClInclude Include="resource.h" />
+    <ClInclude Include="src\ImageProvider.h" />
+    <ClInclude Include="src\resource.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="GPRunner.rc" />
+    <ResourceCompile Include="src\GPRunner.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="gui\icons\gitlab-green.png">
+    <Image Include="src\gui\icons\gitlab-green.png">
       <Filter>gui\icons</Filter>
     </Image>
-    <Image Include="gui\icons\gitlab-green.ico">
+    <Image Include="src\gui\icons\gitlab-green.ico">
       <Filter>gui\icons</Filter>
     </Image>
   </ItemGroup>
