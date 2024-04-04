@@ -2,6 +2,8 @@
 import QtQuick.Layouts
 import QtQuick.Controls
 
+import "Utility.js" as Utility
+
 Item {
     signal addNoteRequested(discussion: var)
     signal editNoteRequested(note: var)
@@ -32,7 +34,7 @@ Item {
         return note.author == gpm.currentUser
     }
 
-    id: treeDelegate
+    id: root
 
     implicitWidth:  isNote ? note.implicitWidth : discussionItem.implicitWidth
     implicitHeight: isNote ? note.implicitHeight : discussionItem.implicitHeight
@@ -41,125 +43,114 @@ Item {
         id: discussionItem
         visible: isDiscussion
 
-        implicitWidth: discussionHeader.implicitWidth + discussionNotes.implicitWidth + unreadIndicator.implicitWidth + discussionStatus.implicitWidth
-        implicitHeight: Math.max(discussionHeader.implicitHeight, discussionStatus.implicitHeight)
-        width: treeDelegate.width
+        implicitWidth: headerLayout.implicitWidth + padding * 2
+        implicitHeight: headerLayout.implicitHeight + padding * 2
+        width: root.width
 
         Rectangle {
             anchors.fill: parent
-            color: discussionHeaderHover.hovered ? palette.base : palette.alternateBase
+            color: discussionHover.hovered ? (discussion.isResolved ? "#3f4e3f" : palette.highlight) : (discussion.isResolved ? "#2d3c2d" : palette.base)
         }
 
-        Item { 
-            id: discussionHeader
+        RowLayout {
+            id: headerLayout
 
-            implicitWidth: indicator.implicitWidth + discussionTitle.implicitWidth
-            implicitHeight: Math.max(indicator.implicitHeight, discussionTitle.implicitHeight)
+            anchors.fill: parent
+            anchors.margins: padding
 
-            TapHandler {
-                onTapped: treeView.toggleExpanded(row)
+            ColumnLayout {
+                RowLayout {
+                    TextLinkButton {
+                        url: discussion.url
+                        text: discussion.isResolvable ? "Thread" : "Comment"
+                    }
+                    Label { text: "by" }
+                    User  { user: discussion.author }
+                    Label {
+                        text: "updated at " + Utility.formatDateTime(discussion.updated)
+                        font.pointSize: 9
+                    }
+                }
+                RowLayout {
+                    Label {
+                        text: "Created at " + Utility.formatDateTime(discussion.started)
+                        visible: discussion.started != discussion.updated
+                        font.pointSize: 9
+                    }
+                    Label {
+                        visible: canResolve(discussion)
+                        text: discussion.isResolved ? "[Unresolve]" : "[Resolve]"
+                        font.pointSize: 9
+
+                        HoverHandler { cursorShape: Qt.PointingHandCursor }
+
+                        TapHandler {
+                            onTapped: {
+                                if(discussion.isResolved) discussion.unresolve()
+                                else discussion.resolve()
+                            }
+                        }
+                    }
+                }
             }
 
-            HoverHandler {
-                id: discussionHeaderHover
-                cursorShape: Qt.PointingHandCursor
+            HorizontalSpacer {}
+
+            UnreadMarker {
+                discussion: model.discussion
+                visible: model.discussion.hasUnreadNotes
             }
+
+            Label { text: "[" + discussion.noteCount + "]" }
 
             Label {
                 id: indicator
 
-                text: ">"
-                rotation: treeDelegate.expanded ? 90 : 0
-                padding: treeDelegate.padding
-            }
+                text: root.expanded ? "Hide thread ˄" : "Show thread ˅"
 
-            Label {
-                id: discussionTitle
+                TapHandler {
+                    onTapped: treeView.toggleExpanded(row)
+                }
 
-                anchors.left: indicator.right
-                anchors.verticalCenter: indicator.verticalCenter
-
-                text: model.display
-                padding: treeDelegate.padding
-            }
-        }
-
-        Item {
-            id: discussionNotes
-
-            visible: model.noteCount > 0
-            implicitWidth: visible ? noteCountLabel.implicitWidth : 0
-            implicitHeight: visible ? noteCountLabel.implicitHeight : 0
-
-            anchors.right: unreadIndicator.left
-            anchors.verticalCenter: discussionHeader.verticalCenter
-
-            Label {
-                id: noteCountLabel
-
-                visible: model.noteCount > 0
-
-                rightPadding: 5
-                text: "[" + model.noteCount + "]"
-            }
-        }
-
-        Item {
-            id: unreadIndicator
-
-            anchors.right: discussionStatus.left
-            anchors.verticalCenter: discussionHeader.verticalCenter
-
-            visible: model.discussion && model.discussion.hasUnreadNotes()
-            implicitWidth: visible ? unreadIndicatorLabel.implicitWidth : 0
-            implicitHeight: visible ? unreadIndicatorLabel.implicitHeight : 0
-
-            UnreadMarker {
-                discussion: model.discussion
-                id: unreadIndicatorLabel
-                rightPadding: 5
-            }
-        }
-
-        Label {
-            id: discussionStatus
-
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.rightMargin: treeDelegate.padding * 2
-
-            visible: model.discussion.isResolvable
-
-            text: canResolve(model.discussion) ? (model.discussion.isResolved ? "[Unresolve] ☑" : "[Resolve] ☐") : model.discussion.isResolved ? "☑" : "☐"
-            color: canResolve(model.discussion) ? (model.discussion.isResolved ? "green" : "yellow") : palette.text
-
-            HoverHandler {
-                enabled: canResolve(discussion)
-                cursorShape: Qt.PointingHandCursor
-            }
-
-            TapHandler {
-                enabled: canResolve(discussion)
-                onTapped: {
-                    if(discussion.isResolved) discussion.unresolve()
-                    else discussion.resolve()
+                HoverHandler {
+                    id: discussionHover
+                    cursorShape: Qt.PointingHandCursor
                 }
             }
+        }
+        Rectangle {
+            height: 1
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            color: palette.window
+            visible: !root.expanded
         }
     }
 
     Item {
         id: note
-        visible: treeDelegate.isNote
+        visible: root.isNote
 
         implicitHeight: noteHeader.implicitHeight + noteBody.implicitHeight + noteFooter.implicitHeight
         implicitWidth: Math.max(noteHeader.implicitWidth, noteBody.implicitWidth, noteFooter.implicitWidth)
-        width: treeDelegate.width
+        width: root.width
 
         Rectangle {
             anchors.fill: parent
-            color: palette.base
+            color: "#3f3f3f"
+
+            Rectangle {
+                height: 1
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                color: palette.window
+
+                visible: isLastChild(treeView.index(row, column))
+            }
         }
+
 
         Item {
             id: noteHeader
@@ -193,31 +184,35 @@ Item {
                     Layout.alignment: Qt.AlignTop
                 
                     text: model.note ? (model.note.author.username + "\n" + new Date(model.note.created).toLocaleString(Qt.locale("ru_RU"), Locale.ShortFormat)) : ""
-                    leftPadding: treeDelegate.padding
+                    leftPadding: root.padding
                 }
 
                 TextLinkButton {
                     Layout.alignment: Qt.AlignTop
                     visible: model.note && model.note.url ? true : false
+                    text: "[Link]"
+                    font.pointSize: 9
                     url: model.note ? model.note.url : ""
-                }
-
-                TextLinkButton {
-                    Layout.alignment: Qt.AlignTop
-
-                    visible: canEdit(model.note)
-                    text: "✎"
-
-                    DefaultToolTip { toolTipText: "Edit" }
-                    HoverHandler { cursorShape: Qt.PointingHandCursor }
-                    TapHandler { onTapped: treeDelegate.editNoteRequested(model.note) }
                 }
 
                 Label {
                     Layout.alignment: Qt.AlignTop
 
                     visible: canEdit(model.note)
-                    text: "🗑"
+                    text: "[Edit]"
+                    font.pointSize: 9
+
+                    DefaultToolTip { toolTipText: "Edit" }
+                    HoverHandler { cursorShape: Qt.PointingHandCursor }
+                    TapHandler { onTapped: root.editNoteRequested(model.note) }
+                }
+
+                Label {
+                    Layout.alignment: Qt.AlignTop
+
+                    visible: canEdit(model.note)
+                    text: "[Remove]"
+                    font.pointSize: 9
 
                     DefaultToolTip { toolTipText: "Remove" }
                     HoverHandler { cursorShape: Qt.PointingHandCursor }
@@ -245,13 +240,13 @@ Item {
             anchors.top: noteHeader.bottom
             anchors.left: noteHeader.left
 
-            width: treeDelegate.width - noteHeader.x
+            width: root.width - noteHeader.x
             wrapMode: Text.WordWrap
 
             text: model.display
             textFormat: Text.MarkdownText
-            rightPadding: treeDelegate.padding
-            bottomPadding: treeDelegate.padding
+            rightPadding: root.padding
+            bottomPadding: root.padding
 
             onLinkActivated: function(link){ Qt.openUrlExternally(link) }
             HoverHandler {
@@ -276,7 +271,7 @@ Item {
 
                 Button {
                     text: "Add reply"
-                    onClicked: treeDelegate.addNoteRequested(model.discussion)
+                    onClicked: root.addNoteRequested(model.discussion)
                 }
 
                 Button {

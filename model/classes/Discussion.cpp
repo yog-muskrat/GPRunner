@@ -52,9 +52,21 @@ namespace gpr::api
 		mr().project().manager().client().addDiscussionNote(mr().project().id(), mr().iid(), id(), std::move(noteBody));
 	}
 
+	QString Discussion::url() const
+	{
+		if(m_notes.empty()) return {};
+
+		return m_notes.front()->url();
+	}
+
 	std::vector<QPointer<Note>> const &Discussion::notes() const
 	{
 		return m_notes;
+	}
+
+	int Discussion::noteCount() const
+	{
+		return std::ssize(m_notes);
 	}
 
 	QPointer<Note> Discussion::findNote(int id) const
@@ -143,6 +155,16 @@ namespace gpr::api
 	bool Discussion::userCanResolve(User const &user) const
 	{
 		return isResolvable() && author() == user;
+	}
+
+	QDateTime Discussion::started() const
+	{
+		return std::ranges::min(m_notes | std::views::transform(&Note::created));
+	}
+
+	QDateTime Discussion::updated() const
+	{
+		return std::ranges::max(m_notes | std::views::transform(&Note::updated));
 	}
 
 	void Discussion::setLoadFinished()

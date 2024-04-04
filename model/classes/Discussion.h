@@ -13,10 +13,15 @@ namespace gpr::api
 	class Discussion : public QObject
 	{
 		Q_OBJECT
-		Q_PROPERTY (QString id READ id)
+		Q_PROPERTY (QString id READ id NOTIFY modified)
+		Q_PROPERTY (QString url READ url NOTIFY modified)
 		Q_PROPERTY (bool isResolved READ isResolved NOTIFY modified)
 		Q_PROPERTY (bool isResolvable READ isResolvable NOTIFY modified)
+		Q_PROPERTY (bool hasUnreadNotes READ hasUnreadNotes NOTIFY modified)
 		Q_PROPERTY (User author READ author NOTIFY modified)
+		Q_PROPERTY (int noteCount READ noteCount NOTIFY modified)
+		Q_PROPERTY (QDateTime started READ started NOTIFY modified)
+		Q_PROPERTY (QDateTime updated READ updated NOTIFY modified)
 
 	public:
 
@@ -46,7 +51,10 @@ namespace gpr::api
 		Q_INVOKABLE bool userCanResolve(User const &user) const;
 		Q_INVOKABLE bool isUserInvolved(QString const &username) const;
 
+		QString url() const;
+		
 		std::vector<QPointer<Note>> const &notes() const;
+		int noteCount() const;
 		QPointer<Note> findNote(int id) const;
 		void updateNotes(std::vector<Note::Data> notes);
 
@@ -55,6 +63,9 @@ namespace gpr::api
 		bool isResolved() const;
 
 		User const &author() const;
+
+		QDateTime started() const;
+		QDateTime updated() const;
 
 		void setLoadFinished();
 
