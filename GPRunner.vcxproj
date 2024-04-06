@@ -59,19 +59,7 @@
     <OutDir>$(ProjectDir)bin\</OutDir>
     <IntDir>.build\$(Platform)\$(Configuration)\obj\</IntDir>
   </PropertyGroup>
-  <PropertyGroup Label="QtDeploy" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <QtDeployDir>$(OutDir)deploy</QtDeployDir>
-    <QtDeployLibDir>$(OutDir)deploy/libs</QtDeployLibDir>
-    <QtDeployPluginDir>$(OutDir)deploy/plugins</QtDeployPluginDir>
-    <QtDeployNoPlugins>false</QtDeployNoPlugins>
-    <QtDeployNoLibraries>false</QtDeployNoLibraries>
-    <QtDeployCompilerRuntime>skip</QtDeployCompilerRuntime>
-    <QtDeployWebkit2>skip</QtDeployWebkit2>
-    <QtDeployAngle>skip</QtDeployAngle>
-    <QtDeployNoOpenglSw>true</QtDeployNoOpenglSw>
-    <QtDeployQmlDir>$(ProjectDir)src</QtDeployQmlDir>
-    <QtDeploy>true</QtDeploy>
-  </PropertyGroup>
+  <PropertyGroup Label="QtDeploy" Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
