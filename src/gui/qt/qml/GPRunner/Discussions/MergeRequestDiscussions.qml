@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import QtQuick.Controls
 
 import mudbay.gprunner.models
+import GPRunner
 
 Item {
     property var currentMR: null

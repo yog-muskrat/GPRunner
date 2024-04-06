@@ -120,34 +120,34 @@
     <ClCompile Include="src\model\PipelineModel.cpp" />
     <ClCompile Include="src\model\ProjectModel.cpp" />
     <ClCompile Include="src\model\VariableModel.cpp" />
-    <None Include="src\gui\common\DefaultToolTip.qml" />
-    <None Include="src\gui\common\DatePicker.qml" />
-    <None Include="src\gui\discussions\DiscussionDelegate.qml" />
-    <None Include="src\gui\discussions\DiscussionNoteDialog.qml" />
-    <None Include="src\gui\common\EmojiButton.qml" />
+    <None Include="src\gui\qt\qml\GPRunner\Common\DefaultToolTip.qml" />
+    <None Include="src\gui\qt\qml\GPRunner\Common\DatePicker.qml" />
+    <None Include="src\gui\qt\qml\GPRunner\Discussions\DiscussionDelegate.qml" />
+    <None Include="src\gui\qt\qml\GPRunner\Discussions\DiscussionNoteDialog.qml" />
+    <None Include="src\gui\qt\qml\GPRunner\Common\EmojiButton.qml" />
     <None Include="src\gui\emojis.json" />
-    <None Include="src\gui\common\HorizontalSpacer.qml" />
-    <None Include="src\gui\discussions\MergeRequestDiscussions.qml" />
-    <None Include="src\gui\mr\MergeRequests.qml" />
-    <None Include="src\gui\mr\MergeRequestTableDelegate.qml" />
-    <None Include="src\gui\mr\MrDelegate.qml" />
-    <None Include="src\gui\mr\MRTable.qml" />
-    <None Include="src\gui\mr\MrUser.qml" />
-    <None Include="src\gui\pipelines\StartPipeline.qml" />
-    <None Include="src\gui\pipelines\PipelineJobs.qml" />
-    <None Include="src\gui\pipelines\PipelineStatistics.qml" />
-    <None Include="src\gui\pipelines\PipelineTable.qml" />
-    <None Include="src\gui\pipelines\PipelineVariablesTable.qml" />
-    <None Include="src\gui\ProjectList.qml" />
-    <None Include="src\gui\pipelines\Pipelines.qml" />
-    <None Include="src\gui\common\TextLinkButton.qml" />
-    <None Include="src\gui\common\UnreadMarker.qml" />
-    <None Include="src\gui\common\User.qml" />
-    <None Include="src\gui\common\Utility.js" />
-    <None Include="src\gui\common\VerticalSpacer.qml" />
-    <QtRcc Include="src\gui\qml.qrc" />
+    <None Include="src\gui\qt\qml\GPRunner\Common\HorizontalSpacer.qml" />
+    <None Include="src\gui\qt\qml\GPRunner\Discussions\MergeRequestDiscussions.qml" />
+    <None Include="src\gui\qt\qml\GPRunner\MR\MergeRequests.qml" />
+    <None Include="src\gui\qt\qml\GPRunner\MR\MergeRequestTableDelegate.qml" />
+    <None Include="src\gui\qt\qml\GPRunner\MR\MrDelegate.qml" />
+    <None Include="src\gui\qt\qml\GPRunner\MR\MRTable.qml" />
+    <None Include="src\gui\qt\qml\GPRunner\MR\MrUser.qml" />
+    <None Include="src\gui\qt\qml\GPRunner\qmldir" />
+    <None Include="src\gui\qt\qml\GPRunner\Pipelines\StartPipeline.qml" />
+    <None Include="src\gui\qt\qml\GPRunner\Pipelines\PipelineJobs.qml" />
+    <None Include="src\gui\qt\qml\GPRunner\Pipelines\PipelineStatistics.qml" />
+    <None Include="src\gui\qt\qml\GPRunner\Pipelines\PipelineTable.qml" />
+    <None Include="src\gui\qt\qml\GPRunner\Pipelines\PipelineVariablesTable.qml" />
+    <None Include="src\gui\qt\qml\GPRunner\ProjectList.qml" />
+    <None Include="src\gui\qt\qml\GPRunner\Pipelines\Pipelines.qml" />
+    <None Include="src\gui\qt\qml\GPRunner\Common\TextLinkButton.qml" />
+    <None Include="src\gui\qt\qml\GPRunner\Common\UnreadMarker.qml" />
+    <None Include="src\gui\qt\qml\GPRunner\Common\User.qml" />
+    <None Include="src\gui\qt\qml\GPRunner\Common\Utility.js" />
+    <None Include="src\gui\qt\qml\GPRunner\Common\VerticalSpacer.qml" />
     <None Include="src\cpp.hint" />
-    <None Include="src\gui\main.qml" />
+    <None Include="src\gui\qt\qml\GPRunner\Main.qml" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="src\GPManager.h" />
@@ -179,6 +179,9 @@
   <ItemGroup>
     <Image Include="src\gui\icons\gitlab-green.ico" />
     <Image Include="src\gui\icons\gitlab-green.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtRcc Include="src\gui\qml.qrc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

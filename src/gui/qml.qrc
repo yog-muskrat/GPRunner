@@ -1,30 +1,31 @@
 <RCC>
-    <qresource prefix="/modules">
-        <file>common/DatePicker.qml</file>
-        <file>common/Utility.js</file>
-        <file>common/HorizontalSpacer.qml</file>
-        <file>common/VerticalSpacer.qml</file>
-        <file>common/UnreadMarker.qml</file>
-        <file>common/DefaultToolTip.qml</file>
-        <file>common/TextLinkButton.qml</file>
-        <file>common/EmojiButton.qml</file>
-        <file>common/User.qml</file>
-        <file>pipelines/PipelineTable.qml</file>
-        <file>pipelines/PipelineVariablesTable.qml</file>
-        <file>pipelines/Pipelines.qml</file>
-        <file>pipelines/PipelineStatistics.qml</file>
-        <file>pipelines/PipelineJobs.qml</file>
-        <file>pipelines/StartPipeline.qml</file>
-        <file>discussions/MergeRequestDiscussions.qml</file>
-        <file>discussions/DiscussionNoteDialog.qml</file>
-        <file>discussions/DiscussionDelegate.qml</file>
-        <file>mr/MRTable.qml</file>
-        <file>mr/MergeRequests.qml</file>
-        <file>mr/MergeRequestTableDelegate.qml</file>
-        <file>mr/MrDelegate.qml</file>
-        <file>mr/MrUser.qml</file>
-        <file>main.qml</file>
-        <file>ProjectList.qml</file>
+    <qresource prefix="/">
+        <file>qt/qml/GPRunner/Common/DatePicker.qml</file>
+        <file>qt/qml/GPRunner/Common/Utility.js</file>
+        <file>qt/qml/GPRunner/Common/HorizontalSpacer.qml</file>
+        <file>qt/qml/GPRunner/Common/VerticalSpacer.qml</file>
+        <file>qt/qml/GPRunner/Common/UnreadMarker.qml</file>
+        <file>qt/qml/GPRunner/Common/DefaultToolTip.qml</file>
+        <file>qt/qml/GPRunner/Common/TextLinkButton.qml</file>
+        <file>qt/qml/GPRunner/Common/EmojiButton.qml</file>
+        <file>qt/qml/GPRunner/Common/User.qml</file>
+        <file>qt/qml/GPRunner/Pipelines/PipelineTable.qml</file>
+        <file>qt/qml/GPRunner/Pipelines/PipelineVariablesTable.qml</file>
+        <file>qt/qml/GPRunner/Pipelines/Pipelines.qml</file>
+        <file>qt/qml/GPRunner/Pipelines/PipelineStatistics.qml</file>
+        <file>qt/qml/GPRunner/Pipelines/PipelineJobs.qml</file>
+        <file>qt/qml/GPRunner/Pipelines/StartPipeline.qml</file>
+        <file>qt/qml/GPRunner/Discussions/MergeRequestDiscussions.qml</file>
+        <file>qt/qml/GPRunner/Discussions/DiscussionNoteDialog.qml</file>
+        <file>qt/qml/GPRunner/Discussions/DiscussionDelegate.qml</file>
+        <file>qt/qml/GPRunner/MR/MRTable.qml</file>
+        <file>qt/qml/GPRunner/MR/MergeRequests.qml</file>
+        <file>qt/qml/GPRunner/MR/MergeRequestTableDelegate.qml</file>
+        <file>qt/qml/GPRunner/MR/MrDelegate.qml</file>
+        <file>qt/qml/GPRunner/MR/MrUser.qml</file>
+        <file>qt/qml/GPRunner/Main.qml</file>
+        <file>qt/qml/GPRunner/ProjectList.qml</file>
+        <file>qt/qml/GPRunner/qmldir</file>
     </qresource>
     <qresource prefix="/icons">
         <file alias="gitlab.png">icons/gitlab.png</file>

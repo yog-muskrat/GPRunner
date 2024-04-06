@@ -46,9 +46,13 @@ int main(int argc, char *argv[])
 	QQmlApplicationEngine engine;
 	engine.addImageProvider("gpr", imageProvider);
 	engine.rootContext()->setContextProperty("gpm", &manager);
-	engine.addImportPath("qrc:///icons");
-	engine.addImportPath("qrc:///modules");
-	engine.load(QUrl(QStringLiteral("qrc:///modules/main.qml")));
+	engine.addImportPath("qrc:/icons");
+	//engine.addImportPath("qrc:/qt/qml/GPRunner/Common");
+	//engine.addImportPath("qrc:/qt/qml/GPRunner/MR");
+	//engine.addImportPath("qrc:/qt/qml/GPRunner/Pipeline");
+	//engine.addImportPath("qrc:/qt/qml/GPRunner/Discussions");
+	//engine.load(QUrl(QStringLiteral("qrc:/qt/qml/GPRunner/Main.qml")));
+	engine.loadFromModule("GPRunner", "Main");
 
 	if (engine.rootObjects().isEmpty()) return -1;
 

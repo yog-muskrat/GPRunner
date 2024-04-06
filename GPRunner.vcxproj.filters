@@ -13,20 +13,29 @@
     <Filter Include="client">
       <UniqueIdentifier>{470d65b4-c275-4c9b-912f-bc5d3fa53b5d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="gui\mr">
-      <UniqueIdentifier>{094509e9-9ac2-4a7f-8737-c1e33213ff28}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="gui\common">
-      <UniqueIdentifier>{7c847ada-0393-45da-bcc2-a61ad547edc4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="gui\pipelines">
-      <UniqueIdentifier>{ba0f0512-17db-4fd8-96ce-75912eaa10d9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="gui\discussions">
-      <UniqueIdentifier>{dc8a5a75-6660-4fb0-8c92-633a0bee1e9f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="gui\icons">
       <UniqueIdentifier>{2feff78a-35a0-4206-b204-73ad2d7e31ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gui\qt">
+      <UniqueIdentifier>{d896dc14-51e2-49c1-b13a-5bb15856b7a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gui\qt\qml">
+      <UniqueIdentifier>{c5d2407b-f979-4280-bbc4-1c23dbc9861d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gui\qt\qml\GPRunner">
+      <UniqueIdentifier>{19cd1119-520e-4346-8961-cbb91917bd75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gui\qt\qml\GPRunner\pipelines">
+      <UniqueIdentifier>{ba0f0512-17db-4fd8-96ce-75912eaa10d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gui\qt\qml\GPRunner\mr">
+      <UniqueIdentifier>{094509e9-9ac2-4a7f-8737-c1e33213ff28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gui\qt\qml\GPRunner\discussions">
+      <UniqueIdentifier>{dc8a5a75-6660-4fb0-8c92-633a0bee1e9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gui\qt\qml\GPRunner\common">
+      <UniqueIdentifier>{7c847ada-0393-45da-bcc2-a61ad547edc4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -119,89 +128,87 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="src\cpp.hint" />
-    <None Include="src\gui\main.qml">
-      <Filter>gui</Filter>
-    </None>
-    <None Include="src\gui\ProjectList.qml">
-      <Filter>gui</Filter>
-    </None>
-    <None Include="src\gui\mr\MRTable.qml">
-      <Filter>gui\mr</Filter>
-    </None>
-    <None Include="src\gui\mr\MergeRequests.qml">
-      <Filter>gui\mr</Filter>
-    </None>
-    <None Include="src\gui\common\DatePicker.qml">
-      <Filter>gui\common</Filter>
-    </None>
-    <None Include="src\gui\common\DefaultToolTip.qml">
-      <Filter>gui\common</Filter>
-    </None>
-    <None Include="src\gui\common\HorizontalSpacer.qml">
-      <Filter>gui\common</Filter>
-    </None>
-    <None Include="src\gui\common\TextLinkButton.qml">
-      <Filter>gui\common</Filter>
-    </None>
-    <None Include="src\gui\common\UnreadMarker.qml">
-      <Filter>gui\common</Filter>
-    </None>
-    <None Include="src\gui\common\VerticalSpacer.qml">
-      <Filter>gui\common</Filter>
-    </None>
-    <None Include="src\gui\common\Utility.js">
-      <Filter>gui\common</Filter>
-    </None>
-    <None Include="src\gui\pipelines\PipelineVariablesTable.qml">
-      <Filter>gui\pipelines</Filter>
-    </None>
-    <None Include="src\gui\pipelines\Pipelines.qml">
-      <Filter>gui\pipelines</Filter>
-    </None>
-    <None Include="src\gui\pipelines\PipelineStatistics.qml">
-      <Filter>gui\pipelines</Filter>
-    </None>
-    <None Include="src\gui\pipelines\PipelineTable.qml">
-      <Filter>gui\pipelines</Filter>
-    </None>
-    <None Include="src\gui\discussions\DiscussionNoteDialog.qml">
-      <Filter>gui\discussions</Filter>
-    </None>
-    <None Include="src\gui\discussions\DiscussionDelegate.qml">
-      <Filter>gui\discussions</Filter>
-    </None>
-    <None Include="src\gui\discussions\MergeRequestDiscussions.qml">
-      <Filter>gui\discussions</Filter>
-    </None>
-    <None Include="src\gui\mr\MergeRequestTableDelegate.qml">
-      <Filter>gui\mr</Filter>
-    </None>
     <None Include="src\gui\emojis.json">
       <Filter>gui</Filter>
     </None>
-    <None Include="src\gui\pipelines\PipelineJobs.qml">
-      <Filter>gui\pipelines</Filter>
+    <None Include="src\gui\qt\qml\GPRunner\Common\DatePicker.qml">
+      <Filter>gui\qt\qml\GPRunner\common</Filter>
     </None>
-    <None Include="src\gui\pipelines\StartPipeline.qml">
-      <Filter>gui\pipelines</Filter>
+    <None Include="src\gui\qt\qml\GPRunner\Common\DefaultToolTip.qml">
+      <Filter>gui\qt\qml\GPRunner\common</Filter>
     </None>
-    <None Include="src\gui\common\EmojiButton.qml">
-      <Filter>gui\common</Filter>
+    <None Include="src\gui\qt\qml\GPRunner\Common\EmojiButton.qml">
+      <Filter>gui\qt\qml\GPRunner\common</Filter>
     </None>
-    <None Include="src\gui\mr\MrDelegate.qml">
-      <Filter>gui\mr</Filter>
+    <None Include="src\gui\qt\qml\GPRunner\Discussions\DiscussionNoteDialog.qml">
+      <Filter>gui\qt\qml\GPRunner\discussions</Filter>
     </None>
-    <None Include="src\gui\common\User.qml">
-      <Filter>gui\common</Filter>
+    <None Include="src\gui\qt\qml\GPRunner\Discussions\DiscussionDelegate.qml">
+      <Filter>gui\qt\qml\GPRunner\discussions</Filter>
     </None>
-    <None Include="src\gui\mr\MrUser.qml">
-      <Filter>gui\mr</Filter>
+    <None Include="src\gui\qt\qml\GPRunner\Common\HorizontalSpacer.qml">
+      <Filter>gui\qt\qml\GPRunner\common</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <QtRcc Include="src\gui\qml.qrc">
-      <Filter>gui</Filter>
-    </QtRcc>
+    <None Include="src\gui\qt\qml\GPRunner\Discussions\MergeRequestDiscussions.qml">
+      <Filter>gui\qt\qml\GPRunner\discussions</Filter>
+    </None>
+    <None Include="src\gui\qt\qml\GPRunner\MR\MergeRequests.qml">
+      <Filter>gui\qt\qml\GPRunner\mr</Filter>
+    </None>
+    <None Include="src\gui\qt\qml\GPRunner\MR\MergeRequestTableDelegate.qml">
+      <Filter>gui\qt\qml\GPRunner\mr</Filter>
+    </None>
+    <None Include="src\gui\qt\qml\GPRunner\MR\MrDelegate.qml">
+      <Filter>gui\qt\qml\GPRunner\mr</Filter>
+    </None>
+    <None Include="src\gui\qt\qml\GPRunner\MR\MRTable.qml">
+      <Filter>gui\qt\qml\GPRunner\mr</Filter>
+    </None>
+    <None Include="src\gui\qt\qml\GPRunner\MR\MrUser.qml">
+      <Filter>gui\qt\qml\GPRunner\mr</Filter>
+    </None>
+    <None Include="src\gui\qt\qml\GPRunner\Pipelines\PipelineJobs.qml">
+      <Filter>gui\qt\qml\GPRunner\pipelines</Filter>
+    </None>
+    <None Include="src\gui\qt\qml\GPRunner\Pipelines\Pipelines.qml">
+      <Filter>gui\qt\qml\GPRunner\pipelines</Filter>
+    </None>
+    <None Include="src\gui\qt\qml\GPRunner\Pipelines\PipelineStatistics.qml">
+      <Filter>gui\qt\qml\GPRunner\pipelines</Filter>
+    </None>
+    <None Include="src\gui\qt\qml\GPRunner\Pipelines\PipelineTable.qml">
+      <Filter>gui\qt\qml\GPRunner\pipelines</Filter>
+    </None>
+    <None Include="src\gui\qt\qml\GPRunner\Pipelines\PipelineVariablesTable.qml">
+      <Filter>gui\qt\qml\GPRunner\pipelines</Filter>
+    </None>
+    <None Include="src\gui\qt\qml\GPRunner\Pipelines\StartPipeline.qml">
+      <Filter>gui\qt\qml\GPRunner\pipelines</Filter>
+    </None>
+    <None Include="src\gui\qt\qml\GPRunner\Common\VerticalSpacer.qml">
+      <Filter>gui\qt\qml\GPRunner\common</Filter>
+    </None>
+    <None Include="src\gui\qt\qml\GPRunner\Common\User.qml">
+      <Filter>gui\qt\qml\GPRunner\common</Filter>
+    </None>
+    <None Include="src\gui\qt\qml\GPRunner\Common\UnreadMarker.qml">
+      <Filter>gui\qt\qml\GPRunner\common</Filter>
+    </None>
+    <None Include="src\gui\qt\qml\GPRunner\Common\TextLinkButton.qml">
+      <Filter>gui\qt\qml\GPRunner\common</Filter>
+    </None>
+    <None Include="src\gui\qt\qml\GPRunner\Common\Utility.js">
+      <Filter>gui\qt\qml\GPRunner\common</Filter>
+    </None>
+    <None Include="src\gui\qt\qml\GPRunner\Main.qml">
+      <Filter>gui\qt\qml\GPRunner</Filter>
+    </None>
+    <None Include="src\gui\qt\qml\GPRunner\qmldir">
+      <Filter>gui\qt\qml\GPRunner</Filter>
+    </None>
+    <None Include="src\gui\qt\qml\GPRunner\ProjectList.qml">
+      <Filter>gui\qt\qml\GPRunner</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\model\classes\Parser.h">
@@ -223,5 +230,10 @@
     <Image Include="src\gui\icons\gitlab-green.ico">
       <Filter>gui\icons</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <QtRcc Include="src\gui\qml.qrc">
+      <Filter>gui</Filter>
+    </QtRcc>
   </ItemGroup>
 </Project>

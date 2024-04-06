@@ -3,7 +3,8 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import Qt.labs.qmlmodels
 import mudbay.gprunner.models
-import "Utility.js" as Utility
+
+import GPRunner
 
 Item {
     required property var currentProject

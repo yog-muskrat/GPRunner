@@ -2,6 +2,8 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 
+import GPRunner
+
 SplitView {
     id: mergeRequests
     required property var currentProject

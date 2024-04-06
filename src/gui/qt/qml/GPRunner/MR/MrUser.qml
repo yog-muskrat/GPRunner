@@ -3,6 +3,8 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 
+import GPRunner
+
 RowLayout {
     property alias user: userItem.user
     property alias size: userItem.size

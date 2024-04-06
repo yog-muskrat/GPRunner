@@ -2,7 +2,7 @@
 import QtQuick.Layouts
 import QtQuick.Controls
 
-import "Utility.js" as Utility
+import GPRunner
 
 Item {
     signal addNoteRequested(discussion: var)

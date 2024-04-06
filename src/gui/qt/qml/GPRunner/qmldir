@@ -1,0 +1,20 @@
+module GPRunner
+
+Main 1.0 Main.qml
+
+UnreadMarker     1.0 Common/UnreadMarker.qml
+HorizontalSpacer 1.0 Common/HorizontalSpacer.qml
+VerticalSpacer   1.0 Common/VerticalSpacer.qml
+TextLinkButton   1.0 Common/TextLinkButton.qml
+DefaultToolTip   1.0 Common/DefaultToolTip.qml
+EmojiButton      1.0 Common/EmojiButton.qml
+DatePicker       1.0 Common/DatePicker.qml
+User             1.0 Common/User.qml
+Utility          1.0 Common/Utility.js
+
+PipelineStatistics 1.0 Pipelines/PipelineStatistics.qml
+Pipelines          1.0 Pipelines/Pipelines.qml
+
+MergeRequests 1.0 MR/MergeRequests.qml
+
+MergeRequestDiscussions 1.0 Discussions/MergeRequestDiscussions.qml
