@@ -209,6 +209,9 @@
     <None Include="src\gui\qt\qml\GPRunner\ProjectList.qml">
       <Filter>gui\qt\qml\GPRunner</Filter>
     </None>
+    <None Include="src\gui\qt\qml\GPRunner\Discussions\DiscussionNoteDelegate.qml">
+      <Filter>gui\qt\qml\GPRunner\discussions</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\model\classes\Parser.h">

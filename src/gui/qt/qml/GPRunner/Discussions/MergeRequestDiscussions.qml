@@ -1,6 +1,7 @@
 ﻿import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
+import Qt.labs.qmlmodels
 
 import mudbay.gprunner.models
 import GPRunner
@@ -48,16 +49,30 @@ Item {
                 model: discussionModel
                 columnWidthProvider: function (column) { return width }
 
-                delegate: DiscussionDelegate {
-                    onAddNoteRequested: function(discussion) {
-                        dialog.discussion = discussion
-                        dialog.open()
-                    }
+                delegate: DelegateChooser {
+                    role: "isNote"
 
-                    onEditNoteRequested: function(note) {
-                        dialog.note = note
-                        dialog.noteText = note.body
-                        dialog.open()
+                    DelegateChoice {
+                        roleValue: false
+
+                        DiscussionDelegate { }
+                    }
+                    
+                    DelegateChoice {
+                        roleValue: true
+
+                        DiscussionNoteDelegate {
+                            onAddNoteRequested: function(discussion) {
+                                dialog.discussion = discussion
+                                dialog.open()
+                            }
+
+                            onEditNoteRequested: function(note) {
+                                dialog.note = note
+                                dialog.noteText = note.body
+                                dialog.open()
+                            }
+                        }
                     }
                 }
 

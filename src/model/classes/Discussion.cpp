@@ -99,7 +99,7 @@ namespace gpr::api
 
 				if(!m_loaded // Не помечать сообщения при первоначальной загрузке
 					|| newNote->author() == currentUser // Не помечать собственные сообщения
-					|| mr().isUserInvolved(currentUser)) // Не помечать сообщения из чужих MR-ов)
+					|| !mr().isUserInvolved(currentUser)) // Не помечать сообщения из чужих MR-ов)
 				{
 					newNote->markRead();
 				}

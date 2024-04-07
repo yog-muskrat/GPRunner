@@ -341,8 +341,8 @@ namespace gpr
 				reply->deleteLater();
 				if (reply->error())
 				{
-					qDebug() << "API request error:" << reply->errorString();
-					qDebug() << "API request error:" << reply->error();
+					//qDebug() << reply->request().url();
+					qDebug() << "[" << reply->error() << "] " << reply->errorString();
 					return;
 				}
 
@@ -373,8 +373,8 @@ namespace gpr
 				reply->deleteLater();
 				if (reply->error())
 				{
-					qDebug() << "API request error:" << reply->errorString();
-					qDebug() << "API request error:" << reply->error();
+					//qDebug() << reply->request().url();
+					qDebug() << "[" << reply->error() << "] " << reply->errorString();
 					return;
 				}
 

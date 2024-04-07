@@ -36,6 +36,7 @@ public:
 	{
 		DiscussionRole = Qt::ItemDataRole::UserRole,
 		NoteRole,
+		IsNoteRole,
 	};
 	Q_ENUMS(Role)
 

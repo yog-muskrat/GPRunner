@@ -123,6 +123,7 @@
     <None Include="src\gui\qt\qml\GPRunner\Common\DefaultToolTip.qml" />
     <None Include="src\gui\qt\qml\GPRunner\Common\DatePicker.qml" />
     <None Include="src\gui\qt\qml\GPRunner\Discussions\DiscussionDelegate.qml" />
+    <None Include="src\gui\qt\qml\GPRunner\Discussions\DiscussionNoteDelegate.qml" />
     <None Include="src\gui\qt\qml\GPRunner\Discussions\DiscussionNoteDialog.qml" />
     <None Include="src\gui\qt\qml\GPRunner\Common\EmojiButton.qml" />
     <None Include="src\gui\emojis.json" />

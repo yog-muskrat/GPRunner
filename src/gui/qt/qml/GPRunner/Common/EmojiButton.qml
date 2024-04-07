@@ -11,6 +11,8 @@ Label {
     background: Rectangle {
         color: modelData.user == gpm.currentUser ? palette.shadow : palette.button
         radius: 3
+        border.width: 1
+        border.color: palette.window
     }
 
     DefaultToolTip { toolTipText: modelData.reaction.name + " by " + modelData.user.username + " at " + modelData.created }

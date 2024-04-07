@@ -237,8 +237,9 @@ void GPManager::parsePipelines(QPointer<gpr::api::Project> project, QJsonDocumen
 
 	project->updatePipelines(std::move(pipelines));
 
-	for (auto const &pipeline :
-	     project->pipelines() | std::views::filter([](auto const &p) { return p->user().username.isEmpty(); }))
+	for (auto const &pipeline : project->pipelines()
+	                                | std::views::filter([](auto const &p) { return p->user().username.isEmpty(); })
+	                                | std::views::filter([](auto const &p) { return p->id() > 0; }))
 	{
 		loadPipelineInfo(project, pipeline->id());
 		loadPipelineJobs(pipeline);
@@ -287,13 +288,17 @@ void GPManager::parseMRDetails(QPointer<gpr::api::MR> mr, QJsonDocument const &d
 
 	auto const headPipelineId = gpr::api::parseMRHeadPipeline(doc.object());
 
-	if(auto const pos = std::ranges::find(mr->project().pipelines(), headPipelineId, &gpr::api::Pipeline::id); pos != mr->project().pipelines().cend())
+	if (headPipelineId > 0)
 	{
-		mr->setPipeline(*pos);
-	}
-	else
-	{
-		loadPipelineInfo(&mr->project(), headPipelineId);
+		if (auto const pos = std::ranges::find(mr->project().pipelines(), headPipelineId, &gpr::api::Pipeline::id);
+		    pos != mr->project().pipelines().cend())
+		{
+			mr->setPipeline(*pos);
+		}
+		else
+		{
+			loadPipelineInfo(&mr->project(), headPipelineId);
+		}
 	}
 }
 

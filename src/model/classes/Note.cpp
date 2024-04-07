@@ -7,6 +7,8 @@
 
 namespace gpr::api
 {
+	namespace
+	{
 		void replaceEmojis(QString &text, std::map<QString, gpr::Emoji> const &emojiDict)
 		{
 			QRegularExpression regex{":([a-zA-Z_]+):"};
@@ -28,12 +30,15 @@ namespace gpr::api
 				}
 			}
 		}
+	}
 
 	Note::Note(Data data, Discussion &discussion)
 		: QObject(&discussion)
 		, m_data{std::move(data)}
 		, m_discussion{discussion}
-	{}
+	{
+		replaceEmojis(m_data.body, discussion.mr().project().manager().emojiDict());
+	}
 
 	int Note::id() const
 	{

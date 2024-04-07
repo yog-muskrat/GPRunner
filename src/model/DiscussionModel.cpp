@@ -105,6 +105,7 @@ QHash<int, QByteArray> DiscussionModel::roleNames() const
 	auto names = QAbstractItemModel::roleNames();
 	names.insert(Role::DiscussionRole,   "discussion");
 	names.insert(Role::NoteRole,         "note");
+	names.insert(Role::IsNoteRole,       "isNote");
 	return names;
 }
 
@@ -130,6 +131,7 @@ QVariant DiscussionModel::discussionData(QPointer<gpr::api::Discussion> discussi
 	}
 	if (role == Role::DiscussionRole)                          return QVariant::fromValue(discussion.get());
 	if (role == Role::NoteRole)                                return QVariant{};
+	if (role == Role::IsNoteRole)                              return false;
 
 	return QVariant{};
 }
@@ -142,6 +144,7 @@ QVariant DiscussionModel::noteData(QPointer<gpr::api::Note> note, int role) cons
 		note->markRead();
 		return note->body();
 	}
+	if (role == Role::IsNoteRole)       return true;
 	if (role == Role::NoteRole)         return QVariant::fromValue(note.get());
 	if (role == Role::DiscussionRole)   return QVariant::fromValue(&note->discussion());
 

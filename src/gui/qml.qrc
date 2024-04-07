@@ -26,6 +26,7 @@
         <file>qt/qml/GPRunner/Main.qml</file>
         <file>qt/qml/GPRunner/ProjectList.qml</file>
         <file>qt/qml/GPRunner/qmldir</file>
+        <file>qt/qml/GPRunner/Discussions/DiscussionNoteDelegate.qml</file>
     </qresource>
     <qresource prefix="/icons">
         <file alias="gitlab.png">icons/gitlab.png</file>
