@@ -18,22 +18,30 @@ namespace {
 	auto getStatusInfo(QString const &status)
 	{
 		static std::map<QString, StatusInfo> const mergeStatuses = {
-		{"blocked_status",           {"BLK",  "Blocked by another merge request."}},
+		{"blocked_status",           {"BLK", "Blocked by another merge request."}},
 		{"broken_status",            {"⚠",  "Can’t merge into the target branch due to a potential conflict."}},
-		{"checking",                 {"GIT",  "Git is testing if a valid merge is possible."}},
-		{"unchecked",                {"GIT",  "Git has not yet tested if a valid merge is possible."}},
-		{"ci_must_pass",             {"CI",   "A CI/CD pipeline must succeed before merge."}},
-		{"ci_still_running",         {"CI",   "A CI/CD pipeline is still running."}},
+		{"need_rebase",              {"⚠",  "The merge request must be rebased."}},
+		{"conflict",                 {"⚠",  "Conflicts exist between the source and target branches."}},
+		{"checking",                 {"GIT", "Git is testing if a valid merge is possible."}},
+		{"unchecked",                {"GIT", "Git has not yet tested if a valid merge is possible."}},
+		{"ci_must_pass",             {"CI",  "A CI/CD pipeline must succeed before merge."}},
+		{"ci_still_running",         {"CI",  "A CI/CD pipeline is still running."}},
 		{"discussions_not_resolved", {"🗨",  "All discussions must be resolved before merge."}},
-		{"draft_status",             {"✎", "Can’t merge because the merge request is a draft."}},
-		{"external_status_checks",   {"CHK",  "All status checks must pass before merge."}},
-		{"mergeable",                {"✅",   "The branch can merge cleanly into the target branch."}},
-		{"not_approved",             {"APP",  "Approval is required before merge."}},
-		{"not_open",                 {"CLS",  "The merge request must be open before merge."}},
-		{"policies_denied",          {"PLC",  "The merge request contains denied policies."}},
+		{"draft_status",             {"✎",  "Can’t merge because the merge request is a draft."}},
+		{"external_status_checks",   {"CHK", "All status checks must pass before merge."}},
+		{"mergeable",                {"✅",  "The branch can merge cleanly into the target branch."}},
+		{"not_approved",             {"APP", "Approval is required before merge."}},
+		{"approvals_syncing",        {"APP", "The merge request’s approvals are syncing."}},
+		{"not_open",                 {"CLS", "The merge request must be open before merge."}},
+		{"policies_denied",          {"PLC", "The merge request contains denied policies."}},
+		{"requested_changes",        {"CHG", "The merge request has reviewers who have requested changes."}},
 		};
 
-		if(!mergeStatuses.contains(status)) return StatusInfo{"???", "Unknown status"};
+		if(!mergeStatuses.contains(status))
+		{
+			qDebug() << "Unknown MR statue: " << status;
+			return StatusInfo{"???", "Unknown status"};
+		}
 		return mergeStatuses.at(status);
 	}
 

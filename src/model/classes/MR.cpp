@@ -200,6 +200,11 @@ namespace gpr::api
 			{
 				discussion = m_discussions.emplace_back(new Discussion(std::move(discussionData), *this));
 				connectDiscussion(discussion);
+				if(m_discussionsLoaded)
+				{
+					discussion->setLoadFinished();
+				}
+
 				Q_EMIT discussionAdded(discussion);
 			}
 
